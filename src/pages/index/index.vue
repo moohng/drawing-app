@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from '@vue/runtime-core';
+import { onMounted } from 'vue';
 import { ref } from 'vue';
 import { useStore } from 'vuex';
 import * as dan from '@moohng/dan';
@@ -29,12 +29,12 @@ import { addPath } from '@/commons/api';
 const store = useStore();
 
 // 屏幕常亮
-// onMounted(() => {
-//   uni.setKeepScreenOn({ keepScreenOn: true });
-//   return () => {
-//     uni.setKeepScreenOn({ keepScreenOn: false });
-//   };
-// });
+onMounted(() => {
+  uni.setKeepScreenOn({ keepScreenOn: true });
+  return () => {
+    uni.setKeepScreenOn({ keepScreenOn: false });
+  };
+});
 
 // 分享
 useShare();

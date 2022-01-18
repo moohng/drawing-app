@@ -92,3 +92,56 @@ const handleClick = (index: number) => {
   showDialog.value = false;
 };
 </script>
+
+<style lang="scss" scoped>
+.preview-cover {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.4s;
+  background-color: rgba(44, 44, 44, .4);
+  z-index: 0;
+}
+
+.preview-cover .share-img {
+  width: 250px;
+}
+
+.preview-cover .icon-play {
+  color: #fff;
+  font-size: 44px;
+}
+
+.preview-cover .bottom {
+  position: absolute;
+  bottom: 40px;
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: constant(safe-area-inset-bottom);
+}
+
+.preview-cover .bottom .btn {
+  margin: 16px 0;
+  padding: 8px 16px;
+  color: #666;
+  text-align: center;
+  background-color: #fff;
+  border-radius: 6px;
+}
+
+.preview-cover .bottom .btn:first-child {
+  color: var(--primaryColor);
+}
+
+.tui-dialog input {
+  padding: 8px 12px;
+  text-align: left;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+</style>

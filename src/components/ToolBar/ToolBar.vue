@@ -34,14 +34,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { Ref, ref } from 'vue';
 import { useStore } from 'vuex';
 import * as dan from '@moohng/dan';
 import { Paint } from '@/commons/Paint';
 import { TypeKeys } from '@/store/types';
 
-const { paint } = defineProps<{
-  paint: Paint;
+const props = defineProps<{
+  paint: Ref<Paint | undefined>;
 }>();
 
 const emit = defineEmits<{
@@ -76,14 +76,14 @@ const handleRevoke = () => {
   const path = state.path.slice(0, state.path.length - 1);
   commit(TypeKeys.SET_PATH, path);
 
-  paint.clear();
-  paint.drawPath(path);
+  props.paint.value?.clear();
+  props.paint.value?.drawPath(path);
 };
 
 const handleClear = () => {
   commit(TypeKeys.SET_PATH, []);
 
-  paint.clear();
+  props.paint.value?.clear();
 };
 
 const handlePreview = () => {
