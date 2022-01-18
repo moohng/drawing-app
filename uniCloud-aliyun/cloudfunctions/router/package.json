@@ -9,6 +9,6 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"uni-cloud-router": "file:../../../uni_modules/uni-cloud-router/uniCloud/cloudfunctions/common/uni-cloud-router"
+		"uni-cloud-router": "file:../../../src/uni_modules/uni-cloud-router/uniCloud/cloudfunctions/common/uni-cloud-router"
 	}
 }

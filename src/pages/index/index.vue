@@ -12,9 +12,9 @@
   <view class="preview-cover" v-if="isPreview" :style="{ opacity: '0' }" @click="handleEndPreview"></view>
   <ToolBar v-else :paint="paint" @preview="handlePreview" @save="handleSave" />
   <!-- 输入口令弹窗 -->
-  <!-- <Dialog :visible="showDialog" title="请输入口令：" buttons="['取消', '确定']" @click="handleClick">
-    <input type="text" placeholder="口令" :value="code" @input="handleInput" />
-  </Dialog> -->
+  <Dialog :visible="showDialog" title="请输入口令：" :buttons="['取消', '确定']" @click="handleClick">
+    <input v-model="code" type="text" placeholder="口令" />
+  </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -67,10 +67,6 @@ const code = ref('');
 const handleSave = (text = dan.random(8) as string) => {
   code.value = text;
   showDialog.value = true;
-};
-
-const handleInput = (e: any) => {
-  code.value = e.detail.value;
 };
 
 const handleClick = (index: number) => {
