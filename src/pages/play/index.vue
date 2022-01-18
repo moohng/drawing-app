@@ -15,21 +15,17 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { fetchPath } from '@/commons/api';
+import { shareConfig } from '@/commons/config';
 import { usePaint } from '@/uses';
 import { pathFallback } from '@/commons/utils';
 import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { Path } from '@/store/types';
 
 // 分享
-onShareAppMessage(() => ({
-  title: '【涂图了】让你笔尖动起来~',
-  content: '找到一款神奇的绘图工具，快来体验一下吧！',
-}));
+onShareAppMessage(() => shareConfig);
 
 // 分享朋友圈
-onShareTimeline(() => ({
-  title: '【涂图了】让你笔尖动起来~',
-}));
+onShareTimeline(() => shareConfig);
 
 // 画笔
 const paint = usePaint('#drawCanvas');

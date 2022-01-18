@@ -13,7 +13,6 @@ export function useCanvasEvent(paint: Ref<Paint | undefined>) {
   const { state, commit } = useStore();
 
   const handleTouchStart = (event: TouchEvent) => {
-    console.log('-----------------------------------------------');
     painting = true;
     const dot = getRelativeDot(getDot(event), { width: windowWidth, height: windowHeight });
     const { color, width } = state;

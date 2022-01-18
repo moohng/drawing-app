@@ -25,6 +25,7 @@ import * as dan from '@moohng/dan';
 import { usePaint } from '@/uses';
 import { useCanvasEvent } from './uses/useCanvasEvent';
 import { addPath } from '@/commons/api';
+import { shareConfig } from '@/commons/config';
 
 const store = useStore();
 
@@ -37,15 +38,10 @@ onMounted(() => {
 });
 
 // 分享
-onShareAppMessage(() => ({
-  title: '【涂图了】让笔尖动起来~',
-  content: '找到一款神奇的绘图工具，快来体验一下吧！',
-}));
+onShareAppMessage(() => shareConfig);
 
 // 分享朋友圈
-onShareTimeline(() => ({
-  title: '【涂图了】让笔尖动起来~',
-}));
+onShareTimeline(() => shareConfig);
 
 // 画笔
 const paint = usePaint('#drawCanvas');
