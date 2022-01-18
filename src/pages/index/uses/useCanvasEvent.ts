@@ -1,8 +1,8 @@
-import { useStore } from 'vuex';
-import { Path, TypeKeys } from "../../../store/types";
-import { Paint } from "../../../commons/Paint";
-import { getRelativeDot, getDot } from '../../../commons/utils';
 import { Ref } from 'vue';
+import { useStore } from 'vuex';
+import { Path, TypeKeys } from "@/store/types";
+import { Paint } from "@/commons/Paint";
+import { getRelativeDot, getDot } from '@/commons/utils';
 
 export function useCanvasEvent(paint: Ref<Paint | undefined>) {
   let painting = false;
@@ -12,7 +12,7 @@ export function useCanvasEvent(paint: Ref<Paint | undefined>) {
 
   const { state, commit } = useStore();
 
-  const handleTouchStart = (event: any) => {
+  const handleTouchStart = (event: TouchEvent) => {
     painting = true
     const dot = getRelativeDot(getDot(event), { width: windowWidth, height: windowHeight})
     const { color, width } = state
@@ -26,7 +26,7 @@ export function useCanvasEvent(paint: Ref<Paint | undefined>) {
     }
   }
 
-  const handleTouchMove = (event: any) => {
+  const handleTouchMove = (event: TouchEvent) => {
     if (!painting) return
     const dot = getRelativeDot(getDot(event), { width: windowWidth, height: windowHeight})
     paint.value?.drawLine(dot)

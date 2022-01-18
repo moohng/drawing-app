@@ -1,4 +1,4 @@
-import { Path, Dot } from './Paint'
+import { Path, Dot } from '@/store/types'
 
 /**
  * 下载资源
@@ -40,6 +40,7 @@ export function getRelativeDot({ x, y }: Dot, { width, height }: { width: number
 }
 
 export function getDot(event: TouchEvent) {
+  // @ts-ignore
   const { x, y } = event.touches[0]
   return { x, y }
 }

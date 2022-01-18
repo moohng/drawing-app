@@ -35,10 +35,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import * as dan from '@moohng/dan';
-import { Paint } from '../../commons/Paint';
 import { useStore } from 'vuex';
-import { TypeKeys } from '../../store/types';
+import * as dan from '@moohng/dan';
+import { Paint } from '@/commons/Paint';
+import { TypeKeys } from '@/store/types';
 
 const { paint } = defineProps<{
   paint: Paint;
@@ -105,11 +105,13 @@ const handleDownload = () => {
     .select('#drawCanvas')
     .fields(
       {
+        // @ts-ignore
         node: true,
         size: true,
       },
       ({ node: canvas }: any) => {
         uni.canvasToTempFilePath({
+          // @ts-ignore
           canvas,
           success: ({ tempFilePath }) => {
             shareImg.value = tempFilePath;

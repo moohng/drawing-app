@@ -22,9 +22,9 @@ import { onMounted } from '@vue/runtime-core';
 import { ref } from 'vue';
 import { useStore } from 'vuex';
 import * as dan from '@moohng/dan';
-import { usePaint, useShare } from '../../uses';
+import { usePaint, useShare } from '@/uses';
 import { useCanvasEvent } from './uses/useCanvasEvent';
-import { addPath } from '../../commons/api';
+import { addPath } from '@/commons/api';
 
 const store = useStore();
 

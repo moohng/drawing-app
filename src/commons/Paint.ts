@@ -1,13 +1,4 @@
-export interface Dot {
-  x: number;
-  y: number;
-}
-
-export interface Path {
-  pos: Dot[];
-  color?: string;
-  width?: number;
-}
+import { Dot, Path } from '@/store/types';
 
 const { windowWidth, windowHeight } = uni.getSystemInfoSync();
 
