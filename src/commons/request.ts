@@ -1,23 +1,25 @@
-interface HttpOoptions {
+import { baseUrl } from './config';
+
+interface HttpOptions {
   url: string;
   method?: 'GET' | 'POST' | 'DELETE';
   data?: Record<string, any>;
 }
 
-export const http = async ({ url, method = 'GET', data }: HttpOoptions) => {
+export const http = async <T>({ url, method = 'GET', data }: HttpOptions) => {
   return new Promise((resolve, reject) => {
     uni.request({
-      url: 'https://ff827abe-e27d-48d4-a09a-81355a2ce85d.bspapp.com' + url,
+      url: baseUrl + url,
       method,
       data,
-      success: (res: any) => {
-        resolve(res.data);
+      success: (res) => {
+        resolve(res.data as T);
       },
       fail: reject,
     });
   });
-}
+};
 
-http.get = (url: string, data: any) => http({ url: url, data: data })
+http.get = <T>(url: string, data: any) => http<T>({ url: url, data: data });
 
-http.post = (url: string, data: any) => http({ url: url, data: data, method: 'POST' })
+http.post = <T>(url: string, data: any) => http<T>({ url: url, data: data, method: 'POST' });
