@@ -1,6 +1,6 @@
 import { onReady } from '@dcloudio/uni-app';
 import { ref } from 'vue';
-import { Paint } from '../commons/Paint';
+import { Paint } from '@/commons/Paint';
 
 const { windowWidth, windowHeight } = uni.getSystemInfoSync();
 
@@ -13,6 +13,7 @@ export default function usePaint(selector: string) {
       .select(selector)
       .fields(
         {
+          // @ts-ignore
           node: true,
           size: true,
         },

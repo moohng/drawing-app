@@ -19,13 +19,13 @@
   <!-- 画笔宽度 -->
   <radio-group class="width-bar" @change="handleWidthSelect">
     <view class="button" v-for="(item, index) in widthList" :key="index">
-      <radio :value="String(value)" :checked="value === state.width" />
-      <text class="icon" :style="{ width: `${width}px`, height: `${width}px`, color: state.color }"></text>
+      <radio :value="String(item.value)" :checked="item.value === state.width" />
+      <text class="icon" :style="{ width: `${item.width}px`, height: `${item.width}px`, color: state.color }"></text>
     </view>
   </radio-group>
 
   <!-- 分享图片预览 -->
-  <view v-if="shareImg" class="preview-cover" @click="() => setShareImg('')">
+  <view v-if="shareImg" class="preview-cover" @click="shareImg.value = ''">
     <image class="share-img" :src="shareImg" mode="widthFix" lazyLoad />
     <view class="bottom">
       <view class="btn" @click="handleSave">保存</view>
@@ -232,11 +232,6 @@ const handleShare = () => {
 
 .color-bar .button radio + .icon {
   box-shadow: 0 0 1px currentColor;
-}
-
-.width-bar .button input[type='radio']::after {
-  width: inherit;
-  height: inherit;
 }
 
 .line {
