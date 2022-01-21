@@ -12,8 +12,8 @@
   <view class="preview-cover" v-if="isPreview" :style="{ opacity: '0' }" @click="handleEndPreview"></view>
   <ToolBar v-else :paint="paint" @preview="handlePreview" @save="handleSave" />
   <!-- 输入口令弹窗 -->
-  <Dialog :visible="showDialog" title="请输入口令：" :buttons="['取消', '确定']" @click="handleClick">
-    <input v-model="code" type="text" placeholder="口令" />
+  <Dialog :visible="showDialog" title="是否设置口令？" :buttons="['不设置', '设置']" @click="handleClick">
+    <input v-model="pwd" type="text" placeholder="口令" />
   </Dialog>
 </template>
 
@@ -66,22 +66,21 @@ const handleEndPreview = () => {
 
 /** 保存 */
 const showDialog = ref(false);
-const code = ref('');
+const pwd = ref('');
+let code: string;
 
 const handleSave = (text = dan.random(8) as string) => {
-  code.value = text;
+  code = text;
   showDialog.value = true;
 };
 
 const handleClick = (index: number) => {
-  if (index === 1) {
-    if (!code) {
-      return uni.showToast({ title: '请输入一个口令', icon: 'none' });
-    }
-    addPath({ code: code.value, path: store.state.path }).then(() => {
-      uni.navigateTo({ url: '/pages/play/index?code=' + code });
-    });
+  if (index === 1 && !pwd.value) {
+    return uni.showToast({ title: '请输入一个口令', icon: 'none' });
   }
+  addPath({ code, path: store.state.path, pwd: pwd.value }).then(() => {
+    uni.navigateTo({ url: '/pages/play/index?code=' + code });
+  });
   showDialog.value = false;
 };
 </script>

@@ -4,12 +4,14 @@
     <text class="iconfont icon-play" @click="handlePlayToggle"></text>
     <view class="bottom">
       <view class="btn" @click="handleGoPlay">我也要玩~</view>
-      <view class="btn" @click="handlePwd">输入口令</view>
     </view>
   </view>
+  <!-- 口令 -->
   <Dialog :visible="showDialog" title="请输入口令：" :buttons="['取消', '确定']" @click="handleClick">
     <input v-model="codeRef" type="text" placeholder="口令" />
   </Dialog>
+  <!-- 异常 -->
+  <Dialog :visible="errorDialog" title="数据异常！" :buttons="['确定']" @click="handleErrorClick"></Dialog>
 </template>
 
 <script lang="ts" setup>
@@ -31,17 +33,25 @@ onShareTimeline(() => shareConfig);
 const paint = usePaint('#drawCanvas');
 
 const isPlaying = ref(true);
+
 const showDialog = ref(false);
+const errorDialog = ref(false);
 
-let localPath: Path[];
+let localState: {
+  title?: string;
+  path: Path[];
+  background: string;
+  pwd: string;
+};
 
-const startPlay = (path: Path[]) => {
+const startPlay = () => {
   isPlaying.value = true;
   paint.value?.clear();
-  paint.value?.playPath(path, () => {
+  localState?.title && uni.setNavigationBarTitle({ title: localState.title });
+  paint.value?.setBackground(localState.background);
+  paint.value?.playPath(localState.path, () => {
     isPlaying.value = false;
   });
-  localPath = path;
 };
 
 const fetchData = (code: string) => {
@@ -50,25 +60,34 @@ const fetchData = (code: string) => {
       isPlaying.value = false;
       return uni.showToast({ title: '链接已失效~', icon: 'none' });
     }
-    const { path, background = '#ffffff', title, code: _code } = data[0];
+    const { path, background = '#ffffff', code: _code, pwd } = data[0];
+    localState = data[0];
+    localState.path = _code ? path : pathFallback(path);
+    localState.background = background
 
-    title && uni.setNavigationBarTitle({ title });
-    paint.value?.setBackground(background);
-    // 播放
-    startPlay(_code ? path : pathFallback(path));
+    if (pwd) {
+      showDialog.value = true;
+    } else {
+      // 播放
+      startPlay();
+    }
   });
 };
 
 const codeRef = ref('');
 
 onLoad(({ code }) => {
-  code && fetchData(code);
-  codeRef.value = code as string;
+  if (code) {
+    fetchData(code);
+    codeRef.value = code as string;
+  } else {
+    errorDialog.value = true;
+  }
 });
 
 const handlePlayToggle = () => {
   if (paint.value?.isComplete) {
-    startPlay(localPath);
+    startPlay();
   } else if (isPlaying.value) {
     paint.value?.pause();
     isPlaying.value = false;
@@ -82,18 +101,25 @@ const handleGoPlay = () => {
   uni.reLaunch({ url: '/pages/index/index' });
 };
 
-const handlePwd = () => {
-  showDialog.value = true;
-};
-
 const handleClick = (index: number) => {
   if (index === 1) {
     if (!codeRef.value) {
-      return uni.showToast({ title: '请输入一个口令', icon: 'none' });
+      uni.showToast({ title: '请输入口令', icon: 'none' });
+    } else if (codeRef.value !== localState?.pwd) {
+      uni.showToast({ title: '口令不正确，请重新输入', icon: 'none' });
+    } else {
+      startPlay();
     }
-    fetchData(codeRef.value);
   }
   showDialog.value = false;
+};
+
+const handleErrorClick = async () => {
+  try {
+    await uni.navigateBack({});
+  } catch (err) {
+    uni.reLaunch({ url: '/pages/index/index' });
+  }
 };
 </script>
 

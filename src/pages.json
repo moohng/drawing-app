@@ -12,6 +12,12 @@
 			"style": {
 				"navigationBarTitleText": "预览"
 			}
+		},
+		{
+			"path": "pages/demo/index",
+			"style": {
+				"navigationBarTitleText": "DEMO"
+			}
 		}
 	],
 	"globalStyle": {
