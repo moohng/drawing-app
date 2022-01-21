@@ -3,6 +3,7 @@
   <view class="preview-cover" v-if="!isPlaying">
     <text class="iconfont icon-play" @click="handlePlayToggle"></text>
     <view class="bottom">
+      <button class="btn" open-type="share">分享给好友</button>
       <view class="btn" @click="handleGoPlay">我也要玩~</view>
     </view>
   </view>
@@ -157,14 +158,16 @@ const handleErrorClick = async () => {
 
 .preview-cover .bottom .btn {
   margin: 16px 0;
-  padding: 8px 16px;
+  padding: 9px 16px;
   color: #666;
   text-align: center;
+  font-size: 16px;
   background-color: #fff;
   border-radius: 6px;
 }
 
 .preview-cover .bottom .btn:first-child {
+  padding: 0 16px;
   color: var(--primaryColor);
 }
 

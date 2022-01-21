@@ -8,9 +8,16 @@
     @touchend="handleTouchEnd"
     @touchcancel="handleTouchEnd"
   ></canvas>
+  <!-- <view class="canvas"></view> -->
+  <!-- 画笔工具 -->
+  <PaintTool></PaintTool>
+  <!-- 底部内容区域 -->
+  <view class="container">
+    <ToolBar :paint="paint" @preview="handlePreview" @save="handleSave" />
+  </view>
   <!-- 工具面板 -->
   <view class="preview-cover" v-if="isPreview" :style="{ opacity: '0' }" @click="handleEndPreview"></view>
-  <ToolBar v-else :paint="paint" @preview="handlePreview" @save="handleSave" />
+
   <!-- 输入口令弹窗 -->
   <Dialog :visible="showDialog" title="是否设置口令？" :buttons="['不设置', '设置']" @click="handleClick">
     <input v-model="pwd" type="text" placeholder="口令" />
@@ -86,6 +93,20 @@ const handleClick = (index: number) => {
 </script>
 
 <style lang="scss" scoped>
+.container {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  // padding: 8px 12px;
+  // min-height: calc(100vh - 150vw);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: constant(safe-area-inset-bottom);
+  // background-color: $uni-bg-color-grey;
+  box-sizing: border-box;
+  border-radius: 22px 22px 0 0;
+}
+
 .tui-dialog input {
   padding: 8px 12px;
   text-align: left;
