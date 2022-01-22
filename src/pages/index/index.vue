@@ -3,12 +3,14 @@
     id="drawCanvas"
     type="2d"
     class="canvas"
-    @touchstart="handleTouchStart"
-    @touchmove="handleTouchMove"
-    @touchend="handleTouchEnd"
-    @touchcancel="handleTouchEnd"
   ></canvas>
-  <!-- <view class="canvas"></view> -->
+  <view
+    class="canvas canvas-cover"
+    @touchstart.stop="handleTouchStart"
+    @touchmove.stop="handleTouchMove"
+    @touchend.stop="handleTouchEnd"
+    @touchcancel.stop="handleTouchEnd"
+  ></view>
   <!-- 画笔工具 -->
   <PaintTool></PaintTool>
   <!-- 底部内容区域 -->
@@ -105,6 +107,12 @@ const handleClick = (index: number) => {
   // background-color: $uni-bg-color-grey;
   box-sizing: border-box;
   border-radius: 22px 22px 0 0;
+}
+
+.canvas-cover {
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 .tui-dialog input {

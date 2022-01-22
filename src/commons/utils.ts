@@ -1,4 +1,4 @@
-import { Path, Dot } from '@/store/types'
+import { Path, Dot } from '@/store/types';
 
 /**
  * 下载资源
@@ -6,10 +6,10 @@ import { Path, Dot } from '@/store/types'
  * @param name 下载命名
  */
 export function download(url: string, name = String(Date.now())) {
-  const a = document.createElement('a')
-  a.download = name
-  a.href = url
-  a.click()
+  const a = document.createElement('a');
+  a.download = name;
+  a.href = url;
+  a.click();
 }
 
 /**
@@ -18,12 +18,12 @@ export function download(url: string, name = String(Date.now())) {
  * @returns
  */
 export function pathFallback(path: Path[]): Path[] {
-  return path.map(item => {
+  return path.map((item) => {
     return {
       ...item,
       pos: item.pos.map(({ x, y }) => ({ x: x - 180, y: y - 284 })),
-    }
-  })
+    };
+  });
 }
 
 /**
@@ -32,27 +32,26 @@ export function pathFallback(path: Path[]): Path[] {
  * @param param1
  * @returns
  */
-export function getRelativeDot({ x, y }: Dot, { width, height }: { width: number, height: number }): Dot {
+export function getRelativeDot({ x, y }: Dot, { width, height }: { width: number; height: number }): Dot {
   return {
     x: x - width * 0.5,
     y: y - height * 0.5,
-  }
+  };
 }
 
 export function getDot(event: TouchEvent) {
   // @ts-ignore
-  const { x, y } = event.touches[0]
-  return { x, y }
+  const { clientX, clientY, x = clientX, y = clientY } = event.touches[0];
+  return { x, y };
 }
 
-
 export function getEnv(): string {
-  const ua = window.navigator.userAgent.toLowerCase()
-  let env = 'h5'
+  const ua = window.navigator.userAgent.toLowerCase();
+  let env = 'h5';
   if (/miniProgram/i.test(ua)) {
-    env = 'miniProgram'
+    env = 'miniProgram';
   } else if (/MicroMessenger/i.test(ua)) {
-    env = 'weixin'
+    env = 'weixin';
   }
-  return env
+  return env;
 }

@@ -25,7 +25,7 @@ import { Paint } from '@/commons/Paint';
 import { TypeKeys } from '@/store/types';
 
 const props = defineProps<{
-  paint: Ref<Paint | undefined>;
+  paint?: Paint;
 }>();
 
 const emit = defineEmits<{
@@ -41,14 +41,14 @@ const handleRevoke = () => {
   const path = state.path.slice(0, state.path.length - 1);
   commit(TypeKeys.SET_PATH, path);
 
-  props.paint.value?.clear();
-  props.paint.value?.drawPath(path);
+  props.paint?.clear();
+  props.paint?.drawPath(path);
 };
 
 const handleClear = () => {
   commit(TypeKeys.SET_PATH, []);
 
-  props.paint.value?.clear();
+  props.paint?.clear();
 };
 
 const handlePreview = () => {
@@ -114,7 +114,8 @@ const handleShare = () => {
   top: 0;
   left: 50%;
   transform: translate(-50%, calc(-100% - 24px));
-  background-color: rgba(#00CCFF, 0.08);
+  // background-color: rgba(#00CCFF, 0.4);
+  background-color: hsla(192, 100%, 80%, 0.6);
   border-radius: 100px;
   box-shadow: 0 1px 12px 0 rgba(#333, 0.06);
 }
