@@ -1,4 +1,5 @@
 <template>
+  <!-- #ifdef MP-WEIXIN -->
   <canvas
     id="drawCanvas"
     type="2d"
@@ -11,6 +12,19 @@
     @touchend.stop="handleTouchEnd"
     @touchcancel.stop="handleTouchEnd"
   ></view>
+  <!-- #endif -->
+  <!-- #ifndef MP-WEIXIN -->
+  <canvas
+    id="drawCanvas"
+    canvasId="drawCanvas"
+    type="2d"
+    class="canvas"
+    @touchstart="handleTouchStart"
+    @touchmove="handleTouchMove"
+    @touchend="handleTouchEnd"
+    @touchcancel="handleTouchEnd"
+  ></canvas>
+  <!-- #endif -->
   <!-- 画笔工具 -->
   <PaintTool></PaintTool>
   <!-- 底部内容区域 -->
@@ -39,12 +53,14 @@ import { shareConfig } from '@/commons/config';
 const store = useStore();
 
 // 屏幕常亮
+// #ifndef H5
 onMounted(() => {
   uni.setKeepScreenOn({ keepScreenOn: true });
   return () => {
     uni.setKeepScreenOn({ keepScreenOn: false });
   };
 });
+// #endif
 
 // 分享
 onShareAppMessage(() => shareConfig);
@@ -53,7 +69,7 @@ onShareAppMessage(() => shareConfig);
 onShareTimeline(() => shareConfig);
 
 // 画笔
-const paint = usePaint('#drawCanvas');
+const paint = usePaint('drawCanvas');
 
 /** 绘图事件 */
 const { handleTouchStart, handleTouchMove, handleTouchEnd } = useCanvasEvent(paint);
