@@ -4,9 +4,9 @@
       <text class="icon-line"></text>
     </view>
     <radio-group class="list" :class="{ open: expand }" @change="handleSelect">
-      <view class="item" v-for="(item, index) in options" :key="index">
-        <radio :value="String(item.value)" :checked="item.value === value" :data-checked="item.value == value" />
-        <slot :item="item"></slot>
+      <view class="item" v-for="(item, index) in props.options" :key="index">
+        <radio class="radio" :value="String(item.value)" :checked="item.value == props.value" />
+        <slot :item="item" :checked="item.value == props.value"></slot>
       </view>
     </radio-group>
   </view>
@@ -29,7 +29,7 @@ const emit = defineEmits<{
   (event: 'input', value: string): void;
 }>();
 
-const { value, options } = props;
+// const { value, options } = props;
 
 const expand = ref(false);
 
@@ -61,31 +61,12 @@ const handleSelect = (e: any) => {
     width: 44px;
     text-align: center;
 
-    radio {
+    .radio {
       display: block;
       margin: 0;
       width: 100%;
       height: 22px;
       opacity: 0;
-
-      + .icon {
-        padding: 4px;
-        position: absolute;
-        top: 0;
-        left: 50%;
-        width: 14px;
-        height: 14px;
-        transform: translateX(-50%);
-        background-color: currentColor;
-        background-clip: content-box;
-        z-index: -1;
-        pointer-events: none;
-        border-radius: 16px;
-        // box-shadow: 0 0 1px currentColor;
-      }
-    }
-    radio[data-checked='true'] + .icon {
-      box-shadow: 0 0 8px var(--primaryColor);
     }
   }
 }
