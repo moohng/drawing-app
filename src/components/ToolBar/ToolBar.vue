@@ -7,18 +7,10 @@
     <view class="button" @click="handleDownload"><text class="iconfont icon-download"></text></view>
     <view class="button" @click="handleShare"><text class="iconfont icon-share"></text></view>
   </view>
-
-  <!-- 分享图片预览 -->
-  <view v-if="shareImg" class="preview-cover" @click="shareImg = ''">
-    <image class="share-img" :src="shareImg" mode="widthFix" lazyLoad />
-    <view class="bottom">
-      <view class="btn" @click="handleSave">保存</view>
-    </view>
-  </view>
 </template>
 
 <script setup lang="ts">
-import { Ref, ref } from 'vue';
+import { ref } from 'vue';
 import { useStore } from 'vuex';
 import * as dan from '@moohng/dan';
 import { Paint } from '@/commons/Paint';
@@ -59,21 +51,20 @@ const handlePreview = () => {
   emit('preview');
 };
 
-const shareImg = ref('');
-
 const handleDownload = async () => {
   if (!state.path.length) {
     return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
   }
   // 生成图片
-  shareImg.value = await useGenerateImage('#drawCanvas');
-};
+  const shareImg = await useGenerateImage('#drawCanvas');
 
-const handleSave = () => {
   uni.saveImageToPhotosAlbum({
-    filePath: shareImg.value,
+    filePath: shareImg,
     success: () => {
       uni.showToast({ title: '已保存！', icon: 'none' });
+    },
+    fail: () => {
+      uni.showToast({ title: '保存失败！', icon: 'none' });
     },
   });
 };

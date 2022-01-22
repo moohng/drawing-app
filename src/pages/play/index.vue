@@ -8,7 +8,7 @@
     </view>
   </view>
   <!-- 口令 -->
-  <Dialog :visible="showDialog" title="请输入口令：" :buttons="['取消', '确定']" @click="handleClick">
+  <Dialog :visible="showDialog" title="请输入口令：" :buttons="['确定']" @click="handleClick">
     <input placeholder-class="placeholder" v-model="codeRef" type="text" placeholder="口令" />
   </Dialog>
   <!-- 异常 -->
@@ -117,8 +117,8 @@ const handleGoPlay = () => {
   uni.reLaunch({ url: '/pages/index/index' });
 };
 
-const handleClick = (index: number) => {
-  if (index === 1) {
+const handleClick = (index: number | string) => {
+  if (index !== 'mask') {
     if (!codeRef.value) {
       uni.showToast({ title: '请输入口令', icon: 'none' });
     } else if (codeRef.value !== localState?.pwd) {

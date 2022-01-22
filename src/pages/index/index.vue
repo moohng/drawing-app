@@ -83,13 +83,15 @@ const handleSave = (text = dan.random(8) as string) => {
   showDialog.value = true;
 };
 
-const handleClick = (index: number) => {
+const handleClick = (index: number | string) => {
   if (index === 1 && !pwd.value) {
     return uni.showToast({ title: '请输入一个口令', icon: 'none' });
   }
-  addPath({ code, path: store.state.path, pwd: pwd.value }).then(() => {
-    uni.navigateTo({ url: '/pages/play/index?code=' + code });
-  });
+  if (index !== 'mask') {
+    addPath({ code, path: store.state.path, pwd: pwd.value }).then(() => {
+      uni.navigateTo({ url: '/pages/play/index?code=' + code });
+    });
+  }
   showDialog.value = false;
   pwd.value = '';
 };

@@ -1,6 +1,6 @@
 <template>
   <view class="tui-dialog" v-if="show" :style="style">
-    <view class="cover mask"></view>
+    <view class="cover mask" @click="$emit('click', 'mask')"></view>
     <view class="tui-dialog__body">
       <view class="tui-dialog__hd">{{ title }}</view>
       <view class="tui-dialog__content">
@@ -26,7 +26,7 @@ const props = defineProps<{
 const { title, content, buttons, visible } = props;
 
 const emit = defineEmits<{
-  (event: 'click', index: number, item: string): void;
+  (event: 'click', index: number | string, item?: string): void;
 }>();
 
 const style = ref<Record<string, string>>({
