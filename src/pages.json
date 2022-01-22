@@ -17,12 +17,6 @@
 				"navigationStyle": "custom"
 				// #endif
 			}
-		},
-		{
-			"path": "pages/demo/index",
-			"style": {
-				"navigationBarTitleText": "DEMO"
-			}
 		}
 	],
 	"globalStyle": {

@@ -2,7 +2,7 @@
   <!-- 颜色选择 -->
   <radio-group class="color-bar" @change="handleColorSelect">
     <view class="button" v-for="(color, index) in colorList" :key="index">
-      <radio :value="color" :checked="state.color === color" />
+      <radio :value="color" :checked="state.color === color" :data-checked="state.color === color" />
       <text class="icon" :style="{ color }"></text>
     </view>
   </radio-group>
@@ -10,7 +10,7 @@
   <!-- 画笔宽度 -->
   <radio-group class="width-bar" @change="handleWidthSelect">
     <view class="button" v-for="(item, index) in widthList" :key="index">
-      <radio :value="String(item.value)" :checked="item.value === state.width" />
+      <radio :value="String(item.value)" :checked="item.value === state.width" :data-checked="item.value == state.width" />
       <text class="icon" :style="{ width: `${item.width}px`, height: `${item.width}px`, color: state.color }"></text>
     </view>
   </radio-group>
@@ -98,8 +98,8 @@ const handleWidthSelect = (e: any) => {
   border-radius: 16px;
 }
 
-.button radio[aria-checked='true'] + .icon,
-.color-bar .button radio[aria-checked='true'] + .icon {
+.button radio[data-checked='true'] + .icon,
+.color-bar .button radio[data-checked='true'] + .icon {
   box-shadow: 0 0 8px var(--primaryColor);
 }
 
