@@ -16,19 +16,28 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { fetchPath } from '@/commons/api';
 import { shareConfig } from '@/commons/config';
 import { usePaint } from '@/uses';
 import { pathFallback } from '@/commons/utils';
 import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { Path } from '@/store/types';
+import { useGenerateImage } from '@/uses/useGenerateImage';
+
+let shareImageUrl = '';
 
 // 分享
-onShareAppMessage(() => shareConfig);
+onShareAppMessage(() => ({
+  ...shareConfig,
+  imageUrl: shareImageUrl,
+}));
 
 // 分享朋友圈
-onShareTimeline(() => shareConfig);
+onShareTimeline(() => ({
+  ...shareConfig,
+  imageUrl: shareImageUrl,
+}));
 
 // 画笔
 const paint = usePaint('#drawCanvas');
@@ -44,6 +53,13 @@ let localState: {
   background: string;
   pwd: string;
 };
+
+// 生成分享图片
+watch(isPlaying, async (value) => {
+  if (!value) {
+    shareImageUrl = await useGenerateImage('#drawCanvas');
+  }
+});
 
 const startPlay = () => {
   isPlaying.value = true;

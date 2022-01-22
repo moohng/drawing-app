@@ -23,6 +23,7 @@ import { useStore } from 'vuex';
 import * as dan from '@moohng/dan';
 import { Paint } from '@/commons/Paint';
 import { TypeKeys } from '@/store/types';
+import { useGenerateImage } from '@/uses/useGenerateImage';
 
 const props = defineProps<{
   paint?: Paint;
@@ -60,31 +61,12 @@ const handlePreview = () => {
 
 const shareImg = ref('');
 
-const handleDownload = () => {
+const handleDownload = async () => {
   if (!state.path.length) {
     return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
   }
   // 生成图片
-  uni
-    .createSelectorQuery()
-    .select('#drawCanvas')
-    .fields(
-      {
-        // @ts-ignore
-        node: true,
-        size: true,
-      },
-      ({ node: canvas }: any) => {
-        uni.canvasToTempFilePath({
-          // @ts-ignore
-          canvas,
-          success: ({ tempFilePath }) => {
-            shareImg.value = tempFilePath;
-          },
-        });
-      }
-    )
-    .exec();
+  shareImg.value = await useGenerateImage('#drawCanvas');
 };
 
 const handleSave = () => {
