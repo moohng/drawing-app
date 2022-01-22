@@ -86,6 +86,8 @@ watch(() => props.visible,
 
 .tui-dialog__hd {
   padding: 32px 24px 16px;
+  font-size: 18px;
+  font-weight: bold;
 }
 
 .tui-dialog__content {

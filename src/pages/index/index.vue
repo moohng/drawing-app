@@ -22,7 +22,7 @@
 
   <!-- 输入口令弹窗 -->
   <Dialog :visible="showDialog" title="是否设置口令？" :buttons="['不设置', '设置']" @click="handleClick">
-    <input v-model="pwd" type="text" placeholder="口令" />
+    <input placeholder-class="placeholder" v-model="pwd" type="text" placeholder="点击设置" />
   </Dialog>
 </template>
 
@@ -117,10 +117,12 @@ const handleClick = (index: number) => {
 }
 
 .tui-dialog input {
-  padding: 8px 12px;
-  text-align: left;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  margin: auto;
+  padding: 12px;
+  width: 60%;
+  text-align: center;
+  font-size: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .tui-dialog input:focus {
@@ -128,10 +130,8 @@ const handleClick = (index: number) => {
   outline: none;
 }
 
-.tui-dialog {
-  :v-deep .tui-dialog__ft .btn:nth-child(2) {
-    color: var(--primaryColor);
-  }
+::v-deep .tui-dialog__ft .btn:nth-child(2) {
+  color: var(--primaryColor);
 }
 
 .preview-cover {

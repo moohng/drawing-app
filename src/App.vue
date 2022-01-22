@@ -10,7 +10,7 @@ onHide(() => {
   console.log("App Hide");
 });
 </script>
-<style>
+<style lang="scss">
 @import './styles/iconfont.css';
 
 page {
@@ -34,5 +34,9 @@ page {
 
 .mask.cover {
   background-color: rgba(0,0,0,.6);
+}
+
+.placeholder {
+  color: $uni-border-color;
 }
 </style>

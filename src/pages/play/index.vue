@@ -9,7 +9,7 @@
   </view>
   <!-- 口令 -->
   <Dialog :visible="showDialog" title="请输入口令：" :buttons="['取消', '确定']" @click="handleClick">
-    <input v-model="codeRef" type="text" placeholder="口令" />
+    <input placeholder-class="placeholder" v-model="codeRef" type="text" placeholder="口令" />
   </Dialog>
   <!-- 异常 -->
   <Dialog :visible="errorDialog" title="数据异常！" :buttons="['确定']" @click="handleErrorClick"></Dialog>
@@ -187,9 +187,11 @@ const handleErrorClick = async () => {
 }
 
 .tui-dialog input {
-  padding: 8px 12px;
-  text-align: left;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  margin: auto;
+  padding: 12px;
+  width: 60%;
+  text-align: center;
+  font-size: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 </style>
