@@ -96,7 +96,6 @@ const codeRef = ref('');
 onLoad(({ code }) => {
   if (code) {
     fetchData(code);
-    codeRef.value = code as string;
   } else {
     errorDialog.value = true;
   }
@@ -126,9 +125,9 @@ const handleClick = (index: number) => {
       uni.showToast({ title: '口令不正确，请重新输入', icon: 'none' });
     } else {
       startPlay();
+      showDialog.value = false;
     }
   }
-  showDialog.value = false;
 };
 
 const handleErrorClick = async () => {

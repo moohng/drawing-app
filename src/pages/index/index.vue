@@ -91,6 +91,7 @@ const handleClick = (index: number) => {
     uni.navigateTo({ url: '/pages/play/index?code=' + code });
   });
   showDialog.value = false;
+  pwd.value = '';
 };
 </script>
 
@@ -125,6 +126,12 @@ const handleClick = (index: number) => {
 .tui-dialog input:focus {
   border-color: var(--primaryColor);
   outline: none;
+}
+
+.tui-dialog {
+  :v-deep .tui-dialog__ft .btn:nth-child(2) {
+    color: var(--primaryColor);
+  }
 }
 
 .preview-cover {
