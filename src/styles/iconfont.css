@@ -1,16 +1,20 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2748127 */
-  src: url('https://at.alicdn.com/t/font_2748127_y9d5a4xtsra.woff2?t=1642905739245') format('woff2'),
-       url('https://at.alicdn.com/t/font_2748127_y9d5a4xtsra.woff?t=1642905739245') format('woff'),
-       url('https://at.alicdn.com/t/font_2748127_y9d5a4xtsra.ttf?t=1642905739245') format('truetype');
+  src: url('https://at.alicdn.com/t/font_2748127_hk7kjtqnxnr.woff2?t=1642942280748') format('woff2'),
+       url('https://at.alicdn.com/t/font_2748127_hk7kjtqnxnr.woff?t=1642942280748') format('woff'),
+       url('https://at.alicdn.com/t/font_2748127_hk7kjtqnxnr.ttf?t=1642942280748') format('truetype');
 }
 
 .iconfont {
   font-family: "iconfont" !important;
-  font-size: 32rpx;
+  font-size: 16px;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-random:before {
+  content: "\e6a0";
 }
 
 .icon-close:before {

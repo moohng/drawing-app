@@ -12,14 +12,13 @@ export const colorList = [
   { value: '#95F996' },
   { value: '#F9DB95' },
   { value: '#F7A186' },
-  { value: '#FFFFFF' },
 ];
 
 // 背景颜色列表
 export const bgColorList = [
-  { value: '#ffffff' },
-  { value: '#ffffff' },
-  { value: '#ffffff' },
-  { value: '#ffffff' },
-  { value: '#ffffff' },
+  { value: '#F2495C' },
+  { value: '#F7ABB3' },
+  { value: '#95F996' },
+  { value: '#F9DB95' },
+  { value: '#F7A186' },
 ];

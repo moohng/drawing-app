@@ -86,10 +86,9 @@ const handleShare = () => {
   justify-content: space-around;
   top: 0;
   left: 50%;
-  background-color: hsla(192, 100%, 80%, 0.9);
   background-color: rgba($color: #f2f2f2, $alpha: 0.9);
   border-radius: 200rpx;
-  box-shadow: 0 2rpx 24rpx 0 rgba(#333, 0.06);
+  box-shadow: 0 2rpx 24rpx 0 rgba(#333, 0.1);
 }
 
 .toolbar .button {

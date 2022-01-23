@@ -7,13 +7,19 @@
     <view class="row">
       <view class="label">颜色</view>
       <view class="list">
-        <view class="item" :class="{ selected: state.color === item.value }" :style="{ color: item.value }" v-for="(item, index) in colorList" :key="index" @click="handleColorSelect(item.value)"></view>
+        <view class="item color-block" :class="{ selected: state.color === item.value }" :style="{ color: item.value }" v-for="(item, index) in state.colorList" :key="index" @click="handleColorSelect(item.value)"></view>
+        <view class="item button" @click="handleRandomColor(TypeKeys.SET_RANDOM_COLOR)">
+          <text class="iconfont icon-random"></text>
+        </view>
       </view>
     </view>
     <view class="row">
       <view class="label">背景</view>
       <view class="list">
-        <view class="item" :class="{ selected: state.backgroundColor === item.value }" :style="{ color: item.value }" v-for="(item, index) in bgColorList" :key="index" @click="handleBgColorSelect(item.value)"></view>
+        <view class="item color-block" :class="{ selected: state.backgroundColor === item.value }" :style="{ color: item.value }" v-for="(item, index) in state.bgColorList" :key="index" @click="handleBgColorSelect(item.value)"></view>
+        <view class="item button" @click="handleRandomColor(TypeKeys.SET_RANDOM_BACKGROUND_COLOR)">
+          <text class="iconfont icon-random"></text>
+        </view>
       </view>
     </view>
   </view>
@@ -22,7 +28,6 @@
 <script lang="ts" setup>
 import { useStore } from 'vuex';
 import { TypeKeys } from '@/store/types';
-import { colorList, bgColorList } from '@/commons/config';
 
 const { state, commit } = useStore();
 
@@ -36,6 +41,10 @@ const handleBgColorSelect = (value: string) => {
 
 const handleWidthSelect = (e: any) => {
   commit(TypeKeys.SET_WIDTH, e.detail.value);
+};
+
+const handleRandomColor = (type: string) => {
+  commit(type);
 };
 </script>
 
@@ -70,7 +79,7 @@ const handleWidthSelect = (e: any) => {
     align-items: center;
     justify-content: center;
 
-    &::before {
+    &.color-block::before {
       content: '';
       display: block;
       width: 48rpx;
@@ -80,9 +89,13 @@ const handleWidthSelect = (e: any) => {
       transition: all .4s;
     }
 
-    &.selected::before {
+    &.color-block.selected::before {
       transform: scale(1.4);
       box-shadow: 0 0 12rpx 0;
+    }
+
+    .iconfont {
+      font-size: 52rpx;
     }
   }
 }

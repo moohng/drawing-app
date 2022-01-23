@@ -49,7 +49,7 @@ $bgColor: #f2f2f2;
   right: $left;
   bottom: $bottom;
   opacity: 0;
-  box-shadow: 0 2rpx 24rpx 0 rgba(#333, 0.06);
+  box-shadow: 0 2rpx 24rpx 0 rgba(#333, 0.1);
 
   &.visible {
     transform: scale(1) translateZ(0);
@@ -64,7 +64,7 @@ $bgColor: #f2f2f2;
   width: 96rpx;
   height: 96rpx;
   border-radius: 200rpx;
-  box-shadow: 0 2rpx 24rpx 0 rgba(#333, 0.06);
+  box-shadow: 0 2rpx 24rpx 0 rgba(#333, 0.1);
   background-color: rgba($color: $bgColor, $alpha: 0.9);
   z-index: 99999;
 

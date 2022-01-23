@@ -9,6 +9,10 @@ export interface Path {
   width?: number;
 }
 
+export interface ColorList {
+  value: string;
+}
+
 export interface State {
   path: Path[];
   color: string;
@@ -16,6 +20,9 @@ export interface State {
   width: number;
 
   env: 'h5' | 'miniProgram' | 'weixin' | '';
+
+  colorList: ColorList[];
+  bgColorList: ColorList[];
 }
 
 export enum TypeKeys {
@@ -25,4 +32,6 @@ export enum TypeKeys {
   SET_WIDTH = 'SET_WIDTH',
   SET_BACKGROUND_COLOR = 'SET_BACKGROUND_COLOR',
   SET_ENV = 'SET_ENV',
+  SET_RANDOM_COLOR = 'SET_RANDOM_COLOR',
+  SET_RANDOM_BACKGROUND_COLOR = 'SET_RANDOM_BACKGROUND_COLOR',
 };

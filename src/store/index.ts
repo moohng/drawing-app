@@ -1,7 +1,11 @@
-import { bgColorList, colorList } from '@/commons/config';
+import { getRandomColorList } from '@/commons/utils';
 import { createStore } from 'vuex';
 import mutations from './mutations';
 import { State } from './types';
+
+const colorList = getRandomColorList(5).map(item => ({ value: item }));
+const bgColorList = getRandomColorList(5).map(item => ({ value: item }));
+bgColorList[4] = { value: '#ffffff' };
 
 export const initState: State = {
   /** 绘制数据 */
@@ -11,6 +15,9 @@ export const initState: State = {
   width: 4,
 
   env: '',
+
+  colorList,
+  bgColorList,
 }
 
 const store = createStore({
