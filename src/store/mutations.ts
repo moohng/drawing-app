@@ -15,9 +15,6 @@ const mutations: MutationTree<State> = {
   [TypeKeys.SET_WIDTH] (state, width) {
     state.width = width;
   },
-  [TypeKeys.SET_CODE] (state, code) {
-    state.code = code;
-  },
 };
 
 export default mutations;

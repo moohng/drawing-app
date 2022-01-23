@@ -1,22 +1,14 @@
+import { bgColorList, colorList } from '@/commons/config';
 import { createStore } from 'vuex';
 import mutations from './mutations';
 import { State } from './types';
 
 export const initState: State = {
+  /** 绘制数据 */
   path: [],
-  color: '#000000',
-  backgroundColor: '#ffffff',
+  color: colorList[0].value,
+  backgroundColor: bgColorList[0].value,
   width: 4,
-  play: false,
-
-  code: '秦丹',
-  // previewMode: !!code && edit === undefined,
-
-  showPreviewCover: false,
-  showPwdDialog: false,
-  isSave: false,
-
-  preview: false,
 
   env: '',
 }

@@ -13,7 +13,7 @@
     <view class="row">
       <view class="label">背景</view>
       <view class="list">
-        <view class="item" :class="{ selected: state.backgroundColor === item.value }" :style="{ color: item.value }" v-for="(item, index) in colorList" :key="index" @click="handleBgColorSelect(item.value)"></view>
+        <view class="item" :class="{ selected: state.backgroundColor === item.value }" :style="{ color: item.value }" v-for="(item, index) in bgColorList" :key="index" @click="handleBgColorSelect(item.value)"></view>
       </view>
     </view>
   </view>
@@ -22,7 +22,7 @@
 <script lang="ts" setup>
 import { useStore } from 'vuex';
 import { TypeKeys } from '@/store/types';
-import { colorList } from '@/commons/config';
+import { colorList, bgColorList } from '@/commons/config';
 
 const { state, commit } = useStore();
 
@@ -81,7 +81,7 @@ const handleWidthSelect = (e: any) => {
     }
 
     &.selected::before {
-      transform: scale(1.2);
+      transform: scale(1.4);
       box-shadow: 0 0 12rpx 0;
     }
   }

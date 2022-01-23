@@ -10,7 +10,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { useStore } from 'vuex';
 import * as dan from '@moohng/dan';
 import { Paint } from '@/commons/Paint';
