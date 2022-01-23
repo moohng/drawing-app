@@ -57,7 +57,7 @@ let localState: {
 // 生成分享图片
 watch(isPlaying, async (value) => {
   if (!value) {
-    shareImageUrl = await useGenerateImage('#drawCanvas');
+    shareImageUrl = await useGenerateImage('drawCanvas');
   }
 });
 

@@ -15,6 +15,7 @@ import * as dan from '@moohng/dan';
 import { Paint } from '@/commons/Paint';
 import { TypeKeys } from '@/store/types';
 import { useGenerateImage } from '@/uses/useGenerateImage';
+import { download } from '@/commons/utils';
 
 const props = defineProps<{
   paint?: Paint;
@@ -57,8 +58,9 @@ const handleDownload = async () => {
     return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
   }
   // 生成图片
-  const shareImg = await useGenerateImage('#drawCanvas');
+  const shareImg = await useGenerateImage('drawCanvas');
 
+  // #ifndef H5
   uni.saveImageToPhotosAlbum({
     filePath: shareImg,
     success: () => {
@@ -68,6 +70,10 @@ const handleDownload = async () => {
       uni.showToast({ title: '保存失败！', icon: 'none' });
     },
   });
+  // #endif
+  // #ifdef H5
+  download(shareImg);
+  // #endif
 };
 
 const handleShare = () => {
