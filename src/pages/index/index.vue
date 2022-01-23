@@ -29,6 +29,10 @@
   <PaintTool></PaintTool>
   <!-- 底部内容区域 -->
   <view class="container">
+    <!-- 配置面板 -->
+    <Panel>
+      <view>123</view>
+    </Panel>
     <ToolBar :paint="paint" @preview="handlePreview" @save="handleSave" />
   </view>
   <!-- 工具面板 -->

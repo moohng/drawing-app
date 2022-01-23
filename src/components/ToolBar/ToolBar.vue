@@ -1,9 +1,9 @@
 <template>
   <!-- 操作区域 -->
   <view class="toolbar">
-    <view class="button" @click="handleRevoke"><text class="iconfont icon-revoke"></text></view>
+    <view class="button" @click="handleUndo"><text class="iconfont icon-undo"></text></view>
     <view class="button" @click="handleClear"><text class="iconfont icon-clear"></text></view>
-    <view class="button" @click="handlePreview"><text class="iconfont icon-preview"></text></view>
+    <view class="button" @click="handlePreview"><text class="iconfont icon-play"></text></view>
     <view class="button" @click="handleDownload"><text class="iconfont icon-download"></text></view>
     <view class="button" @click="handleShare"><text class="iconfont icon-share"></text></view>
   </view>
@@ -30,7 +30,7 @@ const { state, commit } = useStore();
 
 /** 操作 */
 
-const handleRevoke = () => {
+const handleUndo = () => {
   const path = state.path.slice(0, state.path.length - 1);
   commit(TypeKeys.SET_PATH, path);
 
@@ -81,12 +81,12 @@ const handleShare = () => {
 
 <style lang="scss" scoped>
 .toolbar {
-  position: absolute;
+  // position: absolute;
   display: flex;
   padding: 0 12px;
   top: 0;
   left: 50%;
-  transform: translate(-50%, calc(-100% - 24px));
+  // transform: translate(-50%, calc(-100% - 24px));
   // background-color: rgba(#00CCFF, 0.4);
   background-color: hsla(192, 100%, 80%, 0.6);
   border-radius: 100px;
@@ -94,8 +94,8 @@ const handleShare = () => {
 }
 
 .toolbar .button {
-  width: 44px;
-  height: 44px;
+  width: 56px;
+  height: 56px;
   color: var(--primaryColor);
   border-radius: 100px;
   display: flex;
@@ -112,6 +112,6 @@ const handleShare = () => {
 }
 
 .toolbar .button .iconfont {
-  font-size: 24px;
+  font-size: 28px;
 }
 </style>

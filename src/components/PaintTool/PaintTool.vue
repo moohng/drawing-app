@@ -1,23 +1,27 @@
 <template>
-  <!-- 画笔宽度 -->
-  <view class="width-bar">
-    <SelectButton :value="state.width" :options="widthList" @input="handleWidthSelect">
-      <template #default="{ item, checked }">
-        <text
-          class="icon"
-          :data-checked="checked"
-          :style="{ width: `${item.label}px`, height: `${item.label}px`, color: state.color }"
-        ></text>
-      </template>
-    </SelectButton>
-  </view>
-  <!-- 颜色选择 -->
-  <view class="color-bar">
-    <SelectButton :value="state.color" :options="colorList" @input="handleColorSelect">
-      <template #default="{ item, checked }">
-        <text class="icon" :data-checked="checked" :style="{ color: item.value }"></text>
-      </template>
-    </SelectButton>
+  <view class="left-aside">
+    <!-- 画笔宽度 -->
+    <view class="bar width-bar">
+      <SelectButton :value="state.width" :options="widthList" @input="handleWidthSelect">
+        <text class="iconfont icon-pen" :style="{ color: state.color }"></text>
+        <template #select-item="{ item, checked }">
+          <text
+            class="icon"
+            :data-checked="checked"
+            :style="{ width: `${item.label}px`, height: `${item.label}px`, color: state.color }"
+          ></text>
+        </template>
+      </SelectButton>
+    </view>
+    <!-- 颜色选择 -->
+    <view class="bar color-bar">
+      <SelectButton :value="state.color" :options="colorList" @input="handleColorSelect">
+        <text class="iconfont icon-color" :style="{ color: state.color }"></text>
+        <template #select-item="{ item, checked }">
+          <text class="icon" :data-checked="checked" :style="{ color: item.value }"></text>
+        </template>
+      </SelectButton>
+    </view>
   </view>
 </template>
 
@@ -55,40 +59,37 @@ const handleWidthSelect = (value: string) => {
 </script>
 
 <style lang="scss" scoped>
-.color-bar,
-.width-bar {
+.left-aside {
   position: fixed;
   top: 32px;
-  background-color: rgba($color: #efefef, $alpha: 0.6);
-  box-shadow: 0 1px 12px 0 rgba(#333, 0.06);
-  border-radius: 100px;
-}
-
-.color-bar {
-  right: 12px;
-}
-
-.width-bar {
   left: 12px;
+  box-shadow: 0 1px 12px 0 rgba(#333, 0.06);
+}
+
+.bar {
+  background-color: rgba($color: #dfdfdf, $alpha: 0.6);
 }
 
 .icon {
   padding: 4px;
-  position: absolute;
-  top: 0;
-  left: 50%;
   width: 14px;
   height: 14px;
-  transform: translateX(-50%);
   background-color: currentColor;
   background-clip: content-box;
-  z-index: -1;
+  // z-index: -1;
   pointer-events: none;
   border-radius: 16px;
-  // box-shadow: 0 0 1px currentColor;
 }
 
-.icon[data-checked='true'] {
-  box-shadow: 0 0 8px var(--primaryColor);
+.color-bar .icon {
+  box-shadow: 0 0 1px currentColor;
+}
+
+// .icon[data-checked='true'] {
+//   box-shadow: 0 0 8px var(--primaryColor);
+// }
+
+.iconfont {
+  font-size: 28px;
 }
 </style>

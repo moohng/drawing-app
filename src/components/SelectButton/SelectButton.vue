@@ -1,19 +1,25 @@
 <template>
   <view class="select-button">
     <view class="button" @click="toggleExpand">
-      <text class="icon-line"></text>
+      <slot :expand="expand"></slot>
     </view>
-    <radio-group class="list" :class="{ open: expand }" @change="handleSelect">
-      <view class="item" v-for="(item, index) in props.options" :key="index">
-        <radio class="radio" :value="String(item.value)" :checked="item.value == props.value" />
-        <slot :item="item" :checked="item.value == props.value"></slot>
-      </view>
-    </radio-group>
+    <view id="transBody" class="trans" :class="{ open: expand }">
+      <radio-group class="list" @change="handleSelect">
+        <!-- <view class="line"></view> -->
+        <view class="item" v-for="(item, index) in props.options" :key="index" :data-checked="item.value == props.value">
+          <radio class="radio" :value="String(item.value)" :checked="item.value == props.value" />
+          <view class="inner">
+            <slot name="select-item" :item="item" :checked="item.value == props.value"></slot>
+          </view>
+        </view>
+      </radio-group>
+    </view>
   </view>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { onReady } from '@dcloudio/uni-app';
+import { getCurrentInstance, ref } from 'vue';
 
 interface SelectButtonOption {
   label?: string;
@@ -23,15 +29,21 @@ interface SelectButtonOption {
 const props = defineProps<{
   value: string | number;
   options: SelectButtonOption[];
+  direction?: 'left' | 'right';
 }>();
 
 const emit = defineEmits<{
   (event: 'input', value: string): void;
 }>();
 
-// const { value, options } = props;
-
 const expand = ref(false);
+let listWidth = 244;
+
+onReady(() => {
+  uni.createSelectorQuery().in(getCurrentInstance()).select('#transBody').boundingClientRect(({ width }) => {
+    listWidth = width!;
+  }).exec();
+});
 
 const toggleExpand = () => {
   expand.value = !expand.value;
@@ -43,60 +55,73 @@ const handleSelect = (e: any) => {
 </script>
 
 <style lang="scss" scoped>
-.list {
+.select-button {
+  position: relative;
   display: flex;
-  flex-direction: column;
-  transition: height 0.4s;
-  height: 0;
-  overflow: hidden;
-  box-sizing: border-box;
+  background-color: inherit;
 
-  &.open {
-    height: 244px;
+  .button {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100px;
   }
 
-  .item {
-    position: relative;
-    margin: 8px 0;
-    width: 44px;
-    text-align: center;
+  .trans {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    width: 0;
+    transition: width 0.4s;
+    background-color: inherit;
+    overflow: hidden;
+    border-radius: 0 100px 100px 0;
 
-    .radio {
-      display: block;
-      margin: 0;
-      width: 100%;
-      height: 22px;
-      opacity: 0;
+    &.open {
+      width: 264px;
     }
   }
 }
 
-.button {
-  width: 44px;
-  height: 44px;
+.list {
   display: flex;
-  justify-content: center;
-  align-items: center;
+
+  .item {
+    position: relative;
+    height: 44px;
+    width: 44px;
+
+    &[data-checked="true"] {
+      background-color: rgba(red, 0.8);
+    }
+
+    .radio {
+      display: block;
+      margin: 0;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      z-index: 1;
+    }
+
+    .inner {
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
 }
 
 .line {
-  margin: 4px 8px;
-  border-bottom: 1px solid #ddd;
-}
-
-.icon-line {
-  display: inline-block;
-  width: 22px;
-  border-top: 2px solid;
-  border-bottom: 6px solid;
-  border-radius: 4px;
-  &::before {
-    content: '';
-    display: block;
-    margin: 3px 0;
-    height: 4px;
-    background-color: currentColor;
-    border-radius: 4px;
-  }
+  margin: 8px 4px;
+  border-left: 1px solid #ddd;
 }
 </style>

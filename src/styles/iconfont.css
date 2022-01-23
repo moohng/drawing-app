@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2748127 */
-  src: url('https://at.alicdn.com/t/font_2748127_1ywubg7ty46.woff2?t=1629187648940') format('woff2'),
-       url('https://at.alicdn.com/t/font_2748127_1ywubg7ty46.woff?t=1629187648940') format('woff'),
-       url('https://at.alicdn.com/t/font_2748127_1ywubg7ty46.ttf?t=1629187648940') format('truetype');
+  src: url('https://at.alicdn.com/t/font_2748127_y9d5a4xtsra.woff2?t=1642905739245') format('woff2'),
+       url('https://at.alicdn.com/t/font_2748127_y9d5a4xtsra.woff?t=1642905739245') format('woff'),
+       url('https://at.alicdn.com/t/font_2748127_y9d5a4xtsra.ttf?t=1642905739245') format('truetype');
 }
 
 .iconfont {
@@ -13,12 +13,32 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-download:before {
-  content: "\e617";
+.icon-close:before {
+  content: "\e685";
 }
 
-.icon-Clouddownload:before {
-  content: "\e868";
+.icon-share:before {
+  content: "\e63e";
+}
+
+.icon-run:before {
+  content: "\ec61";
+}
+
+.icon-undo:before {
+  content: "\eaf0";
+}
+
+.icon-pen:before {
+  content: "\e61e";
+}
+
+.icon-color:before {
+  content: "\e601";
+}
+
+.icon-download:before {
+  content: "\e617";
 }
 
 .icon-preview:before {
@@ -27,10 +47,6 @@
 
 .icon-revoke:before {
   content: "\e624";
-}
-
-.icon-share:before {
-  content: "\e60a";
 }
 
 .icon-share1:before {
