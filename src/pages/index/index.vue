@@ -26,12 +26,12 @@
   ></canvas>
   <!-- #endif -->
   <!-- 画笔工具 -->
-  <PaintTool></PaintTool>
+  <!-- <PaintTool></PaintTool> -->
   <!-- 底部内容区域 -->
   <view class="container">
     <!-- 配置面板 -->
     <Panel>
-      <view>123</view>
+      <PanelTool></PanelTool>
     </Panel>
     <ToolBar :paint="paint" @preview="handlePreview" @save="handleSave" />
   </view>
@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { useStore } from 'vuex';
 import * as dan from '@moohng/dan';
@@ -54,7 +54,7 @@ import { useCanvasEvent } from './uses/useCanvasEvent';
 import { addPath } from '@/commons/api';
 import { shareConfig } from '@/commons/config';
 
-const store = useStore();
+const { state } = useStore();
 
 // 屏幕常亮
 // #ifndef H5
@@ -75,6 +75,12 @@ onShareTimeline(() => shareConfig);
 // 画笔
 const paint = usePaint('drawCanvas');
 
+// 设置背景
+watch(() => state.backgroundColor, (color) => {
+  paint.value?.setBackground(color);
+  paint.value?.drawPath(state.path);
+});
+
 /** 绘图事件 */
 const { handleTouchStart, handleTouchMove, handleTouchEnd } = useCanvasEvent(paint);
 
@@ -84,13 +90,14 @@ const isPreview = ref(false);
 const handlePreview = () => {
   isPreview.value = true;
   paint.value?.clear();
-  paint.value?.playPath(store.state.path, handleEndPreview);
+  paint.value?.setBackground(state.backgroundColor);
+  paint.value?.playPath(state.path, handleEndPreview);
 };
 
 const handleEndPreview = () => {
   isPreview.value = false;
   paint.value?.pause();
-  paint.value?.drawPath(store.state.path);
+  paint.value?.drawPath(state.path);
 };
 
 /** 保存 */
@@ -108,7 +115,12 @@ const handleClick = (index: number | string) => {
     return uni.showToast({ title: '请输入一个口令', icon: 'none' });
   }
   if (index !== 'mask') {
-    addPath({ code, path: store.state.path, pwd: pwd.value }).then(() => {
+    addPath({
+      code,
+      path: state.path,
+      pwd: pwd.value,
+      background: state.backgroundColor,
+    }).then(() => {
       uni.navigateTo({ url: '/pages/play/index?code=' + code });
     });
   }
@@ -123,10 +135,10 @@ const handleClick = (index: number | string) => {
   left: 0;
   right: 0;
   bottom: 0;
-  // padding: 8px 12px;
+  padding: 16px;
   // min-height: calc(100vh - 150vw);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-bottom: constant(safe-area-inset-bottom);
+  bottom: env(safe-area-inset-bottom);
+  bottom: constant(safe-area-inset-bottom);
   // background-color: $uni-bg-color-grey;
   box-sizing: border-box;
   border-radius: 22px 22px 0 0;

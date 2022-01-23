@@ -61,9 +61,9 @@ const handleWidthSelect = (value: string) => {
 <style lang="scss" scoped>
 .left-aside {
   position: fixed;
-  top: 32px;
-  left: 12px;
-  box-shadow: 0 1px 12px 0 rgba(#333, 0.06);
+  top: 64rpx;
+  left: 24rpx;
+  box-shadow: 0 2rpx 24rpx 0 rgba(#333, 0.06);
 }
 
 .bar {
@@ -71,18 +71,17 @@ const handleWidthSelect = (value: string) => {
 }
 
 .icon {
-  padding: 4px;
-  width: 14px;
-  height: 14px;
+  padding: 8rpx;
+  width: 28rpx;
+  height: 28rpx;
   background-color: currentColor;
   background-clip: content-box;
-  // z-index: -1;
   pointer-events: none;
-  border-radius: 16px;
+  border-radius: 32rpx;
 }
 
 .color-bar .icon {
-  box-shadow: 0 0 1px currentColor;
+  box-shadow: 0 0 2rpx currentColor;
 }
 
 // .icon[data-checked='true'] {
@@ -90,6 +89,6 @@ const handleWidthSelect = (value: string) => {
 // }
 
 .iconfont {
-  font-size: 28px;
+  font-size: 56rpx;
 }
 </style>

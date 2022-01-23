@@ -1,6 +1,6 @@
 <template>
   <!-- 操作区域 -->
-  <view class="toolbar">
+  <view class="toolbar" :style="{ color: state.color }">
     <view class="button" @click="handleUndo"><text class="iconfont icon-undo"></text></view>
     <view class="button" @click="handleClear"><text class="iconfont icon-clear"></text></view>
     <view class="button" @click="handlePreview"><text class="iconfont icon-play"></text></view>
@@ -35,6 +35,7 @@ const handleUndo = () => {
   commit(TypeKeys.SET_PATH, path);
 
   props.paint?.clear();
+  props.paint?.setBackground(state.backgroundColor);
   props.paint?.drawPath(path);
 };
 
@@ -42,6 +43,7 @@ const handleClear = () => {
   commit(TypeKeys.SET_PATH, []);
 
   props.paint?.clear();
+  props.paint?.setBackground(state.backgroundColor);
 };
 
 const handlePreview = () => {
@@ -81,30 +83,24 @@ const handleShare = () => {
 
 <style lang="scss" scoped>
 .toolbar {
-  // position: absolute;
   display: flex;
-  padding: 0 12px;
+  justify-content: space-around;
   top: 0;
   left: 50%;
-  // transform: translate(-50%, calc(-100% - 24px));
-  // background-color: rgba(#00CCFF, 0.4);
-  background-color: hsla(192, 100%, 80%, 0.6);
-  border-radius: 100px;
-  box-shadow: 0 1px 12px 0 rgba(#333, 0.06);
+  background-color: hsla(192, 100%, 80%, 0.9);
+  background-color: rgba($color: #f2f2f2, $alpha: 0.9);
+  border-radius: 200rpx;
+  box-shadow: 0 2rpx 24rpx 0 rgba(#333, 0.06);
 }
 
 .toolbar .button {
-  width: 56px;
-  height: 56px;
-  color: var(--primaryColor);
-  border-radius: 100px;
+  width: 96rpx;
+  height: 96rpx;
+  // color: var(--primaryColor);
+  border-radius: 200rpx;
   display: flex;
   justify-content: center;
   align-items: center;
-
-  + .button {
-    margin-left: 8px;
-  }
 
   &:active {
     background-color: rgba(#00CCFF, 0.2);
@@ -112,6 +108,6 @@ const handleShare = () => {
 }
 
 .toolbar .button .iconfont {
-  font-size: 28px;
+  font-size: 56rpx;
 }
 </style>

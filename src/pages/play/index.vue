@@ -156,42 +156,42 @@ const handleErrorClick = async () => {
 }
 
 .preview-cover .share-img {
-  width: 250px;
+  width: 500rpx;
 }
 
 .preview-cover .icon-play {
   color: #fff;
-  font-size: 44px;
+  font-size: 88rpx;
 }
 
 .preview-cover .bottom {
   position: absolute;
-  bottom: 40px;
+  bottom: 80rpx;
   padding-bottom: env(safe-area-inset-bottom);
   padding-bottom: constant(safe-area-inset-bottom);
 }
 
 .preview-cover .bottom .btn {
-  margin: 16px 0;
-  padding: 9px 16px;
+  margin: 32rpx 0;
+  padding: 18rpx 32rpx;
   color: #666;
   text-align: center;
-  font-size: 16px;
+  font-size: 32rpx;
   background-color: #fff;
-  border-radius: 6px;
+  border-radius: 12rpx;
 }
 
 .preview-cover .bottom .btn:first-child {
-  padding: 0 16px;
+  padding: 0 32rpx;
   color: var(--primaryColor);
 }
 
 .tui-dialog input {
   margin: auto;
-  padding: 12px;
+  padding: 24rpx;
   width: 60%;
   text-align: center;
-  font-size: 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 32rpx;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
 }
 </style>

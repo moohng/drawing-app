@@ -61,12 +61,12 @@ const handleSelect = (e: any) => {
   background-color: inherit;
 
   .button {
-    width: 44px;
-    height: 44px;
+    width: 88rpx;
+    height: 88rpx;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 100px;
+    border-radius: 200rpx;
   }
 
   .trans {
@@ -77,10 +77,10 @@ const handleSelect = (e: any) => {
     transition: width 0.4s;
     background-color: inherit;
     overflow: hidden;
-    border-radius: 0 100px 100px 0;
+    border-radius: 0 200rpx 200rpx 0;
 
     &.open {
-      width: 264px;
+      width: 528rpx;
     }
   }
 }
@@ -90,8 +90,8 @@ const handleSelect = (e: any) => {
 
   .item {
     position: relative;
-    height: 44px;
-    width: 44px;
+    height: 88rpx;
+    width: 88rpx;
 
     &[data-checked="true"] {
       background-color: rgba(red, 0.8);
@@ -121,7 +121,7 @@ const handleSelect = (e: any) => {
 }
 
 .line {
-  margin: 8px 4px;
-  border-left: 1px solid #ddd;
+  margin: 16rpx 8rpx;
+  border-left: 1rpx solid #ddd;
 }
 </style>

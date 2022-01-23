@@ -16,6 +16,7 @@ onHide(() => {
 page {
   --primaryColor: #00CCFF;
   color: #333;
+  font-size: 32rpx;
 }
 
 .canvas {

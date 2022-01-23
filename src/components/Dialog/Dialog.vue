@@ -73,27 +73,27 @@ watch(() => props.visible,
 
 .tui-dialog__body {
   margin-top: -15%;
-  width: 320px;
+  width: 640rpx;
   max-width: 90%;
   line-height: 1.4;
-  font-size: 16px;
+  font-size: 32rpx;
   text-align: center;
   background-color: #fff;
-  border-radius: 12px;
+  border-radius: 24rpx;
   overflow: hidden;
   z-index: 9999;
 }
 
 .tui-dialog__hd {
-  padding: 32px 24px 16px;
-  font-size: 18px;
+  padding: 64rpx 48rpx 32rpx;
+  font-size: 36rpx;
   font-weight: bold;
 }
 
 .tui-dialog__content {
-  margin-bottom: 32px;
-  padding-left: 24px;
-  padding-right: 24px;
+  margin-bottom: 64rpx;
+  padding-left: 48rpx;
+  padding-right: 48rpx;
 }
 
 .tui-dialog__ft {
@@ -103,7 +103,7 @@ watch(() => props.visible,
 }
 
 .tui-dialog__ft .btn {
-  padding: 16px;
+  padding: 32rpx;
   flex: 1;
   font-weight: 700;
 }
@@ -120,7 +120,7 @@ watch(() => props.visible,
   border-radius: inherit;
   pointer-events: none;
   border-top-style: solid;
-  border-top-width: 1px;
+  border-top-width: 1rpx;
 }
 
 .tui-dialog__ft .btn + .btn {
@@ -140,12 +140,12 @@ watch(() => props.visible,
   border-radius: inherit;
   pointer-events: none;
   border-left-style: solid;
-  border-left-width: 1px;
+  border-left-width: 1rpx;
 }
 
 .tui-dialog .btn {
   color: #333;
-  letter-spacing: 2px;
+  letter-spacing: 2rpx;
   text-decoration: none;
 }
 </style>
