@@ -1,5 +1,5 @@
 <template>
-  <canvas id="drawCanvas" type="2d" class="canvas" @click="handlePlayToggle" />
+  <canvas id="drawCanvas" canvasId="drawCanvas" type="2d" class="canvas" @click="handlePlayToggle" />
   <view class="preview-cover" v-if="!isPlaying">
     <text class="iconfont icon-play" @click="handlePlayToggle"></text>
     <view class="bottom">
@@ -40,7 +40,7 @@ onShareTimeline(() => ({
 }));
 
 // 画笔
-const paint = usePaint('#drawCanvas');
+const paint = usePaint('drawCanvas');
 
 const isPlaying = ref(true);
 
