@@ -4,3 +4,21 @@ export const shareConfig = {
 };
 
 export const baseUrl = 'https://ff827abe-e27d-48d4-a09a-81355a2ce85d.bspapp.com';
+
+// 画笔颜色列表
+export const colorList = [
+  { value: '#F2495C' },
+  { value: '#F7ABB3' },
+  { value: '#95F996' },
+  { value: '#F9DB95' },
+  { value: '#F7A186' },
+];
+
+// 背景颜色列表
+export const bgColorList = [
+  { value: '#F2495C' },
+  { value: '#F7ABB3' },
+  { value: '#95F996' },
+  { value: '#F9DB95' },
+  { value: '#F7A186' },
+];

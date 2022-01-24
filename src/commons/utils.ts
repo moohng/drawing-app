@@ -1,4 +1,5 @@
 import { Path, Dot } from '@/store/types';
+import * as dan from '@moohng/dan';
 
 /**
  * 下载资源
@@ -54,4 +55,29 @@ export function getEnv(): string {
     env = 'weixin';
   }
   return env;
+}
+
+/**
+ * 随机生成颜色值
+ * @returns
+ */
+export function getRandomColor() {
+  const r = dan.random('0' as unknown as number, 256, true) as number;
+  const g = dan.random('0' as unknown as number, 256, true) as number;
+  const b = dan.random('0' as unknown as number, 256, true) as number;
+  const toString = (v: number) => v.toString(16).padStart(2, '0');
+  return '#' + toString(r) + toString(g) + toString(b);
+}
+
+/**
+ * 生成随机颜色列表
+ * @param length 列表长度
+ * @returns
+ */
+export function getRandomColorList(length = 5) {
+  const list = [];
+  for (let i = 0; i < length; i++) {
+    list.push(getRandomColor())
+  }
+  return list;
 }

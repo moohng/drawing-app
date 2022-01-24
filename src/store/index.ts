@@ -1,24 +1,23 @@
+import { getRandomColorList } from '@/commons/utils';
 import { createStore } from 'vuex';
 import mutations from './mutations';
 import { State } from './types';
 
+const colorList = getRandomColorList(5).map(item => ({ value: item }));
+const bgColorList = getRandomColorList(5).map(item => ({ value: item }));
+bgColorList[4] = { value: '#ffffff' };
+
 export const initState: State = {
+  /** 绘制数据 */
   path: [],
-  color: '#000000',
-  backgroundColor: '#ffffff',
+  color: colorList[0].value,
+  backgroundColor: bgColorList[0].value,
   width: 4,
-  play: false,
-
-  code: '秦丹',
-  // previewMode: !!code && edit === undefined,
-
-  showPreviewCover: false,
-  showPwdDialog: false,
-  isSave: false,
-
-  preview: false,
 
   env: '',
+
+  colorList,
+  bgColorList,
 }
 
 const store = createStore({
