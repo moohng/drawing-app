@@ -1,6 +1,7 @@
 <template>
   <canvas id="drawCanvas" canvasId="drawCanvas" type="2d" class="canvas" @click="handlePlayToggle" />
   <view class="preview-cover" v-if="!isPlaying">
+    <view class="share-tips">点击右上角“···”，可分享到“朋友圈”</view>
     <text class="iconfont icon-play" @click="handlePlayToggle"></text>
     <view class="bottom">
       <button class="btn" open-type="share">分享给好友</button>
@@ -155,28 +156,26 @@ const handleErrorClick = async () => {
   z-index: 0;
 }
 
-.preview-cover .share-img {
-  width: 500rpx;
-}
-
 .preview-cover .icon-play {
+  padding: 24rpx 24rpx 88rpx;
   color: #fff;
   font-size: 88rpx;
 }
 
 .preview-cover .bottom {
   position: absolute;
-  bottom: 80rpx;
+  bottom: 100rpx;
   padding-bottom: env(safe-area-inset-bottom);
   padding-bottom: constant(safe-area-inset-bottom);
 }
 
 .preview-cover .bottom .btn {
-  margin: 32rpx 0;
-  padding: 18rpx 32rpx;
+  margin: 40rpx 0;
+  padding: 18rpx 48rpx;
   color: #666;
   text-align: center;
-  font-size: 32rpx;
+  font-size: 36rpx;
+  font-weight: bold;
   background-color: #fff;
   border-radius: 12rpx;
 }
@@ -193,5 +192,19 @@ const handleErrorClick = async () => {
   text-align: center;
   font-size: 32rpx;
   border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
+}
+
+.share-tips {
+  position: absolute;
+  padding: 24rpx 32rpx;
+  top: 40rpx;
+  left: 60rpx;
+  right: 60rpx;
+  text-align: center;
+  color: #fff;
+  font-size: 48rpx;
+  font-weight: bold;
+  border: 10rpx dashed;
+  border-radius: 40%;
 }
 </style>
