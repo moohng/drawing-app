@@ -2,7 +2,7 @@
   <view>
     <view class="row">
       <view class="label">笔宽</view>
-      <slider class="slider" :value="state.width" :min="2" :max="40" :activeColor="state.color" show-value :block-size="24" @change="handleWidthSelect"></slider>
+      <slider class="slider" :value="state.width" :min="1" :max="40" :activeColor="state.color" show-value :block-size="24" @change="handleWidthSelect"></slider>
     </view>
     <view class="row">
       <view class="label">颜色</view>
@@ -91,11 +91,14 @@ const handleRandomColor = (type: string) => {
 
     &.color-block.selected::before {
       transform: scale(1.4);
-      box-shadow: 0 0 12rpx 0;
+      box-shadow: 0 0 8rpx 0;
     }
 
-    .iconfont {
-      font-size: 52rpx;
+    &.button {
+      margin-left: 8rpx;
+      .iconfont {
+        font-size: 56rpx;
+      }
     }
   }
 }

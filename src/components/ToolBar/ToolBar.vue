@@ -1,11 +1,11 @@
 <template>
   <!-- 操作区域 -->
   <view class="toolbar" :style="{ color: state.color }">
-    <view class="button" @click="handleUndo"><text class="iconfont icon-undo"></text></view>
-    <view class="button" @click="handleClear"><text class="iconfont icon-clear"></text></view>
-    <view class="button" @click="handlePreview"><text class="iconfont icon-play"></text></view>
-    <view class="button" @click="handleDownload"><text class="iconfont icon-download"></text></view>
-    <view class="button" @click="handleShare"><text class="iconfont icon-share"></text></view>
+    <button class="button" @click="handleUndo"><text class="iconfont icon-undo"></text></button>
+    <button class="button" @click="handleClear"><text class="iconfont icon-clear"></text></button>
+    <button class="button" @click="handlePreview"><text class="iconfont icon-play"></text></button>
+    <button class="button" @click="handleDownload"><text class="iconfont icon-download"></text></button>
+    <button class="button" @click="handleShare"><text class="iconfont icon-share"></text></button>
   </view>
 </template>
 
@@ -92,22 +92,29 @@ const handleShare = () => {
   justify-content: space-around;
   top: 0;
   left: 50%;
-  background-color: rgba($color: #f2f2f2, $alpha: 0.9);
+  background-color: rgba($bgColor, 0.9);
   border-radius: 200rpx;
-  box-shadow: 0 2rpx 24rpx 0 rgba(#333, 0.1);
+  box-shadow: 0 4rpx 16rpx 0 rgba($bgColor, 0.4);
 }
 
 .toolbar .button {
   width: 96rpx;
   height: 96rpx;
-  // color: var(--primaryColor);
   border-radius: 200rpx;
   display: flex;
   justify-content: center;
   align-items: center;
+  color: currentColor;
+  font-weight: normal;
+  background-color: transparent;
 
+  &::after {
+    border: none;
+  }
+
+  &.button-hover,
   &:active {
-    background-color: rgba(#00CCFF, 0.2);
+    background-color: rgba($bgColorHover, 0.6);
   }
 }
 

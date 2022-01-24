@@ -15,6 +15,7 @@ onHide(() => {
 
 page {
   --primaryColor: #00CCFF;
+  --bg-color: $bgColor;
   color: #333;
   font-size: 32rpx;
 }

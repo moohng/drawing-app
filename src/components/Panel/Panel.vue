@@ -29,7 +29,6 @@ const handleToggle = () => {
 <style lang="scss" scoped>
 $left: 32rpx;
 $bottom: 160rpx;
-$bgColor: #f2f2f2;
 
 .panel {
   --color: #333;
@@ -42,14 +41,14 @@ $bgColor: #f2f2f2;
   transition: all 0.4s;
   transform: scale(0.01) translateZ(0);
   transform-origin: 60rpx calc(100% - 60rpx);
-  background-color: rgba($color: $bgColor, $alpha: 0.9);
+  background-color: rgba($bgColor, $alpha: 0.9);
   border-radius: 32rpx;
   z-index: 9999;
   left: $left;
   right: $left;
   bottom: $bottom;
   opacity: 0;
-  box-shadow: 0 2rpx 24rpx 0 rgba(#333, 0.1);
+  box-shadow: 0 4rpx 16rpx 0 rgba($bgColor, 0.4);
 
   &.visible {
     transform: scale(1) translateZ(0);
@@ -64,7 +63,7 @@ $bgColor: #f2f2f2;
   width: 96rpx;
   height: 96rpx;
   border-radius: 200rpx;
-  box-shadow: 0 2rpx 24rpx 0 rgba(#333, 0.1);
+  box-shadow: 0 4rpx 16rpx 0 rgba($bgColor, 0.4);
   background-color: rgba($color: $bgColor, $alpha: 0.9);
   z-index: 99999;
 
@@ -78,7 +77,7 @@ $bgColor: #f2f2f2;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    font-size: 52rpx;
+    font-size: 56rpx;
   }
 
   .fade-enter-active,
