@@ -60,6 +60,7 @@ import Panel from './components/Panel.vue';
 import PanelTool from './components/PanelTool.vue';
 import ToolBar from './components/ToolBar.vue';
 import { useCanvasEvent } from './uses/useCanvasEvent';
+import { useWXUserInfo } from './uses/useWXUserInfo';
 import { TypeKeys } from '@/store/modules/user';
 
 const { state, commit } = useStore();
@@ -138,19 +139,15 @@ const handleClick = (index: number | string) => {
 
 /** 个人中心 */
 const goMyPage = () => {
-  if (false) {
+  if (state.user.openId) {
     uni.navigateTo({ url: '/pages/my/index' });
   } else {
-    uni.getUserProfile({
-      lang: 'zh_CN',
-      desc: '为了提供更好的服务我们您的信息',
-      success: ({ userInfo }) => {
-        commit(TypeKeys.SET_USER_INFO, userInfo);
-        uni.navigateTo({ url: '/pages/my/index' });
-      },
-      fail: (err) => {
-        console.log(err);
-      },
+    useWXUserInfo((userInfo) => {
+      // 获取 openId
+
+      // 保存数据并跳转
+      commit(TypeKeys.SET_USER_INFO, userInfo);
+      uni.navigateTo({ url: '/pages/my/index' });
     });
   }
 };
