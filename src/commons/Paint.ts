@@ -48,7 +48,7 @@ export class Paint {
   drawLine({ x, y }: Dot) {
     this.ctx.lineTo(x, y);
     this.ctx.stroke();
-    // #ifndef MP-WEIXIN
+    // #ifndef MP
     this.ctx.draw(true);
     this.ctx.moveTo(x, y);
     // #endif
@@ -74,7 +74,7 @@ export class Paint {
   setBackground(color?: string) {
     this.ctx.fillStyle = color || '#ffffff';
     this.ctx.fillRect(-windowWidth / 2, -windowHeight / 2, windowWidth, windowHeight);
-    // #ifndef MP-WEIXIN
+    // #ifndef MP
     this.ctx.draw(true);
     // #endif
   }

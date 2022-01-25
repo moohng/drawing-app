@@ -2,16 +2,42 @@ import { onReady } from '@dcloudio/uni-app';
 import { getCurrentInstance, ref } from 'vue';
 import { Paint } from '@/commons/Paint';
 
-const { windowWidth, windowHeight, pixelRatio } = uni.getSystemInfoSync();
-
 export default function usePaint(selector: string) {
   const paint = ref<Paint>();
 
+  const initCanvas = (canvas: any) => {
+    const { windowWidth, windowHeight, pixelRatio } = uni.getSystemInfoSync();
+    /**
+     * 解决绘图路径锯齿问题
+     * 1. 尺寸取物理像素 windowWidth * pixelRatio
+     * 2. 画布缩放像素比 ctx.scale
+     */
+    canvas.width = windowWidth * pixelRatio;
+    canvas.height = windowHeight * pixelRatio;
+
+    const ctx = canvas.getContext('2d') as UniApp.CanvasContext;
+    ctx.translate(windowWidth * 3 / 2, windowHeight * 3 / 2);
+
+    // #ifndef MP-TOUTIAO
+    ctx.scale(pixelRatio, pixelRatio);
+    // #endif
+
+    paint.value = new Paint(ctx);
+  };
+
   onReady(() => {
-    // #ifdef MP-WEIXIN
+    // #ifdef MP
     uni
       .createSelectorQuery()
       .select('#' + selector)
+      // #ifdef MP-TOUTIAO
+      // @ts-ignore
+      .node()
+      .exec(([{ node: canvas }]) => {
+        initCanvas(canvas);
+      })
+      // #endif
+      // #ifndef MP-TOUTIAO
       .fields(
         {
           // @ts-ignore
@@ -19,23 +45,13 @@ export default function usePaint(selector: string) {
           size: true,
         },
         ({ node: canvas }: any) => {
-          /**
-           * 解决绘图路径锯齿问题
-           * 1. 尺寸取物理像素 windowWidth * pixelRatio
-           * 2. 画布缩放像素比 ctx.scale
-           */
-          canvas.width = windowWidth * pixelRatio;
-          canvas.height = windowHeight * pixelRatio;
-
-          const ctx = canvas.getContext('2d') as UniApp.CanvasContext;
-          ctx.translate(windowWidth * 3 / 2, windowHeight * 3 / 2);
-          ctx.scale(pixelRatio, pixelRatio);
-
-          paint.value = new Paint(ctx);
+          initCanvas(canvas);
         }
       ).exec();
+      // #endif
     // #endif
-    // #ifndef MP-WEIXIN
+    // #ifndef MP
+    const { windowWidth, windowHeight } = uni.getSystemInfoSync();
     const ctx = uni.createCanvasContext(selector, getCurrentInstance());
     ctx.translate(windowWidth / 2, windowHeight / 2);
     paint.value = new Paint(ctx);
