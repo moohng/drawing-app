@@ -35,7 +35,7 @@ page {
 }
 
 .mask.cover {
-  background-color: rgba(0,0,0,.6);
+  background-color: rgba(0,0,0,.4);
 }
 
 .placeholder {

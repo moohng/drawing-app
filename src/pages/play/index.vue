@@ -1,6 +1,8 @@
 <template>
   <canvas id="drawCanvas" canvasId="drawCanvas" type="2d" class="canvas" @click="handlePlayToggle" />
-  <view class="preview-cover" v-if="!isPlaying">
+
+  <!-- 播放中止遮罩层 -->
+  <view class="mask cover preview-cover" v-if="!isPlaying">
     <view class="share-tips">点击右上角“···”，可分享到“朋友圈”</view>
     <text class="iconfont icon-play" @click="handlePlayToggle"></text>
     <view class="bottom">
@@ -8,10 +10,12 @@
       <view class="btn" @click="handleGoPlay">我也要玩~</view>
     </view>
   </view>
+
   <!-- 口令 -->
   <Dialog :visible="showDialog" title="请输入口令：" :buttons="['确定']" @click="handleClick">
     <input placeholder-class="placeholder" v-model="codeRef" type="text" placeholder="口令" />
   </Dialog>
+
   <!-- 异常 -->
   <Dialog :visible="errorDialog" title="数据异常！" :buttons="['确定']" @click="handleErrorClick"></Dialog>
 </template>
@@ -142,47 +146,40 @@ const handleErrorClick = async () => {
 
 <style lang="scss" scoped>
 .preview-cover {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  transition: opacity 0.4s;
-  background-color: rgba(44, 44, 44, .4);
   z-index: 0;
-}
 
-.preview-cover .icon-play {
+  .icon-play {
   padding: 24rpx 24rpx 88rpx;
-  color: #fff;
-  font-size: 88rpx;
-}
+    color: #fff;
+    font-size: 88rpx;
+  }
 
-.preview-cover .bottom {
-  position: absolute;
-  bottom: 100rpx;
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-bottom: constant(safe-area-inset-bottom);
-}
+  .bottom {
+    position: absolute;
+    bottom: 100rpx;
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: constant(safe-area-inset-bottom);
 
-.preview-cover .bottom .btn {
-  margin: 40rpx 0;
-  padding: 18rpx 48rpx;
-  color: #666;
-  text-align: center;
-  font-size: 36rpx;
-  font-weight: bold;
-  background-color: #fff;
-  border-radius: 12rpx;
-}
+    .btn {
+      margin: 40rpx 0;
+      padding: 18rpx 48rpx;
+      color: #666;
+      text-align: center;
+      font-size: 36rpx;
+      font-weight: bold;
+      background-color: #fff;
+      border-radius: 12rpx;
 
-.preview-cover .bottom .btn:first-child {
-  padding: 0 32rpx;
-  color: var(--primaryColor);
+      &:first-child {
+        padding: 0 32rpx;
+        color: var(--primaryColor);
+      }
+    }
+  }
 }
 
 .tui-dialog input {

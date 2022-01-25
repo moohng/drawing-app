@@ -25,18 +25,19 @@
     @touchcancel="handleTouchEnd"
   ></canvas>
   <!-- #endif -->
-  <!-- 画笔工具 -->
-  <!-- <PaintTool></PaintTool> -->
+
   <!-- 底部内容区域 -->
   <view class="container">
     <!-- 配置面板 -->
     <Panel>
       <PanelTool></PanelTool>
     </Panel>
+    <!-- 工具栏 -->
     <ToolBar :paint="paint" @preview="handlePreview" @save="handleSave" />
   </view>
-  <!-- 工具面板 -->
-  <view class="preview-cover" v-if="isPreview" :style="{ opacity: '0' }" @click="handleEndPreview"></view>
+
+  <!-- 预览时的遮罩层 -->
+  <view class="mask preview-cover" v-if="isPreview" @click="handleEndPreview"></view>
 
   <!-- 输入口令弹窗 -->
   <Dialog :visible="showDialog" title="是否设置口令？" :buttons="['不设置', '设置']" @click="handleClick">
@@ -136,10 +137,8 @@ const handleClick = (index: number | string) => {
   right: 0;
   bottom: 0;
   padding: 32rpx;
-  // min-height: calc(100vh - 150vw);
   bottom: env(safe-area-inset-bottom);
   bottom: constant(safe-area-inset-bottom);
-  // background-color: $uni-bg-color-grey;
   box-sizing: border-box;
   border-radius:44rpx 44rpx 0 0;
 }
@@ -169,17 +168,6 @@ const handleClick = (index: number | string) => {
 }
 
 .preview-cover {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  transition: opacity 0.4s;
-  background-color: rgba(44, 44, 44, 0.4);
   z-index: 0;
 }
 </style>

@@ -112,13 +112,15 @@ const handleShare = () => {
     border: none;
   }
 
-  &.button-hover,
-  &:active {
+  // #ifndef MP
+  &:active,
+  // #endif
+  &.button-hover {
     background-color: rgba($bgColorHover, 0.6);
   }
-}
 
-.toolbar .button .iconfont {
-  font-size: 56rpx;
+  .iconfont {
+    font-size: 56rpx;
+  }
 }
 </style>
