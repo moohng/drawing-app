@@ -1,5 +1,6 @@
 import { getRandomColorList } from '@/commons/utils';
 import { createStore } from 'vuex';
+import { user } from './modules/user';
 import mutations from './mutations';
 import { State } from './types';
 
@@ -23,6 +24,9 @@ export const initState: State = {
 
 const store = createStore({
   state: initState,
+  modules: {
+    user,
+  },
   mutations,
 });
 

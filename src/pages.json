@@ -17,6 +17,15 @@
 				"navigationStyle": "custom"
 				// #endif
 			}
+		},
+		{
+			"path": "pages/my/index",
+			"style": {
+				"navigationBarTitleText": "我的",
+				// #ifdef H5
+				"navigationStyle": "custom"
+				// #endif
+			}
 		}
 	],
 	"globalStyle": {

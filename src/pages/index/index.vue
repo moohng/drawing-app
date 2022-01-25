@@ -26,6 +26,9 @@
   ></canvas>
   <!-- #endif -->
 
+  <!-- 个人中心 -->
+  <Avatar @click="goMyPage"></Avatar>
+
   <!-- 底部内容区域 -->
   <view class="container">
     <!-- 配置面板 -->
@@ -51,11 +54,15 @@ import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { useStore } from 'vuex';
 import * as dan from '@moohng/dan';
 import { usePaint } from '@/uses';
-import { useCanvasEvent } from './uses/useCanvasEvent';
 import { addPath } from '@/commons/api';
 import { shareConfig } from '@/commons/config';
+import Panel from './components/Panel.vue';
+import PanelTool from './components/PanelTool.vue';
+import ToolBar from './components/ToolBar.vue';
+import { useCanvasEvent } from './uses/useCanvasEvent';
+import { TypeKeys } from '@/store/modules/user';
 
-const { state } = useStore();
+const { state, commit } = useStore();
 
 // 屏幕常亮
 // #ifndef H5
@@ -127,6 +134,25 @@ const handleClick = (index: number | string) => {
   }
   showDialog.value = false;
   pwd.value = '';
+};
+
+/** 个人中心 */
+const goMyPage = () => {
+  if (false) {
+    uni.navigateTo({ url: '/pages/my/index' });
+  } else {
+    uni.getUserProfile({
+      lang: 'zh_CN',
+      desc: '为了提供更好的服务我们您的信息',
+      success: ({ userInfo }) => {
+        commit(TypeKeys.SET_USER_INFO, userInfo);
+        uni.navigateTo({ url: '/pages/my/index' });
+      },
+      fail: (err) => {
+        console.log(err);
+      },
+    });
+  }
 };
 </script>
 
