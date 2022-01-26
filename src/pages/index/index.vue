@@ -25,18 +25,22 @@
     @touchcancel="handleTouchEnd"
   ></canvas>
   <!-- #endif -->
-  <!-- 画笔工具 -->
-  <!-- <PaintTool></PaintTool> -->
+
+  <!-- 个人中心 -->
+  <!-- <Avatar @click="goMyPage"></Avatar> -->
+
   <!-- 底部内容区域 -->
   <view class="container">
     <!-- 配置面板 -->
     <Panel>
       <PanelTool></PanelTool>
     </Panel>
+    <!-- 工具栏 -->
     <ToolBar :paint="paint" @preview="handlePreview" @save="handleSave" />
   </view>
-  <!-- 工具面板 -->
-  <view class="preview-cover" v-if="isPreview" :style="{ opacity: '0' }" @click="handleEndPreview"></view>
+
+  <!-- 预览时的遮罩层 -->
+  <view class="mask preview-cover" v-if="isPreview" @click="handleEndPreview"></view>
 
   <!-- 输入口令弹窗 -->
   <Dialog :visible="showDialog" title="是否设置口令？" :buttons="['不设置', '设置']" @click="handleClick">
@@ -50,11 +54,16 @@ import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { useStore } from 'vuex';
 import * as dan from '@moohng/dan';
 import { usePaint } from '@/uses';
-import { useCanvasEvent } from './uses/useCanvasEvent';
 import { addPath } from '@/commons/api';
 import { shareConfig } from '@/commons/config';
+import Panel from './components/Panel.vue';
+import PanelTool from './components/PanelTool.vue';
+import ToolBar from './components/ToolBar.vue';
+import { useCanvasEvent } from './uses/useCanvasEvent';
+import { useWXUserInfo } from './uses/useWXUserInfo';
+import { TypeKeys } from '@/store/modules/user';
 
-const { state } = useStore();
+const { state, commit } = useStore();
 
 // 屏幕常亮
 // #ifndef H5
@@ -127,6 +136,21 @@ const handleClick = (index: number | string) => {
   showDialog.value = false;
   pwd.value = '';
 };
+
+/** 个人中心 */
+const goMyPage = () => {
+  if (state.user.openId) {
+    uni.navigateTo({ url: '/pages/my/index' });
+  } else {
+    useWXUserInfo((userInfo) => {
+      // 获取 openId
+
+      // 保存数据并跳转
+      commit(TypeKeys.SET_USER_INFO, userInfo);
+      uni.navigateTo({ url: '/pages/my/index' });
+    });
+  }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -136,10 +160,8 @@ const handleClick = (index: number | string) => {
   right: 0;
   bottom: 0;
   padding: 32rpx;
-  // min-height: calc(100vh - 150vw);
   bottom: env(safe-area-inset-bottom);
   bottom: constant(safe-area-inset-bottom);
-  // background-color: $uni-bg-color-grey;
   box-sizing: border-box;
   border-radius:44rpx 44rpx 0 0;
 }
@@ -169,17 +191,6 @@ const handleClick = (index: number | string) => {
 }
 
 .preview-cover {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  transition: opacity 0.4s;
-  background-color: rgba(44, 44, 44, 0.4);
   z-index: 0;
 }
 </style>

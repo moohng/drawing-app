@@ -15,6 +15,7 @@ onHide(() => {
 
 page {
   --primaryColor: #00CCFF;
+  --bg-color: $bgColor;
   color: #333;
   font-size: 32rpx;
 }
@@ -34,7 +35,7 @@ page {
 }
 
 .mask.cover {
-  background-color: rgba(0,0,0,.6);
+  background-color: rgba(0,0,0,.4);
 }
 
 .placeholder {

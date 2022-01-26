@@ -12,7 +12,7 @@ export class Paint {
   private path: Path[] = [];
   public isComplete = false;
 
-  constructor(private ctx: UniApp.CanvasContext, color?: string, width: number = 6) {
+  constructor(private ctx: CanvasRenderingContext2D, color?: string, width: number = 6) {
     this.setBackground();
 
     this.ctx.lineCap = 'round';
@@ -48,7 +48,8 @@ export class Paint {
   drawLine({ x, y }: Dot) {
     this.ctx.lineTo(x, y);
     this.ctx.stroke();
-    // #ifndef MP-WEIXIN
+    // #ifndef MP
+    // @ts-ignore
     this.ctx.draw(true);
     this.ctx.moveTo(x, y);
     // #endif
@@ -73,8 +74,9 @@ export class Paint {
    */
   setBackground(color?: string) {
     this.ctx.fillStyle = color || '#ffffff';
-    this.ctx.fillRect(-windowWidth / 2, -windowHeight / 2, windowWidth, windowHeight);
-    // #ifndef MP-WEIXIN
+    this.ctx.fillRect(-windowWidth * 0.5, -windowHeight * 0.5, windowWidth, windowHeight);
+    // #ifndef MP
+    // @ts-ignore
     this.ctx.draw(true);
     // #endif
   }
@@ -83,7 +85,7 @@ export class Paint {
    * 清空画布
    */
   clear() {
-    this.ctx.clearRect(-windowWidth / 2, -windowHeight / 2, windowWidth, windowHeight);
+    this.ctx.clearRect(-windowWidth * 0.5, -windowHeight * 0.5, windowWidth, windowHeight);
     this.setBackground();
   }
 

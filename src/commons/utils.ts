@@ -1,6 +1,10 @@
 import { Path, Dot } from '@/store/types';
 import * as dan from '@moohng/dan';
 
+export function showLoading(title = '加载中...') {
+  return uni.showLoading({ title, mask: true });
+}
+
 /**
  * 下载资源
  * @param url 下载链接

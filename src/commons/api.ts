@@ -1,5 +1,6 @@
 import { Path } from '@/store/types';
 import { http } from './request';
+import { showLoading } from './utils';
 
 interface PaintPath {
   path: Path[];
@@ -14,7 +15,7 @@ interface PaintPath {
  * @returns
  */
 export const addPath = (data: PaintPath) => {
-  uni.showLoading({});
+  showLoading();
   return http
     .post('/draw/path/add', {
       ...data,
@@ -33,7 +34,7 @@ export const addPath = (data: PaintPath) => {
  * @returns
  */
 export const fetchPath = (query: { code: string }) => {
-  uni.showLoading({});
+  showLoading();
   return http
     .get('/draw/path/get', query)
     .then(({ data }: any) => {
