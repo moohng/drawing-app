@@ -15,8 +15,8 @@ export default function usePaint(selector: string) {
     canvas.width = windowWidth * pixelRatio;
     canvas.height = windowHeight * pixelRatio;
 
-    const ctx = canvas.getContext('2d') as UniApp.CanvasContext;
-    ctx.translate(windowWidth * 3 / 2, windowHeight * 3 / 2);
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+    ctx.translate(windowWidth * pixelRatio / 2, windowHeight * pixelRatio / 2);
 
     // #ifndef MP-TOUTIAO
     ctx.scale(pixelRatio, pixelRatio);
@@ -54,7 +54,7 @@ export default function usePaint(selector: string) {
     const { windowWidth, windowHeight } = uni.getSystemInfoSync();
     const ctx = uni.createCanvasContext(selector, getCurrentInstance());
     ctx.translate(windowWidth / 2, windowHeight / 2);
-    paint.value = new Paint(ctx);
+    paint.value = new Paint(ctx as unknown as CanvasRenderingContext2D);
     // #endif
   });
 

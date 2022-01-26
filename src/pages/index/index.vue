@@ -27,7 +27,7 @@
   <!-- #endif -->
 
   <!-- 个人中心 -->
-  <Avatar @click="goMyPage"></Avatar>
+  <!-- <Avatar @click="goMyPage"></Avatar> -->
 
   <!-- 底部内容区域 -->
   <view class="container">
