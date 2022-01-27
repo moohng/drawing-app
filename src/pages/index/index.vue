@@ -100,7 +100,7 @@ const handlePreview = () => {
 const handleEndPreview = () => {
   isPreview.value = false;
   paint.value?.pause();
-  paint.value?.drawPath(getters.currentPath);
+  paint.value?.setImageData(getters.currentStep);
 };
 
 /** 保存 */

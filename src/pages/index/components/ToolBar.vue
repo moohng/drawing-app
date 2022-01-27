@@ -48,6 +48,7 @@ const handleRedo = () => {
 };
 
 const handleClear = () => {
+  if (!state.historyStepList.length) return;
   uni.showModal({
     title: '警告！',
     content: '该操作将清空之前所有的历史记录，确定要继续吗？',
@@ -81,14 +82,14 @@ const handleDownload = async () => {
   showLoading('正在生成图片...');
   // 绘制背景
   props.paint?.setBackground(state.backgroundColor);
-  props.paint?.drawPath(state.path);
+  props.paint?.setImageData(getters.currentStep);
 
   // 生成图片
   const shareImg = await useGenerateImage('drawCanvas');
 
   // 去掉背景
   props.paint?.clear();
-  props.paint?.drawPath(state.path);
+  props.paint?.setImageData(getters.currentStep);
 
   // #ifndef H5
   uni.saveImageToPhotosAlbum({
