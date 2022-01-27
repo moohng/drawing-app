@@ -8,18 +8,9 @@
     <button class="button" @click="handleDownload"><text class="iconfont icon-download"></text></button>
     <button class="button" @click="handleShare"><text class="iconfont icon-share"></text></button>
   </view>
-  <!-- 情况弹窗 -->
-  <Dialog
-    :visible="clearVisible"
-    title="警告！"
-    content="该操作将清空之前所有的历史记录，确定要继续吗？"
-    :buttons="['取消', { name: '确定', style: { color: '#dd524d' } }]"
-    @click="handleClearConfirm"
-  ></Dialog>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { useStore } from 'vuex';
 import * as dan from '@moohng/dan';
 import { Paint } from '@/commons/Paint';
@@ -56,20 +47,23 @@ const handleRedo = () => {
   }
 };
 
-const clearVisible = ref(false);
-
 const handleClear = () => {
-  clearVisible.value = true;
-};
-
-const handleClearConfirm = (index: number) => {
-  if (index === 1) {
-    props.paint?.clear();
-    commit(TypeKeys.SET_CURRENT_STEP_INDEX, -1);
-    commit(TypeKeys.SET_PATH, []);
-    commit(TypeKeys.SET_HISTORY_STEP_LIST, []);
-  }
-  clearVisible.value = false;
+  uni.showModal({
+    title: '警告！',
+    content: '该操作将清空之前所有的历史记录，确定要继续吗？',
+    showCancel: true,
+    cancelText: '取消',
+    confirmText: '确定',
+    confirmColor: '#dd524d',
+    success: (res) => {
+      if (res.confirm) {
+        props.paint?.clear();
+        commit(TypeKeys.SET_CURRENT_STEP_INDEX, -1);
+        commit(TypeKeys.SET_PATH, []);
+        commit(TypeKeys.SET_HISTORY_STEP_LIST, []);
+      }
+    },
+  });
 };
 
 const handlePreview = () => {
