@@ -1,6 +1,6 @@
 <template>
   <view class="panel">
-    <view class="mask" v-if="visible" @click="handleToggle"></view>
+    <view class="mask" v-if="visible" @touchend="handleToggle"></view>
     <view class="container" :class="{ visible }">
       <slot></slot>
     </view>
