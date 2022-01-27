@@ -73,7 +73,8 @@ export class Paint {
    * @param color 背景颜色
    */
   setBackground(color?: string) {
-    this.ctx.fillStyle = color || '#ffffff';
+    if (!color) return;
+    this.ctx.fillStyle = color;
     this.ctx.fillRect(-windowWidth * 0.5, -windowHeight * 0.5, windowWidth, windowHeight);
     // #ifndef MP
     // @ts-ignore
@@ -86,7 +87,10 @@ export class Paint {
    */
   clear() {
     this.ctx.clearRect(-windowWidth * 0.5, -windowHeight * 0.5, windowWidth, windowHeight);
-    this.setBackground();
+    // #ifndef MP
+    // @ts-ignore
+    this.ctx.draw(true);
+    // #endif
   }
 
   /**

@@ -15,7 +15,7 @@ import * as dan from '@moohng/dan';
 import { Paint } from '@/commons/Paint';
 import { TypeKeys } from '@/store/types';
 import { useGenerateImage } from '@/uses/useGenerateImage';
-import { download } from '@/commons/utils';
+import { download, showLoading } from '@/commons/utils';
 
 const props = defineProps<{
   paint?: Paint;
@@ -31,19 +31,20 @@ const { state, commit } = useStore();
 /** 操作 */
 
 const handleUndo = () => {
-  const path = state.path.slice(0, state.path.length - 1);
-  commit(TypeKeys.SET_PATH, path);
+  if (state.path.length) {
+    const path = state.path.slice(0, state.path.length - 1);
+    commit(TypeKeys.SET_PATH, path);
 
-  props.paint?.clear();
-  props.paint?.setBackground(state.backgroundColor);
-  props.paint?.drawPath(path);
+    props.paint?.clear();
+    props.paint?.drawPath(path);
+  }
 };
 
 const handleClear = () => {
-  commit(TypeKeys.SET_PATH, []);
-
-  props.paint?.clear();
-  props.paint?.setBackground(state.backgroundColor);
+  if (state.path.length) {
+    commit(TypeKeys.SET_PATH, []);
+    props.paint?.clear();
+  }
 };
 
 const handlePreview = () => {
@@ -57,8 +58,18 @@ const handleDownload = async () => {
   if (!state.path.length) {
     return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
   }
+
+  showLoading('正在生成图片...');
+  // 绘制背景
+  props.paint?.setBackground(state.backgroundColor);
+  props.paint?.drawPath(state.path);
+
   // 生成图片
   const shareImg = await useGenerateImage('drawCanvas');
+
+  // 去掉背景
+  props.paint?.clear();
+  props.paint?.drawPath(state.path);
 
   // #ifndef H5
   uni.saveImageToPhotosAlbum({
@@ -69,10 +80,14 @@ const handleDownload = async () => {
     fail: () => {
       uni.showToast({ title: '保存失败！', icon: 'none' });
     },
+    complete: () => {
+      uni.hideLoading();
+    },
   });
   // #endif
   // #ifdef H5
   download(shareImg);
+  uni.hideLoading();
   // #endif
 };
 

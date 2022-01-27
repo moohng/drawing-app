@@ -1,4 +1,5 @@
 <template>
+  <view class="canvas canvas-bg" :style="{ backgroundColor: state.backgroundColor }"></view>
   <!-- #ifdef MP-WEIXIN -->
   <canvas
     id="drawCanvas"
@@ -49,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { useStore } from 'vuex';
 import * as dan from '@moohng/dan';
@@ -84,12 +85,6 @@ onShareTimeline(() => shareConfig);
 // 画笔
 const paint = usePaint('drawCanvas');
 
-// 设置背景
-watch([() => state.backgroundColor, paint], ([color]) => {
-  paint.value?.setBackground(color);
-  paint.value?.drawPath(state.path);
-}, { immediate: true });
-
 /** 绘图事件 */
 const { handleTouchStart, handleTouchMove, handleTouchEnd } = useCanvasEvent(paint);
 
@@ -99,7 +94,6 @@ const isPreview = ref(false);
 const handlePreview = () => {
   isPreview.value = true;
   paint.value?.clear();
-  paint.value?.setBackground(state.backgroundColor);
   paint.value?.playPath(state.path, handleEndPreview);
 };
 
@@ -166,6 +160,11 @@ const goMyPage = () => {
   border-radius:44rpx 44rpx 0 0;
 }
 
+.canvas-bg {
+  z-index: -1;
+}
+
+.canvas-bg,
 .canvas-cover {
   position: absolute;
   left: 0;

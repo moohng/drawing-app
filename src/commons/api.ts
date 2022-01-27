@@ -15,7 +15,7 @@ interface PaintPath {
  * @returns
  */
 export const addPath = (data: PaintPath) => {
-  showLoading();
+  showLoading('正在保存...');
   return http
     .post('/draw/path/add', {
       ...data,
