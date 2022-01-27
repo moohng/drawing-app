@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { useStore } from 'vuex';
 import * as dan from '@moohng/dan';
@@ -84,6 +84,11 @@ onShareTimeline(() => shareConfig);
 
 // 画笔
 const paint = usePaint('drawCanvas');
+
+// 初始化
+watch(paint, () => {
+  paint.value?.setImageData(getters.currentStep);
+});
 
 /** 绘图事件 */
 const { handleTouchStart, handleTouchMove, handleTouchEnd } = useCanvasEvent(paint);
