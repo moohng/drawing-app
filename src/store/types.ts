@@ -18,6 +18,8 @@ export interface State {
   color: string;
   backgroundColor: string;
   width: number;
+  historyStepList: ImageData[];
+  currentStepIndex: number;
 
   env: 'h5' | 'miniProgram' | 'weixin' | '';
 
@@ -30,6 +32,8 @@ export enum TypeKeys {
   SET_PLAY = 'SET_PLAY',
   SET_COLOR = 'SET_COLOR',
   SET_WIDTH = 'SET_WIDTH',
+  SET_HISTORY_STEP_LIST = 'SET_HISTORY_STEP_LIST',
+  SET_CURRENT_STEP_INDEX = 'SET_CURRENT_STEP_INDEX',
   SET_BACKGROUND_COLOR = 'SET_BACKGROUND_COLOR',
   SET_ENV = 'SET_ENV',
   SET_RANDOM_COLOR = 'SET_RANDOM_COLOR',

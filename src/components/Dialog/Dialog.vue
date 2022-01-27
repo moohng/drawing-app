@@ -7,51 +7,62 @@
         <slot>{{ content }}</slot>
       </view>
       <view class="tui-dialog__ft">
-        <view class="btn" v-for="(item, index) in buttons" :key="index" @click="$emit('click', index, item)">{{ item }}</view>
+        <view
+          class="btn"
+          v-for="(item, index) in buttons"
+          :key="index"
+          :style="(item as ButtonOption).style"
+          @click="(item as ButtonOption).click?.() || emit('click', index, item)"
+        >{{ (item as ButtonOption).name || item }}</view>
       </view>
     </view>
   </view>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { CSSProperties, ref, watch } from 'vue';
+
+interface ButtonOption {
+  name: string;
+  style?: CSSProperties;
+  click?: () => void;
+}
 
 const props = defineProps<{
   visible: boolean;
   title?: string;
   content?: string;
-  buttons: string[];
+  buttons: string | ButtonOption[];
 }>();
 
 const { title, content, buttons, visible } = props;
 
 const emit = defineEmits<{
-  (event: 'click', index: number | string, item?: string): void;
+  (event: 'click', index: number | string, item?: string | ButtonOption): void;
 }>();
 
-const style = ref<Record<string, string>>({
+const initStyle = {
   opacity: '0',
   transform: 'scale(1.2)',
-});
+}
+
+const style = ref<CSSProperties>(initStyle);
+
 const show = ref(visible);
+
+let timer: number;
 
 watch(() => props.visible,
   (value) => {
     if (value) {
+      timer && clearTimeout(timer);
       show.value = true;
       setTimeout(() => {
-        style.value = {
-          opacity: '1',
-          transition: 'all .4s',
-        };
-      });
+        style.value = {};
+      }, 10);
     } else {
-      style.value = {
-        opacity: '0',
-        transform: 'scale(1.2)',
-        transition: 'all .4s',
-      };
-      setTimeout(() => {
+      style.value = initStyle;
+      timer = setTimeout(() => {
         show.value = false;
       }, 400);
     }
@@ -69,6 +80,7 @@ watch(() => props.visible,
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: all .4s;
 }
 
 .tui-dialog__body {
@@ -92,8 +104,9 @@ watch(() => props.visible,
 
 .tui-dialog__content {
   margin-bottom: 64rpx;
-  padding-left: 48rpx;
-  padding-right: 48rpx;
+  padding-left: 64rpx;
+  padding-right: 64rpx;
+  line-height: 1.6;
 }
 
 .tui-dialog__ft {

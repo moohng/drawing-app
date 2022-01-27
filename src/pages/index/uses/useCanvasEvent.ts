@@ -38,7 +38,17 @@ export function useCanvasEvent(paint: Ref<Paint | undefined>) {
     if (!painting) return;
     painting = false;
 
-    commit(TypeKeys.SET_PATH, state.path.concat(currentLine));
+    // 步骤 +1
+    const currentStepIndex = state.currentStepIndex + 1;
+    commit(TypeKeys.SET_CURRENT_STEP_INDEX, currentStepIndex);
+
+    // 保存路径
+    const path = state.path.slice(0, currentStepIndex);
+    commit(TypeKeys.SET_PATH, path.concat(currentLine));
+
+    // 生成记录
+    const list = state.historyStepList.slice(0, currentStepIndex);
+    commit(TypeKeys.SET_HISTORY_STEP_LIST, list.concat(paint.value?.getImageData()));
   };
 
   return {

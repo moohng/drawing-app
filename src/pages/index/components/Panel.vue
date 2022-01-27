@@ -65,11 +65,11 @@ $bottom: 160rpx;
   border-radius: 200rpx;
   box-shadow: 0 4rpx 16rpx 0 rgba($bgColor, 0.4);
   background-color: rgba($color: $bgColor, $alpha: 0.9);
-  z-index: 99999;
 
   &.visible {
     background-color: transparent;
     box-shadow: none;
+    z-index: 99999;
   }
 
   .iconfont {

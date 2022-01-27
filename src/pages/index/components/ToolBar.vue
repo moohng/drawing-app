@@ -2,6 +2,7 @@
   <!-- 操作区域 -->
   <view class="toolbar" :style="{ color: state.color }">
     <button class="button" @click="handleUndo"><text class="iconfont icon-undo"></text></button>
+    <button class="button" @click="handleRedo"><text class="iconfont icon-undo redo"></text></button>
     <button class="button" @click="handleClear"><text class="iconfont icon-clear"></text></button>
     <button class="button" @click="handlePreview"><text class="iconfont icon-play"></text></button>
     <button class="button" @click="handleDownload"><text class="iconfont icon-download"></text></button>
@@ -15,7 +16,7 @@ import * as dan from '@moohng/dan';
 import { Paint } from '@/commons/Paint';
 import { TypeKeys } from '@/store/types';
 import { useGenerateImage } from '@/uses/useGenerateImage';
-import { download } from '@/commons/utils';
+import { download, showLoading } from '@/commons/utils';
 
 const props = defineProps<{
   paint?: Paint;
@@ -26,39 +27,69 @@ const emit = defineEmits<{
   (event: 'preview'): void;
 }>();
 
-const { state, commit } = useStore();
+const { state, getters, commit } = useStore();
 
 /** 操作 */
 
 const handleUndo = () => {
-  const path = state.path.slice(0, state.path.length - 1);
-  commit(TypeKeys.SET_PATH, path);
+  if (state.currentStepIndex > -1) {
+    commit(TypeKeys.SET_CURRENT_STEP_INDEX, state.currentStepIndex - 1);
+    props.paint?.clear();
+    props.paint?.setImageData(getters.currentStep);
+  }
+};
 
-  props.paint?.clear();
-  props.paint?.setBackground(state.backgroundColor);
-  props.paint?.drawPath(path);
+const handleRedo = () => {
+  if (state.currentStepIndex + 1 < state.historyStepList.length) {
+    commit(TypeKeys.SET_CURRENT_STEP_INDEX, state.currentStepIndex + 1);
+    props.paint?.clear();
+    props.paint?.setImageData(getters.currentStep);
+  }
 };
 
 const handleClear = () => {
-  commit(TypeKeys.SET_PATH, []);
-
-  props.paint?.clear();
-  props.paint?.setBackground(state.backgroundColor);
+  if (!state.historyStepList.length) return;
+  uni.showModal({
+    title: '警告！',
+    content: '该操作将清空之前所有的历史记录，确定要继续吗？',
+    showCancel: true,
+    cancelText: '取消',
+    confirmText: '确定',
+    confirmColor: '#dd524d',
+    success: (res) => {
+      if (res.confirm) {
+        props.paint?.clear();
+        commit(TypeKeys.SET_CURRENT_STEP_INDEX, -1);
+        commit(TypeKeys.SET_PATH, []);
+        commit(TypeKeys.SET_HISTORY_STEP_LIST, []);
+      }
+    },
+  });
 };
 
 const handlePreview = () => {
-  if (!state.path.length) {
+  if (state.currentStepIndex < 0) {
     return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
   }
   emit('preview');
 };
 
 const handleDownload = async () => {
-  if (!state.path.length) {
+  if (state.currentStepIndex < 0) {
     return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
   }
+
+  showLoading('正在生成图片...');
+  // 绘制背景
+  props.paint?.setBackground(state.backgroundColor);
+  props.paint?.setImageData(getters.currentStep);
+
   // 生成图片
   const shareImg = await useGenerateImage('drawCanvas');
+
+  // 去掉背景
+  props.paint?.clear();
+  props.paint?.setImageData(getters.currentStep);
 
   // #ifndef H5
   uni.saveImageToPhotosAlbum({
@@ -69,15 +100,19 @@ const handleDownload = async () => {
     fail: () => {
       uni.showToast({ title: '保存失败！', icon: 'none' });
     },
+    complete: () => {
+      uni.hideLoading();
+    },
   });
   // #endif
   // #ifdef H5
   download(shareImg);
+  uni.hideLoading();
   // #endif
 };
 
 const handleShare = () => {
-  if (!state.path.length) {
+  if (state.currentStepIndex < 0) {
     return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
   }
   // 生成随机口令
@@ -98,6 +133,7 @@ const handleShare = () => {
 }
 
 .toolbar .button {
+  margin: 0;
   width: 96rpx;
   height: 96rpx;
   border-radius: 200rpx;
@@ -121,6 +157,10 @@ const handleShare = () => {
 
   .iconfont {
     font-size: 56rpx;
+  }
+
+  .redo {
+    transform: rotateY(180deg);
   }
 }
 </style>
