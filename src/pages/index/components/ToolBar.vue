@@ -2,14 +2,24 @@
   <!-- 操作区域 -->
   <view class="toolbar" :style="{ color: state.color }">
     <button class="button" @click="handleUndo"><text class="iconfont icon-undo"></text></button>
+    <button class="button" @click="handleRedo"><text class="iconfont icon-undo redo"></text></button>
     <button class="button" @click="handleClear"><text class="iconfont icon-clear"></text></button>
     <button class="button" @click="handlePreview"><text class="iconfont icon-play"></text></button>
     <button class="button" @click="handleDownload"><text class="iconfont icon-download"></text></button>
     <button class="button" @click="handleShare"><text class="iconfont icon-share"></text></button>
   </view>
+  <!-- 情况弹窗 -->
+  <Dialog
+    :visible="clearVisible"
+    title="警告！"
+    content="该操作将清空之前所有的历史记录，确定要继续吗？"
+    :buttons="['取消', { name: '确定', style: { color: '#dd524d' } }]"
+    @click="handleClearConfirm"
+  ></Dialog>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useStore } from 'vuex';
 import * as dan from '@moohng/dan';
 import { Paint } from '@/commons/Paint';
@@ -26,36 +36,51 @@ const emit = defineEmits<{
   (event: 'preview'): void;
 }>();
 
-const { state, commit } = useStore();
+const { state, getters, commit } = useStore();
 
 /** 操作 */
 
 const handleUndo = () => {
-  if (state.path.length) {
-    const path = state.path.slice(0, state.path.length - 1);
-    commit(TypeKeys.SET_PATH, path);
-
+  if (state.currentStepIndex > -1) {
+    commit(TypeKeys.SET_CURRENT_STEP_INDEX, state.currentStepIndex - 1);
     props.paint?.clear();
-    props.paint?.drawPath(path);
+    props.paint?.setImageData(getters.currentStep);
   }
 };
 
-const handleClear = () => {
-  if (state.path.length) {
-    commit(TypeKeys.SET_PATH, []);
+const handleRedo = () => {
+  if (state.currentStepIndex + 1 < state.historyStepList.length) {
+    commit(TypeKeys.SET_CURRENT_STEP_INDEX, state.currentStepIndex + 1);
     props.paint?.clear();
+    props.paint?.setImageData(getters.currentStep);
   }
+};
+
+const clearVisible = ref(false);
+
+const handleClear = () => {
+  clearVisible.value = true;
+};
+
+const handleClearConfirm = (index: number) => {
+  if (index === 1) {
+    props.paint?.clear();
+    commit(TypeKeys.SET_CURRENT_STEP_INDEX, -1);
+    commit(TypeKeys.SET_PATH, []);
+    commit(TypeKeys.SET_HISTORY_STEP_LIST, []);
+  }
+  clearVisible.value = false;
 };
 
 const handlePreview = () => {
-  if (!state.path.length) {
+  if (state.currentStepIndex < 0) {
     return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
   }
   emit('preview');
 };
 
 const handleDownload = async () => {
-  if (!state.path.length) {
+  if (state.currentStepIndex < 0) {
     return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
   }
 
@@ -92,7 +117,7 @@ const handleDownload = async () => {
 };
 
 const handleShare = () => {
-  if (!state.path.length) {
+  if (state.currentStepIndex < 0) {
     return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
   }
   // 生成随机口令
@@ -113,6 +138,7 @@ const handleShare = () => {
 }
 
 .toolbar .button {
+  margin: 0;
   width: 96rpx;
   height: 96rpx;
   border-radius: 200rpx;
@@ -136,6 +162,10 @@ const handleShare = () => {
 
   .iconfont {
     font-size: 56rpx;
+  }
+
+  .redo {
+    transform: rotateY(180deg);
   }
 }
 </style>

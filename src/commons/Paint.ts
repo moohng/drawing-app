@@ -1,6 +1,6 @@
 import { Dot, Path } from '@/store/types';
 
-const { windowWidth, windowHeight } = uni.getSystemInfoSync();
+const { windowWidth, windowHeight, pixelRatio } = uni.getSystemInfoSync();
 
 export class Paint {
   private readonly defaultWidth = 6;
@@ -182,5 +182,17 @@ export class Paint {
   play(completed?: () => void) {
     this.stop = false;
     this.run(completed);
+  }
+
+  getImageData() {
+    /**
+     * todo: 可优化点，不用每次都保存整张画布，而是根据当前绘制的笔记自动计算出对应大小的画布和位置，减少内存占用
+     * 方法：遍历当前笔记坐标数组，找到最小 (x, y) 和 最大 (x, y) 的值，并记录起来，下次在对应位置再进行绘制
+     */
+    return this.ctx.getImageData(0, 0, windowWidth * pixelRatio, windowHeight * pixelRatio);
+  }
+
+  setImageData(imageData?: ImageData) {
+    imageData && this.ctx.putImageData(imageData, 0, 0);
   }
 }

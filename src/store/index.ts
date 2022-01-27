@@ -15,6 +15,8 @@ export const initState: State = {
   color: colorList[0].value,
   backgroundColor: bgColorList[0].value,
   width: 4,
+  historyStepList: [],
+  currentStepIndex: -1,
 
   env: '',
 
@@ -24,6 +26,10 @@ export const initState: State = {
 
 const store = createStore({
   state: initState,
+  getters: {
+    currentStep: state => state.historyStepList[state.currentStepIndex],
+    currentPath: state => state.path.slice(0, state.currentStepIndex + 1),
+  },
   modules: {
     user,
   },

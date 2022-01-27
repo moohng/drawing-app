@@ -64,7 +64,7 @@ import { useCanvasEvent } from './uses/useCanvasEvent';
 import { useWXUserInfo } from './uses/useWXUserInfo';
 import { TypeKeys } from '@/store/modules/user';
 
-const { state, commit } = useStore();
+const { state, getters, commit } = useStore();
 
 // 屏幕常亮
 // #ifndef H5
@@ -94,13 +94,13 @@ const isPreview = ref(false);
 const handlePreview = () => {
   isPreview.value = true;
   paint.value?.clear();
-  paint.value?.playPath(state.path, handleEndPreview);
+  paint.value?.playPath((getters.currentPath), handleEndPreview);
 };
 
 const handleEndPreview = () => {
   isPreview.value = false;
   paint.value?.pause();
-  paint.value?.drawPath(state.path);
+  paint.value?.drawPath(getters.currentPath);
 };
 
 /** 保存 */
@@ -120,7 +120,7 @@ const handleClick = (index: number | string) => {
   if (index !== 'mask') {
     addPath({
       code,
-      path: state.path,
+      path: getters.currentPath,
       pwd: pwd.value,
       background: state.backgroundColor,
     }).then(() => {
