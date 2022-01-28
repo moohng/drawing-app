@@ -17,15 +17,6 @@ const mutations: MutationTree<State> = {
   [TypeKeys.SET_WIDTH] (state, width) {
     state.width = width;
   },
-  [TypeKeys.SET_HISTORY_STEP_LIST] (state, list) {
-    if (list.length > MAX_HISTORY_COUNT) {
-      state.lastStep = list.slice(-MAX_HISTORY_COUNT - 1, -MAX_HISTORY_COUNT)[0];
-      state.historyStepList = list.slice(-MAX_HISTORY_COUNT);
-    } else {
-      state.historyStepList = list;
-    }
-    // console.log('步骤记录', state.historyStepList, state.lastStep);
-  },
   [TypeKeys.OPERATION_UNDO] (state) {
     if (state.currentStepIndex > -1) {
       state.currentStepIndex--;
@@ -40,10 +31,22 @@ const mutations: MutationTree<State> = {
     }
     // console.log('恢复', state.currentPathIndex, state.currentStepIndex);
   },
-  [TypeKeys.OPERATION_ADD] (state) {
+  [TypeKeys.OPERATION_ADD] (state, { currentLine, currentImageData }) {
+    // 保存路径
     state.currentPathIndex++;
-    state.currentStepIndex = state.currentStepIndex < MAX_HISTORY_COUNT - 1 ? state.currentStepIndex + 1 : MAX_HISTORY_COUNT - 1;
-    console.log('添加', state.currentPathIndex, state.currentStepIndex);
+    state.path = state.path.slice(0, state.currentPathIndex).concat(currentLine);
+
+    // 历史记录
+    if (state.currentStepIndex >= MAX_HISTORY_COUNT - 1) {
+      // 历史记录已满
+      const [last, ...list] = state.historyStepList.concat(currentImageData);
+      state.lastStep = last;
+      state.historyStepList = list;
+    } else {
+      state.currentStepIndex++;
+      state.historyStepList = state.historyStepList.slice(0, state.currentStepIndex).concat(currentImageData);
+    }
+    console.log('添加', state.currentPathIndex, state.currentStepIndex, state.historyStepList);
   },
   [TypeKeys.OPERATION_CLEAR] (state) {
     state.currentPathIndex = -1;

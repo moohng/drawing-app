@@ -39,16 +39,10 @@ export function useCanvasEvent(paint: Ref<Paint | undefined>) {
     if (!painting) return;
     painting = false;
 
-    // 步骤 +1
-    commit(TypeKeys.OPERATION_ADD);
-
-    // 保存路径
-    const path = state.path.slice(0, state.currentPathIndex);
-    commit(TypeKeys.SET_PATH, path.concat(currentLine));
-
-    // 生成记录
-    const list = state.historyStepList.slice(0, state.currentStepIndex >= MAX_HISTORY_COUNT - 1 ? state.currentStepIndex + 1 : state.currentStepIndex);
-    commit(TypeKeys.SET_HISTORY_STEP_LIST, list.concat(paint.value?.getImageData()));
+    commit(TypeKeys.OPERATION_ADD, {
+      currentLine,
+      currentImageData: paint.value?.getImageData(),
+    });
   };
 
   return {
