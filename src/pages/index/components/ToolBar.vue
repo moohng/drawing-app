@@ -32,21 +32,21 @@ const { state, getters, commit } = useStore();
 /** 操作 */
 
 const handleUndo = () => {
-  if (state.currentStepIndex < 0) return;
+  if (state.currentStepIndex < 0) return uni.showToast({ title: '没有上一步了~', icon: 'none' });
   commit(TypeKeys.OPERATION_UNDO);
   props.paint?.clear();
   props.paint?.setImageData(getters.currentStep || state.lastStep);
 };
 
 const handleRedo = () => {
-  if (state.currentStepIndex >= state.historyStepList.length - 1) return;
+  if (state.currentStepIndex >= state.historyStepList.length - 1) return uni.showToast({ title: '已经是最后一步了~', icon: 'none' });
   commit(TypeKeys.OPERATION_REDO);
   props.paint?.clear();
   props.paint?.setImageData(getters.currentStep);
 };
 
 const handleClear = () => {
-  if (!state.historyStepList.length) return;
+  if (!state.historyStepList.length) return uni.showToast({ title: '没有可清除的内容！', icon: 'none' });
   uni.showModal({
     title: '警告！',
     content: '确定要清空画布上所有的内容和历史记录吗？',
