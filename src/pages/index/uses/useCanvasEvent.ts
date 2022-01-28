@@ -3,6 +3,7 @@ import { useStore } from 'vuex';
 import { Path, TypeKeys } from '@/store/types';
 import { Paint } from '@/commons/Paint';
 import { getRelativeDot, getDot } from '@/commons/utils';
+import { MAX_HISTORY_COUNT } from '@/commons/config';
 
 export function useCanvasEvent(paint: Ref<Paint | undefined>) {
   let painting = false;
@@ -39,15 +40,14 @@ export function useCanvasEvent(paint: Ref<Paint | undefined>) {
     painting = false;
 
     // 步骤 +1
-    const currentStepIndex = state.currentStepIndex + 1;
-    commit(TypeKeys.SET_CURRENT_STEP_INDEX, currentStepIndex);
+    commit(TypeKeys.OPERATION_ADD);
 
     // 保存路径
-    const path = state.path.slice(0, currentStepIndex);
+    const path = state.path.slice(0, state.currentPathIndex);
     commit(TypeKeys.SET_PATH, path.concat(currentLine));
 
     // 生成记录
-    const list = state.historyStepList.slice(0, currentStepIndex);
+    const list = state.historyStepList.slice(0, state.currentStepIndex >= MAX_HISTORY_COUNT - 1 ? state.currentStepIndex + 1 : state.currentStepIndex);
     commit(TypeKeys.SET_HISTORY_STEP_LIST, list.concat(paint.value?.getImageData()));
   };
 

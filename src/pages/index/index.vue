@@ -99,7 +99,7 @@ const isPreview = ref(false);
 const handlePreview = () => {
   isPreview.value = true;
   paint.value?.clear();
-  paint.value?.playPath((getters.currentPath), handleEndPreview);
+  paint.value?.playPath((getters.currentPathList), handleEndPreview);
 };
 
 const handleEndPreview = () => {
@@ -125,7 +125,7 @@ const handleClick = (index: number | string) => {
   if (index !== 'mask') {
     addPath({
       code,
-      path: getters.currentPath,
+      path: getters.currentPathList,
       pwd: pwd.value,
       background: state.backgroundColor,
     }).then(() => {

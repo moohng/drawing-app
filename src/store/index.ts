@@ -15,8 +15,11 @@ export const initState: State = {
   color: colorList[0].value,
   backgroundColor: bgColorList[0].value,
   width: 4,
+  /** 历史记录数据 */
+  currentPathIndex: -1, // 记录path操作记录指针
   historyStepList: [],
-  currentStepIndex: -1,
+  currentStepIndex: -1, // 记录历史步骤指针
+  lastStep: undefined, // 历史记录操作最大值的时候，最后一次撤销时 备份需要用/
 
   env: '',
 
@@ -28,7 +31,7 @@ const store = createStore({
   state: initState,
   getters: {
     currentStep: state => state.historyStepList[state.currentStepIndex],
-    currentPath: state => state.path.slice(0, state.currentStepIndex + 1),
+    currentPathList: state => state.path.slice(0, state.currentPathIndex + 1),
   },
   modules: {
     user,

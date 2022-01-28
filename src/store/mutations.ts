@@ -18,15 +18,38 @@ const mutations: MutationTree<State> = {
     state.width = width;
   },
   [TypeKeys.SET_HISTORY_STEP_LIST] (state, list) {
-    // if (list.length > MAX_HISTORY_COUNT) {
-    //   list = list.slice(-MAX_HISTORY_COUNT);
-    // }
-    state.historyStepList = list;
-    console.log('历史记录', list);
+    if (list.length > MAX_HISTORY_COUNT) {
+      state.lastStep = list.slice(-MAX_HISTORY_COUNT - 1, -MAX_HISTORY_COUNT)[0];
+      state.historyStepList = list.slice(-MAX_HISTORY_COUNT);
+    } else {
+      state.historyStepList = list;
+    }
+    // console.log('步骤记录', state.historyStepList, state.lastStep);
   },
-  [TypeKeys.SET_CURRENT_STEP_INDEX] (state, index) {
-    state.currentStepIndex = index;
-    console.log('当前步骤', state.currentStepIndex);
+  [TypeKeys.OPERATION_UNDO] (state) {
+    if (state.currentStepIndex > -1) {
+      state.currentStepIndex--;
+      state.currentPathIndex--;
+    }
+    // console.log('撤销', state.currentPathIndex, state.currentStepIndex);
+  },
+  [TypeKeys.OPERATION_REDO] (state) {
+    if (state.currentStepIndex < state.historyStepList.length - 1) {
+      state.currentStepIndex++;
+      state.currentPathIndex++;
+    }
+    // console.log('恢复', state.currentPathIndex, state.currentStepIndex);
+  },
+  [TypeKeys.OPERATION_ADD] (state) {
+    state.currentPathIndex++;
+    state.currentStepIndex = state.currentStepIndex < MAX_HISTORY_COUNT - 1 ? state.currentStepIndex + 1 : MAX_HISTORY_COUNT - 1;
+    // console.log('添加', state.currentPathIndex, state.currentStepIndex);
+  },
+  [TypeKeys.OPERATION_CLEAR] (state) {
+    state.currentPathIndex = -1;
+    state.currentStepIndex = -1;
+    state.path = [];
+    state.historyStepList = [];
   },
   [TypeKeys.SET_RANDOM_COLOR] (state, colorList: string[] = getRandomColorList()) {
     state.colorList = colorList.map((item, index) => ({ value: index === 4 ? '#333333' : item }));

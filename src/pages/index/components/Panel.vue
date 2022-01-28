@@ -36,7 +36,7 @@ $bottom: 160rpx;
 }
 
 .container {
-  padding-bottom: 144rpx;
+  padding-bottom: 84rpx;
   position: absolute;
   transition: all 0.4s;
   transform: scale(0.01) translateZ(0);
@@ -58,7 +58,7 @@ $bottom: 160rpx;
 
 .button {
   position: relative;
-  margin-bottom: 24rpx;
+  margin-bottom: 32rpx;
   width: 96rpx;
   height: 96rpx;
   border-radius: 200rpx;

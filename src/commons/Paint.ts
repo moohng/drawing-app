@@ -99,7 +99,6 @@ export class Paint {
    * @returns
    */
   drawPath(path: Path[]) {
-    console.log('绘制轨迹', path);
     if (!path.length) return;
     path.forEach(({ pos, color, width }) => {
       this.start(pos[0], color, width);
@@ -116,7 +115,6 @@ export class Paint {
    * @returns
    */
   playPath(path: Path[], completed?: () => void) {
-    console.log('播放轨迹', path);
     if (!path.length) return Promise.resolve();
 
     this.path = path;
