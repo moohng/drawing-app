@@ -57,9 +57,8 @@ $bottom: 160rpx;
 }
 
 .button {
-  position: fixed;
-  left: $left + 24rpx;
-  bottom: $bottom + 24rpx;
+  position: relative;
+  margin-bottom: 24rpx;
   width: 96rpx;
   height: 96rpx;
   border-radius: 200rpx;
