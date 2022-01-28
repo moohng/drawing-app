@@ -50,6 +50,7 @@ const mutations: MutationTree<State> = {
     state.currentStepIndex = -1;
     state.path = [];
     state.historyStepList = [];
+    state.lastStep = undefined;
   },
   [TypeKeys.SET_RANDOM_COLOR] (state, colorList: string[] = getRandomColorList()) {
     state.colorList = colorList.map((item, index) => ({ value: index === 4 ? '#333333' : item }));
