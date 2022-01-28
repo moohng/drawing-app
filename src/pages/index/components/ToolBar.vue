@@ -34,10 +34,8 @@ const { state, getters, commit } = useStore();
 const handleUndo = () => {
   if (state.currentStepIndex < 0) return;
   commit(TypeKeys.OPERATION_UNDO);
-  if (getters.currentStep || (!getters.currentStep && getters.currentPathList.length)) {
-    props.paint?.clear();
-    props.paint?.setImageData(getters.currentStep || state.lastStep);
-  }
+  props.paint?.clear();
+  props.paint?.setImageData(getters.currentStep || state.lastStep);
 };
 
 const handleRedo = () => {

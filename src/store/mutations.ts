@@ -31,7 +31,7 @@ const mutations: MutationTree<State> = {
       state.currentStepIndex--;
       state.currentPathIndex--;
     }
-    // console.log('撤销', state.currentPathIndex, state.currentStepIndex);
+    console.log('撤销', state.currentPathIndex, state.currentStepIndex);
   },
   [TypeKeys.OPERATION_REDO] (state) {
     if (state.currentStepIndex < state.historyStepList.length - 1) {
@@ -43,7 +43,7 @@ const mutations: MutationTree<State> = {
   [TypeKeys.OPERATION_ADD] (state) {
     state.currentPathIndex++;
     state.currentStepIndex = state.currentStepIndex < MAX_HISTORY_COUNT - 1 ? state.currentStepIndex + 1 : MAX_HISTORY_COUNT - 1;
-    // console.log('添加', state.currentPathIndex, state.currentStepIndex);
+    console.log('添加', state.currentPathIndex, state.currentStepIndex);
   },
   [TypeKeys.OPERATION_CLEAR] (state) {
     state.currentPathIndex = -1;
