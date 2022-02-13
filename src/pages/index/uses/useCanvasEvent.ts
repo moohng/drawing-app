@@ -11,18 +11,17 @@ export function useCanvasEvent(paint: Ref<Paint | undefined>) {
 
   const { windowWidth, windowHeight } = uni.getSystemInfoSync();
 
-  const { state, commit } = useStore();
+  const { state, getters, commit } = useStore();
 
   const handleTouchStart = (event: TouchEvent) => {
     painting = true;
     const dot = getRelativeDot(getDot(event), { width: windowWidth, height: windowHeight });
-    const { color, width } = state;
-    paint.value?.start(dot, color, width);
+    paint.value?.start(dot, getters.color, state.width, getters.alpha);
     paint.value?.drawLine(dot);
 
     currentLine = {
-      width,
-      color,
+      width: state.width,
+      color: getters.color,
       pos: [dot],
     };
   };
@@ -37,7 +36,7 @@ export function useCanvasEvent(paint: Ref<Paint | undefined>) {
     }
 
     currentLine.pos.push(dot);
-  }, 20);
+  }, 16.7);
 
   const handleTouchEnd = () => {
     if (!painting) return;

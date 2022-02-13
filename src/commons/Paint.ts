@@ -4,7 +4,7 @@ const { windowWidth, windowHeight, pixelRatio } = uni.getSystemInfoSync();
 
 export class Paint {
   private readonly defaultWidth = 6;
-  private readonly defaultColor = '#000000';
+  private readonly defaultColor = 'rgb(0,0,0)';
 
   private row = 0;
   private column = 0;
@@ -17,16 +17,14 @@ export class Paint {
 
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
-    this.color = color || this.defaultColor;
     this.width = width;
+    this.setColor(color);
   }
 
-  set color(color: string) {
-    this.ctx.strokeStyle = color || this.defaultColor;
-    const rgba = color.split(',');
-    if (rgba?.length === 4) {
-      console.log(color, parseFloat(rgba[3]));
-      this.ctx.globalAlpha = parseFloat(rgba[3]) || 1;
+  setColor(color = this.defaultColor, alpha?: number) {
+    this.ctx.strokeStyle = color;
+    if (alpha) {
+      this.ctx.globalAlpha = alpha > 1 ? alpha * 0.01 : (alpha || 1);
     }
   }
 
@@ -52,11 +50,10 @@ export class Paint {
    * @param color 轨迹颜色
    * @param width 轨迹宽度
    */
-  start({ x, y }: Dot, color = this.defaultColor, width = this.defaultWidth) {
-    this.ctx.save();
+  start({ x, y }: Dot, color = this.defaultColor, width = this.defaultWidth, alpha = 1) {
     this.ctx.beginPath();
     this.ctx.moveTo(x, y);
-    this.color = color;
+    this.setColor(color, alpha);
     this.width = width;
   }
 
@@ -105,7 +102,6 @@ export class Paint {
       this.ctx.stroke();
       this.endPoint = { x, y };
     }
-    this.ctx.restore();
     // #ifndef MP
     // @ts-ignore
     this.ctx.draw(true);
@@ -154,7 +150,7 @@ export class Paint {
         this.drawLine(path[this.column]);
       } else {
         if (this.column === 2) {
-          this.clear();
+          // this.clear();
           this.ctx.moveTo(path[0].x, path[0].y);
         }
         this.drawLine(path[this.column], path[this.column - 1]);

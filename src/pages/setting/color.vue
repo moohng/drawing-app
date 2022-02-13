@@ -3,63 +3,65 @@
     <view class="row">
       <view class="label">常用颜色</view>
       <view class="list">
-        <view class="item color-block" :class="{ selected: currentColorIndex === index }" :style="{ color: item.value }" v-for="(item, index) in state.colorList" :key="index" @click="handleColorSelect(index, item.value)"></view>
+        <view class="item color-block" :class="{ selected: state.colorIndex === index }" :style="{ color: item.value }" v-for="(item, index) in state.colorList" :key="index" @click="handleColorSelect(index, item)"></view>
       </view>
     </view>
     <view class="border-line"></view>
     <view class="row">
       <view class="label">H</view>
-      <slider class="slider" :value="hsl.h" :min="0" :max="360" :activeColor="state.color" show-value :block-size="24" @changing="handleHSelect"></slider>
+      <slider class="slider" :value="hsl.h" :min="0" :max="360" :activeColor="getters.color" show-value :block-size="24" @changing="handleHSelect"></slider>
     </view>
     <view class="row">
       <view class="label">S</view>
-      <slider class="slider" :value="hsl.s" :min="0" :max="100" :activeColor="state.color" show-value :block-size="24" @changing="handleSSelect"></slider>
+      <slider class="slider" :value="hsl.s" :min="0" :max="100" :activeColor="getters.color" show-value :block-size="24" @changing="handleSSelect"></slider>
     </view>
     <view class="row">
       <view class="label">L</view>
-      <slider class="slider" :value="hsl.l" :min="0" :max="100" :activeColor="state.color" show-value :block-size="24" @changing="handleLSelect"></slider>
+      <slider class="slider" :value="hsl.l" :min="0" :max="100" :activeColor="getters.color" show-value :block-size="24" @changing="handleLSelect"></slider>
     </view>
     <view class="row">
       <view class="label">A</view>
-      <slider class="slider" :value="hsl.a" :min="0" :max="100" :activeColor="state.color" show-value :block-size="24" @changing="handleASelect"></slider>
+      <slider class="slider" :value="hsl.a" :min="0" :max="1" :step="0.01" :activeColor="getters.color" show-value :block-size="24" @changing="handleASelect"></slider>
     </view>
   </view>
 </template>
 
 <script lang="ts" setup>
-import { TypeKeys } from '@/store/types';
-import { reactive, ref, watch } from 'vue';
+import { ColorOption, TypeKeys } from '@/store/types';
+import { reactive, watch } from 'vue';
 import { useStore } from 'vuex';
 import { rgb as convertRgb, hsl as convertHsl } from 'color-convert';
+import { RGB } from 'color-convert/conversions';
 
-const { state, commit } = useStore();
+const { state, getters, commit } = useStore();
 
-const currentColorIndex = ref(state.colorList.findIndex(({ value }) => value === state.color));
-
-const handleColorSelect = (index: number, color: string) => {
-  currentColorIndex.value = index;
-  const [h, s, l] = convertRgb.hsl(color.match(/\d+/g));
+const handleColorSelect = (index: number, item: ColorOption) => {
+  commit(TypeKeys.SET_COLOR_INDEX, index);
+  const [h, s, l] = convertRgb.hsl(item.value.match(/\d+/g) as unknown as RGB);
   hsl.h = h;
   hsl.s = s;
   hsl.l = l;
+  hsl.a = item.alpha || 1;
 };
 
+// 初始化
+const [h, s, l] = convertRgb.hsl(getters.color.match(/\d+/g));
+
 const hsl = reactive({
-  h: 0,
-  s: 0,
-  l: 0,
-  a: 100,
+  h,
+  s,
+  l,
+  a: getters.alpha,
 });
 
 watch(hsl, (newHsl) => {
   const { h, s, l, a } = newHsl;
   const [r, g, b] = convertHsl.rgb([h, s, l]);
-  const color = `rgba(${r},${g},${b},${a / 100})`;
+  const color = `rgb(${r},${g},${b})`;
   commit(TypeKeys.EDIT_COLOR_LIST_BY_INDEX, {
-    index: currentColorIndex.value,
+    alpha: a || 1,
     value: color,
   });
-  commit(TypeKeys.SET_COLOR, color);
 });
 
 const handleHSelect = (e: any) => {

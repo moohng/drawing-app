@@ -2,12 +2,12 @@
   <view>
     <view class="row">
       <view class="label">笔宽</view>
-      <slider class="slider" :value="state.width" :min="1" :max="40" :activeColor="state.color" show-value :block-size="24" @change="handleWidthSelect"></slider>
+      <slider class="slider" :value="state.width" :min="1" :max="40" :activeColor="getters.color" show-value :block-size="24" @change="handleWidthSelect"></slider>
     </view>
     <view class="row">
       <view class="label">颜色</view>
       <view class="list">
-        <view class="item color-block" :class="{ selected: state.color === item.value }" :style="{ color: item.value }" v-for="(item, index) in state.colorList" :key="index" @click="handleColorSelect(item.value)"></view>
+        <view class="item color-block" :class="{ selected: state.colorIndex === index }" :style="{ color: item.value }" v-for="(item, index) in state.colorList" :key="index" @click="handleColorSelect(index)"></view>
         <view class="item button" @click="handleRandomColor()">
           <text class="iconfont icon-config"></text>
         </view>
@@ -16,7 +16,7 @@
     <view class="row">
       <view class="label">背景</view>
       <view class="list">
-        <view class="item color-block" :class="{ selected: state.backgroundColor === item.value }" :style="{ color: item.value }" v-for="(item, index) in state.bgColorList" :key="index" @click="handleBgColorSelect(item.value)"></view>
+        <view class="item color-block" :class="{ selected: state.backgroundColorIndex === index }" :style="{ color: item.value }" v-for="(item, index) in state.bgColorList" :key="index" @click="handleBgColorSelect(index)"></view>
         <view class="item button" @click="handleRandomColor()">
           <text class="iconfont icon-config"></text>
         </view>
@@ -29,19 +29,19 @@
 import { useStore } from 'vuex';
 import { TypeKeys } from '@/store/types';
 
-const { state, commit } = useStore();
+const { state, getters, commit } = useStore();
 
-const handleColorSelect = (value: string) => {
-  if (state.color === value) {
+const handleColorSelect = (index: number) => {
+  if (state.colorIndex === index) {
     // 颜色编辑
     uni.navigateTo({ url: '/pages/setting/color' });
   } else {
-    commit(TypeKeys.SET_COLOR, value);
+    commit(TypeKeys.SET_COLOR_INDEX, index);
   }
 };
 
-const handleBgColorSelect = (value: string) => {
-  commit(TypeKeys.SET_BACKGROUND_COLOR, value);
+const handleBgColorSelect = (index: number) => {
+  commit(TypeKeys.SET_BACKGROUND_COLOR_INDEX, index);
 };
 
 const handleWidthSelect = (e: any) => {

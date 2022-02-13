@@ -4,7 +4,7 @@
     <view class="container" :class="{ visible }">
       <slot></slot>
     </view>
-    <view class="button" :class="{ visible }" :style="{ color: state.color }" @click="handleToggle">
+    <view class="button" :class="{ visible }" :style="{ color: getters.color }" @click="handleToggle">
       <transition name="fade">
         <text class="iconfont icon-close" v-if="visible"></text>
         <text class="iconfont icon-pen" v-else></text>
@@ -17,7 +17,7 @@
 import { ref } from 'vue';
 import { useStore } from 'vuex';
 
-const { state } = useStore();
+const { getters } = useStore();
 
 const visible = ref(false);
 

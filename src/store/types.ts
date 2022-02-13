@@ -9,14 +9,15 @@ export interface Path {
   width?: number;
 }
 
-export interface ColorList {
+export interface ColorOption {
   value: string;
+  alpha?: number;
 }
 
 export interface State {
   path: Path[];
-  color: string;
-  backgroundColor: string;
+  colorIndex: number;
+  backgroundColorIndex: number;
   width: number;
   historyStepList: ImageData[];
   currentPathIndex: number;
@@ -25,16 +26,16 @@ export interface State {
 
   env: 'h5' | 'miniProgram' | 'weixin' | '';
 
-  colorList: ColorList[];
-  bgColorList: ColorList[];
+  colorList: ColorOption[];
+  bgColorList: ColorOption[];
 }
 
 export enum TypeKeys {
   SET_PATH = 'SET_PATH',
   SET_PLAY = 'SET_PLAY',
-  SET_COLOR = 'SET_COLOR',
+  SET_COLOR_INDEX = 'SET_COLOR_INDEX',
   SET_WIDTH = 'SET_WIDTH',
-  SET_BACKGROUND_COLOR = 'SET_BACKGROUND_COLOR',
+  SET_BACKGROUND_COLOR_INDEX = 'SET_BACKGROUND_COLOR_INDEX',
   SET_ENV = 'SET_ENV',
   SET_RANDOM_COLOR = 'SET_RANDOM_COLOR',
   SET_RANDOM_BACKGROUND_COLOR = 'SET_RANDOM_BACKGROUND_COLOR',

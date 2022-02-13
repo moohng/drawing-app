@@ -1,6 +1,6 @@
 <template>
   <!-- 操作区域 -->
-  <view class="toolbar" :style="{ color: state.color }">
+  <view class="toolbar" :style="{ color: getters.color }">
     <button class="button" @click="handleUndo"><text class="iconfont icon-undo"></text></button>
     <button class="button" @click="handleRedo"><text class="iconfont icon-undo redo"></text></button>
     <button class="button" @click="handleClear"><text class="iconfont icon-clear"></text></button>
@@ -77,7 +77,7 @@ const handleDownload = async () => {
 
   showLoading('正在生成图片...');
   // 绘制背景
-  props.paint?.setBackground(state.backgroundColor);
+  props.paint?.setBackground(getters.backgroundColor);
   props.paint?.setImageData(getters.currentStep);
 
   // 生成图片

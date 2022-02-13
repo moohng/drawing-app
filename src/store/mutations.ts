@@ -8,11 +8,11 @@ const mutations: MutationTree<State> = {
   [TypeKeys.SET_PATH] (state, path) {
     state.path = path;
   },
-  [TypeKeys.SET_COLOR] (state, color) {
-    state.color = color;
+  [TypeKeys.SET_COLOR_INDEX] (state, colorIndex) {
+    state.colorIndex = colorIndex;
   },
-  [TypeKeys.SET_BACKGROUND_COLOR](state, backgroundColor) {
-    state.backgroundColor = backgroundColor;
+  [TypeKeys.SET_BACKGROUND_COLOR_INDEX](state, backgroundColorIndex) {
+    state.backgroundColorIndex = backgroundColorIndex;
   },
   [TypeKeys.SET_WIDTH] (state, width) {
     state.width = width;
@@ -56,15 +56,13 @@ const mutations: MutationTree<State> = {
     state.lastStep = undefined;
   },
   [TypeKeys.SET_RANDOM_COLOR] (state, colorList: string[] = getRandomColorList()) {
-    state.colorList = colorList.map((item, index) => ({ value: index === 4 ? 'rgba(51, 51, 51, 1)' : item }));
-    state.color = colorList[0];
+    state.colorList = colorList.map((item, index) => ({ value: index === 4 ? 'rgb(51, 51, 51)' : item }));
   },
   [TypeKeys.SET_RANDOM_BACKGROUND_COLOR] (state, bgColorList: string[] = getRandomColorList()) {
-    state.bgColorList = bgColorList.map((item, index) => ({ value: index === 0 ? 'rgba(255, 255, 255, 1)' : item }));
-    state.backgroundColor = state.bgColorList[0].value;
+    state.bgColorList = bgColorList.map((item, index) => ({ value: index === 0 ? 'rgb(255, 255, 255)' : item }));
   },
-  [TypeKeys.EDIT_COLOR_LIST_BY_INDEX] (state, { value, index }) {
-    state.colorList[index] = { value };
+  [TypeKeys.EDIT_COLOR_LIST_BY_INDEX] (state, color) {
+    state.colorList[state.colorIndex] = color;
   },
 };
 

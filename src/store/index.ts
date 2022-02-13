@@ -5,15 +5,15 @@ import mutations from './mutations';
 import { State } from './types';
 
 const colorList = getRandomColorList(5).map(item => ({ value: item }));
-colorList[4] = { value: 'rgba(51, 51, 51, 1)' };
+colorList[4] = { value: 'rgb(51, 51, 51)' };
 const bgColorList = getRandomColorList(5).map(item => ({ value: item }));
-bgColorList[0] = { value: 'rgba(255, 255, 255, 1)' };
+bgColorList[0] = { value: 'rgb(255, 255, 255)' };
 
 export const initState: State = {
   /** 绘制数据 */
   path: [],
-  color: colorList[0].value,
-  backgroundColor: bgColorList[0].value,
+  colorIndex: 0,
+  backgroundColorIndex: 0,
   width: 4,
   /** 历史记录数据 */
   currentPathIndex: -1, // 记录path操作记录指针
@@ -32,6 +32,10 @@ const store = createStore({
   getters: {
     currentStep: state => state.historyStepList[state.currentStepIndex],
     currentPathList: state => state.path.slice(0, state.currentPathIndex + 1),
+    color: state => state.colorList[state.colorIndex].value,
+    alpha: state => state.colorList[state.colorIndex].alpha || 1,
+    backgroundColor: state => state.bgColorList[state.backgroundColorIndex].value,
+    backgroundAlpha: state => state.bgColorList[state.backgroundColorIndex].alpha || 1,
   },
   modules: {
     user,
