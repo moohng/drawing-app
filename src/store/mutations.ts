@@ -63,6 +63,11 @@ const mutations: MutationTree<State> = {
   },
   [TypeKeys.EDIT_COLOR_LIST_BY_INDEX] (state, color) {
     state.colorList[state.colorIndex] = color;
+    uni.setStorageSync('COLOR_LIST', state.colorList);
+  },
+  [TypeKeys.EDIT_BACKGROUND_LIST_BY_INDEX] (state, color) {
+    state.bgColorList[state.backgroundColorIndex] = color;
+    uni.setStorageSync('BACKGROUND_COLOR_LIST', state.bgColorList);
   },
 };
 

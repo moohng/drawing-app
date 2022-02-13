@@ -4,10 +4,18 @@ import { user } from './modules/user';
 import mutations from './mutations';
 import { State } from './types';
 
-const colorList = getRandomColorList(5).map(item => ({ value: item }));
-colorList[4] = { value: 'rgb(51, 51, 51)' };
-const bgColorList = getRandomColorList(5).map(item => ({ value: item }));
-bgColorList[0] = { value: 'rgb(255, 255, 255)' };
+let colorList = uni.getStorageSync('COLOR_LIST');
+if (!colorList) {
+  colorList = getRandomColorList(5).map(item => ({ value: item }));
+  colorList[4] = { value: 'rgb(51, 51, 51)' };
+  uni.setStorageSync('COLOR_LIST', colorList);
+}
+let bgColorList = uni.getStorageSync('BACKGROUND_COLOR_LIST');
+if (!bgColorList) {
+  bgColorList = getRandomColorList(5).map(item => ({ value: item }));
+  bgColorList[0] = { value: 'rgb(255, 255, 255)' };
+  uni.setStorageSync('BACKGROUND_COLOR_LIST', bgColorList);
+}
 
 export const initState: State = {
   /** 绘制数据 */

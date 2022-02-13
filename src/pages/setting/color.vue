@@ -3,40 +3,60 @@
     <view class="row">
       <view class="label">常用颜色</view>
       <view class="list">
-        <view class="item color-block" :class="{ selected: state.colorIndex === index }" :style="{ color: item.value }" v-for="(item, index) in state.colorList" :key="index" @click="handleColorSelect(index, item)"></view>
+        <view class="item color-block" :class="{ selected: currentColorIndex === index }" :style="{ color: mergeColorByAlpha(item) }" v-for="(item, index) in colorList" :key="index" @click="handleColorSelect(index, item)"></view>
       </view>
     </view>
     <view class="border-line"></view>
+    <view class="color-bar" :style="{ backgroundColor: `hsla(${hsl.h},${hsl.s}%,${hsl.l}%,${hsl.a})`}"></view>
     <view class="row">
       <view class="label">H</view>
-      <slider class="slider" :value="hsl.h" :min="0" :max="360" :activeColor="getters.color" show-value :block-size="24" @changing="handleHSelect"></slider>
+      <slider class="slider" :value="hsl.h" :min="0" :max="360" :activeColor="getters.color" show-value :block-size="24" @changing="handleHSelect" @change="handleHSelectEnd"></slider>
     </view>
     <view class="row">
       <view class="label">S</view>
-      <slider class="slider" :value="hsl.s" :min="0" :max="100" :activeColor="getters.color" show-value :block-size="24" @changing="handleSSelect"></slider>
+      <slider class="slider" :value="hsl.s" :min="0" :max="100" :activeColor="getters.color" show-value :block-size="24" @changing="handleSSelect" @change="handleSSelectEnd"></slider>
     </view>
     <view class="row">
       <view class="label">L</view>
-      <slider class="slider" :value="hsl.l" :min="0" :max="100" :activeColor="getters.color" show-value :block-size="24" @changing="handleLSelect"></slider>
+      <slider class="slider" :value="hsl.l" :min="0" :max="100" :activeColor="getters.color" show-value :block-size="24" @changing="handleLSelect" @change="handleLSelectEnd"></slider>
     </view>
     <view class="row">
       <view class="label">A</view>
-      <slider class="slider" :value="hsl.a" :min="0" :max="1" :step="0.01" :activeColor="getters.color" show-value :block-size="24" @changing="handleASelect"></slider>
+      <slider class="slider" :value="hsl.a" :min="0" :max="1" :step="0.01" :activeColor="getters.color" show-value :block-size="24" @changing="handleASelect" @change="handleASelectEnd"></slider>
     </view>
   </view>
 </template>
 
 <script lang="ts" setup>
 import { ColorOption, TypeKeys } from '@/store/types';
-import { reactive, watch } from 'vue';
+import { computed, reactive, ref } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
 import { useStore } from 'vuex';
 import { rgb as convertRgb, hsl as convertHsl } from 'color-convert';
 import { RGB } from 'color-convert/conversions';
+import { mergeColorByAlpha } from '@/commons/utils';
 
 const { state, getters, commit } = useStore();
 
+const colorType = ref('color');
+
+onLoad(({ type = 'color' }) => {
+  colorType.value = type;
+  // 初始化
+  const [h, s, l] = convertRgb.hsl((colorType.value === 'bg' ? getters.backgroundColor : getters.color).match(/\d+/g));
+  hsl.h = h;
+  hsl.s = s;
+  hsl.l = l;
+});
+
+const colorList = computed(() => {
+  return colorType.value === 'bg' ? state.bgColorList : state.colorList;
+});
+
+const currentColorIndex = computed(() => colorType.value === 'bg' ? state.backgroundColorIndex : state.colorIndex);
+
 const handleColorSelect = (index: number, item: ColorOption) => {
-  commit(TypeKeys.SET_COLOR_INDEX, index);
+  commit(colorType.value === 'bg' ? TypeKeys.SET_BACKGROUND_COLOR_INDEX : TypeKeys.SET_COLOR_INDEX, index);
   const [h, s, l] = convertRgb.hsl(item.value.match(/\d+/g) as unknown as RGB);
   hsl.h = h;
   hsl.s = s;
@@ -44,25 +64,22 @@ const handleColorSelect = (index: number, item: ColorOption) => {
   hsl.a = item.alpha || 1;
 };
 
-// 初始化
-const [h, s, l] = convertRgb.hsl(getters.color.match(/\d+/g));
-
 const hsl = reactive({
-  h,
-  s,
-  l,
+  h: 0,
+  s: 0,
+  l: 0,
   a: getters.alpha,
 });
 
-watch(hsl, (newHsl) => {
-  const { h, s, l, a } = newHsl;
+const submitColor = () => {
+  const { h, s, l, a } = hsl;
   const [r, g, b] = convertHsl.rgb([h, s, l]);
   const color = `rgb(${r},${g},${b})`;
-  commit(TypeKeys.EDIT_COLOR_LIST_BY_INDEX, {
+  commit(colorType.value === 'bg' ? TypeKeys.EDIT_BACKGROUND_LIST_BY_INDEX : TypeKeys.EDIT_COLOR_LIST_BY_INDEX, {
     alpha: a || 1,
     value: color,
   });
-});
+};
 
 const handleHSelect = (e: any) => {
   hsl.h = e.detail.value;
@@ -76,16 +93,39 @@ const handleLSelect = (e: any) => {
 const handleASelect = (e: any) => {
   hsl.a = e.detail.value;
 };
+const handleHSelectEnd = (e: any) => {
+  hsl.h = e.detail.value;
+  submitColor();
+};
+const handleSSelectEnd = (e: any) => {
+  hsl.s = e.detail.value;
+  submitColor();
+};
+const handleLSelectEnd = (e: any) => {
+  hsl.l = e.detail.value;
+  submitColor();
+};
+const handleASelectEnd = (e: any) => {
+  hsl.a = e.detail.value;
+  submitColor();
+};
 </script>
 
 <style lang="scss" scoped>
 .container {
-  padding: 32rpx 64rpx;
+  margin: 32rpx;
+  padding: 32rpx;
+  background-color: $bgColor;
+  border-radius: 32rpx;
 }
 
 .border-line {
   margin: 48rpx 0;
   border-bottom: 1rpx solid $uni-border-color;
+}
+
+.color-bar {
+  height: 48rpx;
 }
 
 .row {

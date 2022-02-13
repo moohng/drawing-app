@@ -7,8 +7,8 @@
     <view class="row">
       <view class="label">颜色</view>
       <view class="list">
-        <view class="item color-block" :class="{ selected: state.colorIndex === index }" :style="{ color: item.value }" v-for="(item, index) in state.colorList" :key="index" @click="handleColorSelect(index)"></view>
-        <view class="item button" @click="handleRandomColor()">
+        <view class="item color-block" :class="{ selected: state.colorIndex === index }" :style="{ color: mergeColorByAlpha(item) }" v-for="(item, index) in state.colorList" :key="index" @click="handleColorSelect(index)"></view>
+        <view class="item button" @click="handleConfigColor('color')">
           <text class="iconfont icon-config"></text>
         </view>
       </view>
@@ -17,7 +17,7 @@
       <view class="label">背景</view>
       <view class="list">
         <view class="item color-block" :class="{ selected: state.backgroundColorIndex === index }" :style="{ color: item.value }" v-for="(item, index) in state.bgColorList" :key="index" @click="handleBgColorSelect(index)"></view>
-        <view class="item button" @click="handleRandomColor()">
+        <view class="item button" @click="handleConfigColor('bg')">
           <text class="iconfont icon-config"></text>
         </view>
       </view>
@@ -28,6 +28,7 @@
 <script lang="ts" setup>
 import { useStore } from 'vuex';
 import { TypeKeys } from '@/store/types';
+import { mergeColorByAlpha } from '@/commons/utils';
 
 const { state, getters, commit } = useStore();
 
@@ -41,15 +42,19 @@ const handleColorSelect = (index: number) => {
 };
 
 const handleBgColorSelect = (index: number) => {
-  commit(TypeKeys.SET_BACKGROUND_COLOR_INDEX, index);
+  if (state.backgroundColorIndex === index) {
+    uni.navigateTo({ url: '/pages/setting/color?type=bg' });
+  } else {
+    commit(TypeKeys.SET_BACKGROUND_COLOR_INDEX, index);
+  }
 };
 
 const handleWidthSelect = (e: any) => {
   commit(TypeKeys.SET_WIDTH, e.detail.value);
 };
 
-const handleRandomColor = () => {
-  uni.navigateTo({ url: '/pages/setting/color' });
+const handleConfigColor = (type = 'color') => {
+  uni.navigateTo({ url: '/pages/setting/color?type=' + type });
 };
 </script>
 

@@ -1,4 +1,4 @@
-import { Path, Dot } from '@/store/types';
+import { Path, Dot, ColorOption } from '@/store/types';
 import * as dan from '@moohng/dan';
 
 export function showLoading(title = '加载中...') {
@@ -69,7 +69,7 @@ export function getRandomColor() {
   const r = dan.random('0' as unknown as number, 256, true) as number;
   const g = dan.random('0' as unknown as number, 256, true) as number;
   const b = dan.random('0' as unknown as number, 256, true) as number;
-  return `rgba(${r},${g},${b},1)`;
+  return `rgb(${r},${g},${b})`;
 }
 
 /**
@@ -83,4 +83,13 @@ export function getRandomColorList(length = 5) {
     list.push(getRandomColor())
   }
   return list;
+}
+
+/**
+ * 合成 rgba 色值
+ * @param color
+ * @returns
+ */
+export function mergeColorByAlpha(color: ColorOption) {
+  return color.value.replace('rgb(', 'rgba(').replace(')', `,${color.alpha || 1})`);
 }
