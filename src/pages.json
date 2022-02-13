@@ -10,6 +10,15 @@
 			}
 		},
 		{
+			"path": "pages/setting/color",
+			"style": {
+				"navigationBarTitleText": "颜色编辑",
+				// #ifdef H5
+				"navigationStyle": "custom"
+				// #endif
+			}
+		},
+		{
 			"path": "pages/play/index",
 			"style": {
 				"navigationBarTitleText": "预览",

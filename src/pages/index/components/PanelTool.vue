@@ -8,8 +8,8 @@
       <view class="label">颜色</view>
       <view class="list">
         <view class="item color-block" :class="{ selected: state.color === item.value }" :style="{ color: item.value }" v-for="(item, index) in state.colorList" :key="index" @click="handleColorSelect(item.value)"></view>
-        <view class="item button" @click="handleRandomColor(TypeKeys.SET_RANDOM_COLOR)">
-          <text class="iconfont icon-random"></text>
+        <view class="item button" @click="handleRandomColor()">
+          <text class="iconfont icon-config"></text>
         </view>
       </view>
     </view>
@@ -17,8 +17,8 @@
       <view class="label">背景</view>
       <view class="list">
         <view class="item color-block" :class="{ selected: state.backgroundColor === item.value }" :style="{ color: item.value }" v-for="(item, index) in state.bgColorList" :key="index" @click="handleBgColorSelect(item.value)"></view>
-        <view class="item button" @click="handleRandomColor(TypeKeys.SET_RANDOM_BACKGROUND_COLOR)">
-          <text class="iconfont icon-random"></text>
+        <view class="item button" @click="handleRandomColor()">
+          <text class="iconfont icon-config"></text>
         </view>
       </view>
     </view>
@@ -32,7 +32,12 @@ import { TypeKeys } from '@/store/types';
 const { state, commit } = useStore();
 
 const handleColorSelect = (value: string) => {
-  commit(TypeKeys.SET_COLOR, value);
+  if (state.color === value) {
+    // 颜色编辑
+    uni.navigateTo({ url: '/pages/setting/color' });
+  } else {
+    commit(TypeKeys.SET_COLOR, value);
+  }
 };
 
 const handleBgColorSelect = (value: string) => {
@@ -43,8 +48,8 @@ const handleWidthSelect = (e: any) => {
   commit(TypeKeys.SET_WIDTH, e.detail.value);
 };
 
-const handleRandomColor = (type: string) => {
-  commit(type);
+const handleRandomColor = () => {
+  uni.navigateTo({ url: '/pages/setting/color' });
 };
 </script>
 

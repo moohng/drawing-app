@@ -63,6 +63,9 @@ const mutations: MutationTree<State> = {
     state.bgColorList = bgColorList.map((item, index) => ({ value: index === 0 ? '#ffffff' : item }));
     state.backgroundColor = state.bgColorList[0].value;
   },
+  [TypeKeys.EDIT_COLOR_LIST_BY_INDEX] (state, { value, index }) {
+    state.colorList[index] = { value };
+  },
 };
 
 export default mutations;
