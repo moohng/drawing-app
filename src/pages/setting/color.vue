@@ -20,10 +20,10 @@
       <view class="label">L</view>
       <slider class="slider" :value="hsl.l" :min="0" :max="100" :activeColor="getters.color" show-value :block-size="24" @changing="handleLSelect" @change="handleLSelectEnd"></slider>
     </view>
-    <view class="row">
+    <!-- <view class="row">
       <view class="label">A</view>
       <slider class="slider" :value="hsl.a" :min="0" :max="1" :step="0.01" :activeColor="getters.color" show-value :block-size="24" @changing="handleASelect" @change="handleASelectEnd"></slider>
-    </view>
+    </view> -->
   </view>
 </template>
 
