@@ -30,6 +30,7 @@
 import { TypeKeys } from '@/store/types';
 import { reactive, ref, watch } from 'vue';
 import { useStore } from 'vuex';
+import { rgb as convertRgb, hsl as convertHsl } from 'color-convert';
 
 const { state, commit } = useStore();
 
@@ -37,7 +38,10 @@ const currentColorIndex = ref(state.colorList.findIndex(({ value }) => value ===
 
 const handleColorSelect = (index: number, color: string) => {
   currentColorIndex.value = index;
-  commit(TypeKeys.SET_COLOR, color);
+  const [h, s, l] = convertRgb.hsl(color.match(/\d+/g));
+  hsl.h = h;
+  hsl.s = s;
+  hsl.l = l;
 };
 
 const hsl = reactive({
@@ -49,7 +53,8 @@ const hsl = reactive({
 
 watch(hsl, (newHsl) => {
   const { h, s, l, a } = newHsl;
-  const color = `hsla(${h},${s}%,${l}%,${a}%)`;
+  const [r, g, b] = convertHsl.rgb([h, s, l]);
+  const color = `rgba(${r},${g},${b},${a / 100})`;
   commit(TypeKeys.EDIT_COLOR_LIST_BY_INDEX, {
     index: currentColorIndex.value,
     value: color,

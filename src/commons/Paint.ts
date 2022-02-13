@@ -23,6 +23,11 @@ export class Paint {
 
   set color(color: string) {
     this.ctx.strokeStyle = color || this.defaultColor;
+    const rgba = color.split(',');
+    if (rgba?.length === 4) {
+      console.log(color, parseFloat(rgba[3]));
+      this.ctx.globalAlpha = parseFloat(rgba[3]) || 1;
+    }
   }
 
   get color(): string {
@@ -42,26 +47,13 @@ export class Paint {
   }
 
   /**
-   * 绘制轨迹
-   * @param param 坐标点
-   */
-  drawLine({ x, y }: Dot) {
-    this.ctx.lineTo(x, y);
-    this.ctx.stroke();
-    // #ifndef MP
-    // @ts-ignore
-    this.ctx.draw(true);
-    this.ctx.moveTo(x, y);
-    // #endif
-  }
-
-  /**
    * 开始绘制轨迹
    * @param dot 坐标点
    * @param color 轨迹颜色
    * @param width 轨迹宽度
    */
   start({ x, y }: Dot, color = this.defaultColor, width = this.defaultWidth) {
+    this.ctx.save();
     this.ctx.beginPath();
     this.ctx.moveTo(x, y);
     this.color = color;
@@ -93,19 +85,32 @@ export class Paint {
     // #endif
   }
 
+  private endPoint?: Dot;
+
   /**
-   * 绘制路径
-   * @param path 路径
-   * @returns
+   * 绘制轨迹
+   * @param param 坐标点
    */
-  drawPath(path: Path[]) {
-    if (!path.length) return;
-    path.forEach(({ pos, color, width }) => {
-      this.start(pos[0], color, width);
-      pos.forEach((dot) => {
-        this.drawLine(dot);
-      });
-    });
+   drawLine({ x, y }: Dot, lastPoint?: Dot) {
+    if (lastPoint) {
+      const ep = {
+        x: lastPoint.x + (x - lastPoint.x) * 0.5,
+        y: lastPoint.y + (y - lastPoint.y) * 0.5,
+      }
+      this.ctx.quadraticCurveTo(lastPoint.x, lastPoint.y, ep.x, ep.y);
+      this.ctx.stroke();
+      this.endPoint = ep;
+    } else {
+      this.ctx.lineTo(x, y);
+      this.ctx.stroke();
+      this.endPoint = { x, y };
+    }
+    this.ctx.restore();
+    // #ifndef MP
+    // @ts-ignore
+    this.ctx.draw(true);
+    this.ctx.moveTo(this.endPoint.x, this.endPoint.y);
+    // #endif
   }
 
   /**
@@ -142,9 +147,19 @@ export class Paint {
       return;
     }
 
-    if (this.column < this.path[this.row].pos.length) {
+    const path = this.path[this.row].pos;
+    if (this.column < path.length) {
       // 绘制第 n 条轨迹
-      this.drawLine(this.path[this.row].pos[this.column++]);
+      if (this.column < 2 || this.column >= path.length - 1) {
+        this.drawLine(path[this.column]);
+      } else {
+        if (this.column === 2) {
+          this.clear();
+          this.ctx.moveTo(path[0].x, path[0].y);
+        }
+        this.drawLine(path[this.column], path[this.column - 1]);
+      }
+      this.column++;
       setTimeout(() => this.run(), 16.7);
     } else {
       // 一条轨迹制完成

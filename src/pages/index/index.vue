@@ -105,6 +105,7 @@ const handlePreview = () => {
 const handleEndPreview = () => {
   isPreview.value = false;
   paint.value?.pause();
+  paint.value?.clear();
   paint.value?.setImageData(getters.currentStep);
 };
 
