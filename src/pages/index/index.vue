@@ -1,5 +1,5 @@
 <template>
-  <view class="canvas canvas-bg" :style="{ backgroundColor: state.backgroundColor }"></view>
+  <view class="canvas canvas-bg" :style="{ backgroundColor: getters.backgroundColor }"></view>
   <!-- #ifdef MP-WEIXIN -->
   <canvas
     id="drawCanvas"
@@ -105,6 +105,7 @@ const handlePreview = () => {
 const handleEndPreview = () => {
   isPreview.value = false;
   paint.value?.pause();
+  paint.value?.clear();
   paint.value?.setImageData(getters.currentStep);
 };
 
@@ -127,7 +128,7 @@ const handleClick = (index: number | string) => {
       code,
       path: getters.currentPathList,
       pwd: pwd.value,
-      background: state.backgroundColor,
+      background: getters.backgroundColor,
     }).then(() => {
       uni.navigateTo({ url: '/pages/play/index?code=' + code });
     });
