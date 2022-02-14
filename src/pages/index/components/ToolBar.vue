@@ -1,6 +1,6 @@
 <template>
   <!-- 操作区域 -->
-  <view class="toolbar" :style="{ color: state.color }">
+  <view class="toolbar" :style="{ color: getters.color }">
     <button class="button" @click="handleUndo"><text class="iconfont icon-undo"></text></button>
     <button class="button" @click="handleRedo"><text class="iconfont icon-undo redo"></text></button>
     <button class="button" @click="handleClear"><text class="iconfont icon-clear"></text></button>
@@ -32,26 +32,24 @@ const { state, getters, commit } = useStore();
 /** 操作 */
 
 const handleUndo = () => {
-  if (state.currentStepIndex > -1) {
-    commit(TypeKeys.SET_CURRENT_STEP_INDEX, state.currentStepIndex - 1);
-    props.paint?.clear();
-    props.paint?.setImageData(getters.currentStep);
-  }
+  if (state.currentStepIndex < 0) return uni.showToast({ title: '没有上一步了~', icon: 'none' });
+  commit(TypeKeys.OPERATION_UNDO);
+  props.paint?.clear();
+  props.paint?.setImageData(getters.currentStep || state.lastStep);
 };
 
 const handleRedo = () => {
-  if (state.currentStepIndex + 1 < state.historyStepList.length) {
-    commit(TypeKeys.SET_CURRENT_STEP_INDEX, state.currentStepIndex + 1);
-    props.paint?.clear();
-    props.paint?.setImageData(getters.currentStep);
-  }
+  if (state.currentStepIndex >= state.historyStepList.length - 1) return uni.showToast({ title: '已经是最后一步了~', icon: 'none' });
+  commit(TypeKeys.OPERATION_REDO);
+  props.paint?.clear();
+  props.paint?.setImageData(getters.currentStep);
 };
 
 const handleClear = () => {
-  if (!state.historyStepList.length) return;
+  if (!state.historyStepList.length) return uni.showToast({ title: '没有可清除的内容！', icon: 'none' });
   uni.showModal({
     title: '警告！',
-    content: '该操作将清空之前所有的历史记录，确定要继续吗？',
+    content: '确定要清空画布上所有的内容和历史记录吗？',
     showCancel: true,
     cancelText: '取消',
     confirmText: '确定',
@@ -59,29 +57,27 @@ const handleClear = () => {
     success: (res) => {
       if (res.confirm) {
         props.paint?.clear();
-        commit(TypeKeys.SET_CURRENT_STEP_INDEX, -1);
-        commit(TypeKeys.SET_PATH, []);
-        commit(TypeKeys.SET_HISTORY_STEP_LIST, []);
+        commit(TypeKeys.OPERATION_CLEAR);
       }
     },
   });
 };
 
 const handlePreview = () => {
-  if (state.currentStepIndex < 0) {
+  if (state.currentPathIndex < 0) {
     return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
   }
   emit('preview');
 };
 
 const handleDownload = async () => {
-  if (state.currentStepIndex < 0) {
+  if (state.currentPathIndex < 0) {
     return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
   }
 
   showLoading('正在生成图片...');
   // 绘制背景
-  props.paint?.setBackground(state.backgroundColor);
+  props.paint?.setBackground(getters.backgroundColor);
   props.paint?.setImageData(getters.currentStep);
 
   // 生成图片
@@ -112,7 +108,7 @@ const handleDownload = async () => {
 };
 
 const handleShare = () => {
-  if (state.currentStepIndex < 0) {
+  if (state.currentPathIndex < 0) {
     return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
   }
   // 生成随机口令

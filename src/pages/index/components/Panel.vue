@@ -1,10 +1,10 @@
 <template>
   <view class="panel">
-    <view class="mask" v-if="visible" @click="handleToggle"></view>
+    <view class="mask" v-if="visible" @touchend="handleToggle"></view>
     <view class="container" :class="{ visible }">
       <slot></slot>
     </view>
-    <view class="button" :class="{ visible }" :style="{ color: state.color }" @click="handleToggle">
+    <view class="button" :class="{ visible }" :style="{ color: getters.color }" @click="handleToggle">
       <transition name="fade">
         <text class="iconfont icon-close" v-if="visible"></text>
         <text class="iconfont icon-pen" v-else></text>
@@ -17,7 +17,7 @@
 import { ref } from 'vue';
 import { useStore } from 'vuex';
 
-const { state } = useStore();
+const { getters } = useStore();
 
 const visible = ref(false);
 
@@ -36,7 +36,7 @@ $bottom: 160rpx;
 }
 
 .container {
-  padding-bottom: 144rpx;
+  padding-bottom: 84rpx;
   position: absolute;
   transition: all 0.4s;
   transform: scale(0.01) translateZ(0);
@@ -57,9 +57,8 @@ $bottom: 160rpx;
 }
 
 .button {
-  position: fixed;
-  left: $left + 24rpx;
-  bottom: $bottom + 24rpx;
+  position: relative;
+  margin-bottom: 32rpx;
   width: 96rpx;
   height: 96rpx;
   border-radius: 200rpx;

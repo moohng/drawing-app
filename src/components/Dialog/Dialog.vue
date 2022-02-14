@@ -43,7 +43,6 @@ const emit = defineEmits<{
 
 const initStyle = {
   opacity: '0',
-  transform: 'scale(1.2)',
 }
 
 const style = ref<CSSProperties>(initStyle);
@@ -80,7 +79,7 @@ watch(() => props.visible,
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all .4s;
+  transition: all .2s;
 }
 
 .tui-dialog__body {

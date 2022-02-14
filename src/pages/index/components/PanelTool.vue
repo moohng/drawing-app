@@ -2,23 +2,23 @@
   <view>
     <view class="row">
       <view class="label">笔宽</view>
-      <slider class="slider" :value="state.width" :min="1" :max="40" :activeColor="state.color" show-value :block-size="24" @change="handleWidthSelect"></slider>
+      <slider class="slider" :value="state.width" :min="1" :max="40" :activeColor="getters.color" show-value :block-size="24" @change="handleWidthSelect"></slider>
     </view>
     <view class="row">
       <view class="label">颜色</view>
       <view class="list">
-        <view class="item color-block" :class="{ selected: state.color === item.value }" :style="{ color: item.value }" v-for="(item, index) in state.colorList" :key="index" @click="handleColorSelect(item.value)"></view>
-        <view class="item button" @click="handleRandomColor(TypeKeys.SET_RANDOM_COLOR)">
-          <text class="iconfont icon-random"></text>
+        <view class="item color-block" :class="{ selected: state.colorIndex === index }" :style="{ color: mergeColorByAlpha(item) }" v-for="(item, index) in state.colorList" :key="index" @click="handleColorSelect(index)"></view>
+        <view class="item button" @click="handleConfigColor('color')">
+          <text class="iconfont icon-config"></text>
         </view>
       </view>
     </view>
     <view class="row">
       <view class="label">背景</view>
       <view class="list">
-        <view class="item color-block" :class="{ selected: state.backgroundColor === item.value }" :style="{ color: item.value }" v-for="(item, index) in state.bgColorList" :key="index" @click="handleBgColorSelect(item.value)"></view>
-        <view class="item button" @click="handleRandomColor(TypeKeys.SET_RANDOM_BACKGROUND_COLOR)">
-          <text class="iconfont icon-random"></text>
+        <view class="item color-block" :class="{ selected: state.backgroundColorIndex === index }" :style="{ color: item.value }" v-for="(item, index) in state.bgColorList" :key="index" @click="handleBgColorSelect(index)"></view>
+        <view class="item button" @click="handleConfigColor('bg')">
+          <text class="iconfont icon-config"></text>
         </view>
       </view>
     </view>
@@ -28,23 +28,33 @@
 <script lang="ts" setup>
 import { useStore } from 'vuex';
 import { TypeKeys } from '@/store/types';
+import { mergeColorByAlpha } from '@/commons/utils';
 
-const { state, commit } = useStore();
+const { state, getters, commit } = useStore();
 
-const handleColorSelect = (value: string) => {
-  commit(TypeKeys.SET_COLOR, value);
+const handleColorSelect = (index: number) => {
+  if (state.colorIndex === index) {
+    // 颜色编辑
+    uni.navigateTo({ url: '/pages/setting/color' });
+  } else {
+    commit(TypeKeys.SET_COLOR_INDEX, index);
+  }
 };
 
-const handleBgColorSelect = (value: string) => {
-  commit(TypeKeys.SET_BACKGROUND_COLOR, value);
+const handleBgColorSelect = (index: number) => {
+  if (state.backgroundColorIndex === index) {
+    uni.navigateTo({ url: '/pages/setting/color?type=bg' });
+  } else {
+    commit(TypeKeys.SET_BACKGROUND_COLOR_INDEX, index);
+  }
 };
 
 const handleWidthSelect = (e: any) => {
   commit(TypeKeys.SET_WIDTH, e.detail.value);
 };
 
-const handleRandomColor = (type: string) => {
-  commit(type);
+const handleConfigColor = (type = 'color') => {
+  uni.navigateTo({ url: '/pages/setting/color?type=' + type });
 };
 </script>
 

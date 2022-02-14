@@ -3,6 +3,7 @@ import { useStore } from 'vuex';
 import { Path, TypeKeys } from '@/store/types';
 import { Paint } from '@/commons/Paint';
 import { getRelativeDot, getDot } from '@/commons/utils';
+import { throttle } from 'lodash';
 
 export function useCanvasEvent(paint: Ref<Paint | undefined>) {
   let painting = false;
@@ -10,45 +11,43 @@ export function useCanvasEvent(paint: Ref<Paint | undefined>) {
 
   const { windowWidth, windowHeight } = uni.getSystemInfoSync();
 
-  const { state, commit } = useStore();
+  const { state, getters, commit } = useStore();
 
   const handleTouchStart = (event: TouchEvent) => {
     painting = true;
     const dot = getRelativeDot(getDot(event), { width: windowWidth, height: windowHeight });
-    const { color, width } = state;
-    paint.value?.start(dot, color, width);
+    paint.value?.start(dot, getters.color, state.width, getters.alpha);
     paint.value?.drawLine(dot);
 
     currentLine = {
-      width,
-      color,
+      width: state.width,
+      color: getters.color,
       pos: [dot],
     };
   };
 
-  const handleTouchMove = (event: TouchEvent) => {
+  const handleTouchMove = throttle((event: TouchEvent) => {
     if (!painting) return;
     const dot = getRelativeDot(getDot(event), { width: windowWidth, height: windowHeight });
-    paint.value?.drawLine(dot);
+    if (currentLine.pos.length < 2) {
+      paint.value?.drawLine(dot);
+    } else {
+      paint.value?.drawLine(dot, currentLine.pos[currentLine.pos.length - 1]);
+    }
 
     currentLine.pos.push(dot);
-  };
+  }, 16.7);
 
   const handleTouchEnd = () => {
     if (!painting) return;
     painting = false;
 
-    // 步骤 +1
-    const currentStepIndex = state.currentStepIndex + 1;
-    commit(TypeKeys.SET_CURRENT_STEP_INDEX, currentStepIndex);
+    paint.value?.drawLine(currentLine.pos[currentLine.pos.length - 1]);
 
-    // 保存路径
-    const path = state.path.slice(0, currentStepIndex);
-    commit(TypeKeys.SET_PATH, path.concat(currentLine));
-
-    // 生成记录
-    const list = state.historyStepList.slice(0, currentStepIndex);
-    commit(TypeKeys.SET_HISTORY_STEP_LIST, list.concat(paint.value?.getImageData()));
+    commit(TypeKeys.OPERATION_ADD, {
+      currentLine,
+      currentImageData: paint.value?.getImageData(),
+    });
   };
 
   return {

@@ -2,6 +2,11 @@ import { onReady } from '@dcloudio/uni-app';
 import { getCurrentInstance, ref } from 'vue';
 import { Paint } from '@/commons/Paint';
 
+/**
+ * todo 画布的宽高需要重新定义，不同屏幕大小的设备不能保持一致
+ * @param selector
+ * @returns
+ */
 export default function usePaint(selector: string) {
   const paint = ref<Paint>();
 

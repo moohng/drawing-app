@@ -1,5 +1,5 @@
 <template>
-  <view class="canvas canvas-bg" :style="{ backgroundColor: state.backgroundColor }"></view>
+  <view class="canvas canvas-bg" :style="{ backgroundColor: getters.backgroundColor }"></view>
   <!-- #ifdef MP-WEIXIN -->
   <canvas
     id="drawCanvas"
@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { useStore } from 'vuex';
 import * as dan from '@moohng/dan';
@@ -85,6 +85,11 @@ onShareTimeline(() => shareConfig);
 // 画笔
 const paint = usePaint('drawCanvas');
 
+// 初始化
+watch(paint, () => {
+  paint.value?.setImageData(getters.currentStep);
+});
+
 /** 绘图事件 */
 const { handleTouchStart, handleTouchMove, handleTouchEnd } = useCanvasEvent(paint);
 
@@ -94,12 +99,13 @@ const isPreview = ref(false);
 const handlePreview = () => {
   isPreview.value = true;
   paint.value?.clear();
-  paint.value?.playPath((getters.currentPath), handleEndPreview);
+  paint.value?.playPath((getters.currentPathList), handleEndPreview);
 };
 
 const handleEndPreview = () => {
   isPreview.value = false;
   paint.value?.pause();
+  paint.value?.clear();
   paint.value?.setImageData(getters.currentStep);
 };
 
@@ -120,9 +126,9 @@ const handleClick = (index: number | string) => {
   if (index !== 'mask') {
     addPath({
       code,
-      path: getters.currentPath,
+      path: getters.currentPathList,
       pwd: pwd.value,
-      background: state.backgroundColor,
+      background: getters.backgroundColor,
     }).then(() => {
       uni.navigateTo({ url: '/pages/play/index?code=' + code });
     });
