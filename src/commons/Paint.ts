@@ -24,7 +24,7 @@ export class Paint {
   setColor(color = this.defaultColor, alpha?: number) {
     this.ctx.strokeStyle = color;
     if (alpha) {
-      // this.ctx.globalAlpha = alpha > 1 ? alpha * 0.01 : (alpha || 1);
+      this.ctx.globalAlpha = alpha > 1 ? alpha * 0.01 : (alpha || 1);
     }
   }
 

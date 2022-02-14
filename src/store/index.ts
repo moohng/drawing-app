@@ -7,7 +7,6 @@ import { State } from './types';
 let colorList = uni.getStorageSync('COLOR_LIST');
 if (!colorList) {
   colorList = getRandomColorList(5).map(item => ({ value: item }));
-  colorList[4] = { value: 'rgb(51, 51, 51)' };
   uni.setStorageSync('COLOR_LIST', colorList);
 }
 let bgColorList = uni.getStorageSync('BACKGROUND_COLOR_LIST');

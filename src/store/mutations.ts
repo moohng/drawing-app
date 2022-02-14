@@ -1,5 +1,4 @@
 import { MAX_HISTORY_COUNT } from '@/commons/config';
-import { getRandomColorList } from '@/commons/utils';
 import { MutationTree } from 'vuex';
 import { State, TypeKeys } from './types';
 
@@ -54,12 +53,6 @@ const mutations: MutationTree<State> = {
     state.path = [];
     state.historyStepList = [];
     state.lastStep = undefined;
-  },
-  [TypeKeys.SET_RANDOM_COLOR] (state, colorList: string[] = getRandomColorList()) {
-    state.colorList = colorList.map((item, index) => ({ value: index === 4 ? 'rgb(51, 51, 51)' : item }));
-  },
-  [TypeKeys.SET_RANDOM_BACKGROUND_COLOR] (state, bgColorList: string[] = getRandomColorList()) {
-    state.bgColorList = bgColorList.map((item, index) => ({ value: index === 0 ? 'rgb(255, 255, 255)' : item }));
   },
   [TypeKeys.EDIT_COLOR_LIST_BY_INDEX] (state, color) {
     state.colorList[state.colorIndex] = color;
