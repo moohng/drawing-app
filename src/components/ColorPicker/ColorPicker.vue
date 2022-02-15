@@ -14,14 +14,17 @@
       </view>
     </view>
     <!-- 颜色格式转换 -->
-    <view class="color-form" :style="{ backgroundColor: hsla }"></view>
+    <view class="color-form" :style="{ backgroundColor: hsla }">
+
+    </view>
   </view>
 </template>
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { hsl, rgb, hex, hsv } from 'color-convert';
+import { rgb, hex, hsv } from 'color-convert';
 import { useHRange, useSLRange } from './uses';
+import { HSL, HSV, RGB } from 'color-convert/conversions';
 
 const props = defineProps({
   value: {
@@ -35,9 +38,21 @@ const hsla = computed(() => {
   return `hsla(${h},${s}%,${l}%,1)`;
 });
 
-const { onSLTouchStart, onSLTouchMove, onSLTouchEnd, point, lValue, sValue } = useSLRange();
+let defaultHSL: HSL = [0, 0, 0];
 
-const { onHTouchStart, onHTouchMove, onHTouchEnd, hValue, hOffset, hColor } = useHRange();
+if (/^#/.test(props.value)) {
+  defaultHSL = hex.hsl(props.value);
+} else if (/^rgb/.test(props.value)) {
+  defaultHSL = rgb.hsl(props.value.match(/\d+/g) as unknown as RGB);
+} else if (/^hsv/.test(props.value)) {
+  defaultHSL = hsv.hsl(props.value.match(/\d+/g) as unknown as HSV);
+} else if (/^hsl/.test(props.value)) {
+  defaultHSL = props.value.match(/\d+/g) as unknown as HSL;
+}
+
+const { onSLTouchStart, onSLTouchMove, onSLTouchEnd, point, lValue, sValue } = useSLRange(defaultHSL);
+
+const { onHTouchStart, onHTouchMove, onHTouchEnd, hValue, hOffset, hColor } = useHRange(defaultHSL);
 </script>
 
 <style lang="scss" scoped>

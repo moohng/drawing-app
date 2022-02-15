@@ -1,12 +1,13 @@
+import { HSL } from 'color-convert/conversions';
 import { computed, onMounted, reactive, ref } from 'vue';
 
 /**
  * 色相选择
  * @returns
  */
-export function useHRange() {
+export function useHRange(hsl: HSL) {
 
-  const hOffset = ref(0);
+  const hOffset = ref(hsl[0] / 3.6);
   const hValue = computed(() => {
     return 3.6 * hOffset.value;
   });
@@ -61,9 +62,9 @@ export function useHRange() {
  * 色相亮度选择
  * @returns
  */
-export function useSLRange() {
+export function useSLRange(hsl: HSL) {
 
-  const point = reactive({ x: 0, y: 0 });
+  const point = reactive({ x: hsl[1], y: 100 - hsl[2] });
 
   const sValue = computed(() => {
     return point.x;
