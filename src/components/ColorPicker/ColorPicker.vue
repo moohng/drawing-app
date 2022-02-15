@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref, watch, watchEffect } from 'vue';
 import { rgb, hex, hsv } from 'color-convert';
 import { useHRange, useSLRange } from './uses';
 import { HSL, HSV, RGB } from 'color-convert/conversions';
@@ -33,26 +33,39 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits<{
+  (event: 'change', value: string): void;
+}>();
+
+const { onSLTouchStart, onSLTouchMove, onSLTouchEnd, point, lValue, sValue } = useSLRange();
+
+const { onHTouchStart, onHTouchMove, onHTouchEnd, hValue, hOffset, hColor } = useHRange();
+
+watch(() => props.value, (v) => {
+  let defaultHSL: HSL = [0, 0, 0];
+  if (/^#/.test(v)) {
+    defaultHSL = hex.hsl(v);
+  } else if (/^rgb/.test(v)) {
+    defaultHSL = rgb.hsl(v.match(/\d+/g) as unknown as RGB);
+  } else if (/^hsv/.test(v)) {
+    defaultHSL = hsv.hsl(v.match(/\d+/g) as unknown as HSV);
+  } else if (/^hsl/.test(v)) {
+    defaultHSL = v.match(/\d+/g) as unknown as HSL;
+  }
+
+  hOffset.value = defaultHSL[0] / 3.6;
+  point.x = defaultHSL[1];
+  point.y = 100 - defaultHSL[2];
+}, { immediate: true });
+
 const hsla = computed(() => {
-  const [h, s, l] = hsv.hsl([hValue.value, sValue.value, lValue.value])
-  return `hsla(${h},${s}%,${l}%,1)`;
+  const [r, g, b] = hsv.rgb([hValue.value, sValue.value, lValue.value])
+  return `rgb(${r},${g},${b})`;
 });
 
-let defaultHSL: HSL = [0, 0, 0];
-
-if (/^#/.test(props.value)) {
-  defaultHSL = hex.hsl(props.value);
-} else if (/^rgb/.test(props.value)) {
-  defaultHSL = rgb.hsl(props.value.match(/\d+/g) as unknown as RGB);
-} else if (/^hsv/.test(props.value)) {
-  defaultHSL = hsv.hsl(props.value.match(/\d+/g) as unknown as HSV);
-} else if (/^hsl/.test(props.value)) {
-  defaultHSL = props.value.match(/\d+/g) as unknown as HSL;
-}
-
-const { onSLTouchStart, onSLTouchMove, onSLTouchEnd, point, lValue, sValue } = useSLRange(defaultHSL);
-
-const { onHTouchStart, onHTouchMove, onHTouchEnd, hValue, hOffset, hColor } = useHRange(defaultHSL);
+watch(hsla, (value) => {
+  emit('change', value);
+});
 </script>
 
 <style lang="scss" scoped>

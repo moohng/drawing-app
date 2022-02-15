@@ -7,8 +7,9 @@
       </view>
     </view>
     <view class="border-line"></view>
-    <view class="color-bar" :style="{ backgroundColor: `hsla(${hsl.h},${hsl.s}%,${hsl.l}%,${hsl.a})`}"></view>
-    <view class="row">
+    <ColorPicker :value="currentColor" @change="onColorChange"></ColorPicker>
+    <!-- <view class="color-bar" :style="{ backgroundColor: `hsla(${hsl.h},${hsl.s}%,${hsl.l}%,${hsl.a})`}"></view> -->
+    <!-- <view class="row">
       <view class="label">H</view>
       <slider class="slider" :value="hsl.h" :min="0" :max="360" :activeColor="getters.color" show-value :block-size="24" @changing="handleHSelect" @change="handleHSelectEnd"></slider>
     </view>
@@ -23,30 +24,25 @@
     <view class="row">
       <view class="label">A</view>
       <slider class="slider" :value="hsl.a" :min="0" :max="1" :step="0.01" :activeColor="getters.color" show-value :block-size="24" @changing="handleASelect" @change="handleASelectEnd"></slider>
-    </view>
+    </view> -->
   </view>
 </template>
 
 <script lang="ts" setup>
 import { ColorOption, TypeKeys } from '@/store/types';
-import { computed, reactive, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { useStore } from 'vuex';
-import { rgb as convertRgb, hsl as convertHsl } from 'color-convert';
-import { RGB } from 'color-convert/conversions';
 import { mergeColorByAlpha } from '@/commons/utils';
 
 const { state, getters, commit } = useStore();
 
 const colorType = ref('color');
+const currentColor = ref('#000');
 
 onLoad(({ type = 'color' }) => {
   colorType.value = type;
-  // 初始化
-  const [h, s, l] = convertRgb.hsl((colorType.value === 'bg' ? getters.backgroundColor : getters.color).match(/\d+/g));
-  hsl.h = h;
-  hsl.s = s;
-  hsl.l = l;
+  currentColor.value = type === 'bg' ? getters.backgroundColor : getters.color;
 });
 
 const colorList = computed(() => {
@@ -57,57 +53,15 @@ const currentColorIndex = computed(() => colorType.value === 'bg' ? state.backgr
 
 const handleColorSelect = (index: number, item: ColorOption) => {
   commit(colorType.value === 'bg' ? TypeKeys.SET_BACKGROUND_COLOR_INDEX : TypeKeys.SET_COLOR_INDEX, index);
-  const [h, s, l] = convertRgb.hsl(item.value.match(/\d+/g) as unknown as RGB);
-  hsl.h = h;
-  hsl.s = s;
-  hsl.l = l;
-  hsl.a = item.alpha || 1;
+  currentColor.value = item.value;
 };
 
-const hsl = reactive({
-  h: 0,
-  s: 0,
-  l: 0,
-  a: getters.alpha,
-});
-
-const submitColor = () => {
-  const { h, s, l, a } = hsl;
-  const [r, g, b] = convertHsl.rgb([h, s, l]);
-  const color = `rgb(${r},${g},${b})`;
+const onColorChange = (v: any) => {
+  console.log('color change', v);
   commit(colorType.value === 'bg' ? TypeKeys.EDIT_BACKGROUND_LIST_BY_INDEX : TypeKeys.EDIT_COLOR_LIST_BY_INDEX, {
-    alpha: a || 1,
-    value: color,
+    alpha: 1,
+    value: v,
   });
-};
-
-const handleHSelect = (e: any) => {
-  hsl.h = e.detail.value;
-};
-const handleSSelect = (e: any) => {
-  hsl.s = e.detail.value;
-};
-const handleLSelect = (e: any) => {
-  hsl.l = e.detail.value;
-};
-const handleASelect = (e: any) => {
-  hsl.a = e.detail.value;
-};
-const handleHSelectEnd = (e: any) => {
-  hsl.h = e.detail.value;
-  submitColor();
-};
-const handleSSelectEnd = (e: any) => {
-  hsl.s = e.detail.value;
-  submitColor();
-};
-const handleLSelectEnd = (e: any) => {
-  hsl.l = e.detail.value;
-  submitColor();
-};
-const handleASelectEnd = (e: any) => {
-  hsl.a = e.detail.value;
-  submitColor();
 };
 </script>
 
