@@ -35,7 +35,7 @@
 
 <script lang="ts" setup>
 import { computed, watch } from 'vue';
-import { rgb, hex, hsv } from 'color-convert';
+import { rgb, hex, hsv, hsl } from 'color-convert';
 import { useAlpha, useHue, useRange, useSLRange } from './uses';
 import { HSL, HSV, RGB } from 'color-convert/conversions';
 
@@ -50,25 +50,31 @@ const emit = defineEmits<{
   (event: 'change', value: string): void;
 }>();
 
-const { onSLTouchStart, onSLTouchMove, onSLTouchEnd, point, lValue, sValue } = useSLRange();
+const onValueChanged = () => {
+  emit('change', hslValue.value);
+}
 
-const { onTouchStart: onHTouchStart, onTouchMove: onHTouchMove, onTouchEnd: onHTouchEnd, offset: hOffset } = useRange('#colorH');
+const { onSLTouchStart, onSLTouchMove, onSLTouchEnd, point, lValue, sValue } = useSLRange(onValueChanged);
+
+const { onTouchStart: onHTouchStart, onTouchMove: onHTouchMove, onTouchEnd: onHTouchEnd, offset: hOffset } = useRange('#colorH', onValueChanged);
 const { hValue, hColor } = useHue(hOffset);
 
-const { onTouchStart: onATouchStart, onTouchMove: onATouchMove, onTouchEnd: onATouchEnd, offset: aOffset } = useRange('#colorA');
+const { onTouchStart: onATouchStart, onTouchMove: onATouchMove, onTouchEnd: onATouchEnd, offset: aOffset } = useRange('#colorA', onValueChanged);
 const { aValue } = useAlpha(aOffset);
 
 watch(() => props.value, (v) => {
   let defaultHSL: HSL = [0, 0, 0];
   if (/^#/.test(v)) {
-    defaultHSL = hex.hsl(v);
+    defaultHSL = hex.hsv(v);
   } else if (/^rgb/.test(v)) {
-    defaultHSL = rgb.hsl(v.match(/\d+/g) as unknown as RGB);
-  } else if (/^hsv/.test(v)) {
-    defaultHSL = hsv.hsl(v.match(/\d+/g) as unknown as HSV);
+    defaultHSL = rgb.hsv(v.match(/\d+/g) as unknown as RGB);
   } else if (/^hsl/.test(v)) {
+    defaultHSL = hsl.hsv(v.match(/\d+/g) as unknown as HSV);
+  } else if (/^hsv/.test(v)) {
     defaultHSL = v.match(/\d+/g) as unknown as HSL;
   }
+
+  console.log(v, '===> hsv', defaultHSL);
 
   hOffset.value = defaultHSL[0] / 3.6;
   aOffset.value = 0;
@@ -83,10 +89,6 @@ const hslValue = computed(() => {
 
 const hslaValue = computed(() => {
   return hslValue.value.replace('rgb(', 'rgba(').replace(')', `,${aValue.value})`);
-});
-
-watch(hslValue, (value) => {
-  emit('change', value);
 });
 </script>
 

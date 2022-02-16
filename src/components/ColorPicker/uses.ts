@@ -1,10 +1,10 @@
-import { computed, onMounted, reactive, Ref, ref } from 'vue';
+import { computed, getCurrentInstance, onMounted, reactive, Ref, ref } from 'vue';
 
 /**
  * 范围选择
  * @returns
  */
-export function useRange(selector: string) {
+export function useRange(selector: string, onValueChanged?: () => void) {
 
   const offset = ref(0);
 
@@ -12,7 +12,7 @@ export function useRange(selector: string) {
   let left: number;
 
   onMounted(() => {
-    uni.createSelectorQuery().select(selector).boundingClientRect((info) => {
+    uni.createSelectorQuery().in(getCurrentInstance()).select(selector).boundingClientRect((info) => {
       width = info.width!;
       left = info.left!;
     }).exec();
@@ -27,7 +27,7 @@ export function useRange(selector: string) {
     setPoint(clientX);
   };
   const onTouchEnd = (e: any) => {
-    // console.log('========onTouchEnd', e);
+    onValueChanged?.();
   };
 
   const setPoint = (x: number) => {
@@ -71,7 +71,7 @@ export function useAlpha(offset: Ref<number>) {
  * 色相亮度选择
  * @returns
  */
-export function useSLRange() {
+export function useSLRange(onValueChanged?: () => void) {
 
   const point = reactive({ x: 0, y: 0 });
 
@@ -89,8 +89,7 @@ export function useSLRange() {
   let top: number;
 
   onMounted(() => {
-    console.log('ready')
-    uni.createSelectorQuery().select('#colorSL').boundingClientRect((info) => {
+    uni.createSelectorQuery().in(getCurrentInstance()).select('#colorSL').boundingClientRect((info) => {
       width = info.width!;
       height = info.height!;
       left = info.left!;
@@ -107,8 +106,7 @@ export function useSLRange() {
     setPoint(clientX, clientY);
   };
   const onSLTouchEnd = (e: any) => {
-    // console.log('========onSLTouchEnd', e);
-    // console.log('-------', point);
+    onValueChanged?.();
   };
 
   const setPoint = (x: number, y: number) => {
