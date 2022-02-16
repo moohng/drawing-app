@@ -18,6 +18,7 @@ page {
   --bg-color: $bgColor;
   color: #333;
   font-size: 32rpx;
+  line-height: 1.6;
 }
 
 .canvas {
