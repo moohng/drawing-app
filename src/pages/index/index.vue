@@ -1,5 +1,15 @@
 <template>
   <view class="canvas canvas-bg" :style="{ backgroundColor: getters.backgroundColor }"></view>
+  <movable-area
+    class="canvas canvas-img mask"
+    :class="{ cover: isBgEdit }"
+    :style="isBgEdit && { zIndex: 1, opacity: 1 }"
+  >
+    <view class="canvas-img-confirm" :style="{ color: getters.color }" @click="isBgEdit = false">放置</view>
+    <movable-view class="canvas-img-wrap" direction="all" :y="100" out-of-bounds scale>
+      <image :src="canvasBg" mode="widthFix"></image>
+    </movable-view>
+  </movable-area>
   <!-- #ifdef MP-WEIXIN -->
   <canvas
     id="drawCanvas"
@@ -36,7 +46,7 @@
   <!-- <Avatar @click="goMyPage"></Avatar> -->
 
   <!-- 底部内容区域 -->
-  <view class="container">
+  <view class="container" @click="onClick">
     <!-- 配置面板 -->
     <Panel>
       <PanelTool></PanelTool>
@@ -70,6 +80,19 @@ import { useWXUserInfo } from './uses/useWXUserInfo';
 import { TypeKeys } from '@/store/modules/user';
 
 const { state, getters, commit } = useStore();
+
+const canvasBg = ref<string>();
+const isBgEdit = ref(false);
+
+const onClick = () => {
+  uni.chooseImage({
+    count: 1,
+    success: ({ tempFilePaths }) => {
+      isBgEdit.value = true;
+      canvasBg.value = tempFilePaths[0];
+    },
+  });
+};
 
 // 屏幕常亮
 // #ifndef H5
@@ -172,7 +195,35 @@ const goMyPage = () => {
 }
 
 .canvas-bg {
+  z-index: -2;
+}
+.canvas-img {
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
   z-index: -1;
+  opacity: 0.8;
+
+  &-confirm {
+    position: absolute;
+    padding: 8rpx 32rpx;
+    right: 32rpx;
+    top: 32rpx;
+    font-weight: bold;
+    background-color: #fff;
+    border-radius: 100rpx;
+    box-shadow: $shadow;
+    z-index: 9;
+  }
+
+  &-wrap {
+    width: 100%;
+    height: fit-content;
+    image {
+      display: block;
+      width: 100%;
+    }
+  }
 }
 
 .canvas-bg,

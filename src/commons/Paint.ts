@@ -12,13 +12,14 @@ export class Paint {
   private path: Path[] = [];
   public isComplete = false;
 
-  constructor(private ctx: CanvasRenderingContext2D, color?: string, width: number = 6) {
+  private canvas?: HTMLCanvasElement
+
+  constructor(private ctx: CanvasRenderingContext2D, canvas?: HTMLCanvasElement) {
     this.setBackground();
 
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
-    this.width = width;
-    this.setColor(color);
+    this.canvas = canvas;
   }
 
   setColor(color = this.defaultColor, alpha?: number) {
@@ -204,5 +205,22 @@ export class Paint {
 
   setImageData(imageData?: ImageData) {
     imageData && this.ctx.putImageData(imageData, 0, 0);
+  }
+
+  drawImage(url: string) {
+    // #ifdef MP
+    // @ts-ignore
+    const image = this.canvas.createImage();
+    image.onload = () => {
+      const width = windowWidth;
+      const height = width * image.height / image.width;
+      this.ctx.drawImage(image, -width * 0.5, -height * 0.5, width, height);
+    };
+    image.src = url;
+    // #endif
+    // #ifndef MP
+    // @ts-ignore
+    this.ctx.drawImage(url, 0, 0);
+    // #endif
   }
 }

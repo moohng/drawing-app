@@ -125,7 +125,7 @@ const handleShare = () => {
   left: 50%;
   background-color: rgba($bgColor, 0.9);
   border-radius: 200rpx;
-  box-shadow: 0 4rpx 16rpx 0 rgba($bgColor, 0.4);
+  box-shadow: $shadow;
 }
 
 .toolbar .button {

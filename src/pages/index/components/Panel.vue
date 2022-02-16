@@ -48,7 +48,7 @@ $bottom: 160rpx;
   right: $left;
   bottom: $bottom;
   opacity: 0;
-  box-shadow: 0 4rpx 16rpx 0 rgba($bgColor, 0.4);
+  box-shadow: $shadow;
 
   &.visible {
     transform: scale(1) translateZ(0);
@@ -62,7 +62,7 @@ $bottom: 160rpx;
   width: 96rpx;
   height: 96rpx;
   border-radius: 200rpx;
-  box-shadow: 0 4rpx 16rpx 0 rgba($bgColor, 0.4);
+  box-shadow: $shadow;
   background-color: rgba($color: $bgColor, $alpha: 0.9);
 
   &.visible {
