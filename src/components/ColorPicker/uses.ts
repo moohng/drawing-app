@@ -1,41 +1,33 @@
-import { HSL } from 'color-convert/conversions';
 import { computed, onMounted, reactive, Ref, ref } from 'vue';
 
 /**
- * 色相选择
+ * 范围选择
  * @returns
  */
-export function useHRange() {
+export function useRange(selector: string) {
 
-  const hOffset = ref(0);
-  const hValue = computed(() => {
-    return 3.6 * hOffset.value;
-  });
-  const hColor = computed(() => {
-    return `hsl(${Math.round(hValue.value)},100%,50%)`;
-  });
+  const offset = ref(0);
 
   let width: number;
   let left: number;
 
   onMounted(() => {
-    console.log('ready')
-    uni.createSelectorQuery().select('#colorH').boundingClientRect((info) => {
+    uni.createSelectorQuery().select(selector).boundingClientRect((info) => {
       width = info.width!;
       left = info.left!;
     }).exec();
   });
 
-  const onHTouchStart = (e: any) => {
+  const onTouchStart = (e: any) => {
     const { clientX } = e.touches[0];
     setPoint(clientX);
   };
-  const onHTouchMove = (e: any) => {
+  const onTouchMove = (e: any) => {
     const { clientX } = e.touches[0];
     setPoint(clientX);
   };
-  const onHTouchEnd = (e: any) => {
-    // console.log('========onHTouchEnd', e);
+  const onTouchEnd = (e: any) => {
+    // console.log('========onTouchEnd', e);
   };
 
   const setPoint = (x: number) => {
@@ -45,17 +37,34 @@ export function useHRange() {
     } else if (x > 100) {
       x = 100
     }
-    hOffset.value = x;
+    offset.value = Math.round(x);
   };
 
   return {
-    onHTouchStart,
-    onHTouchMove,
-    onHTouchEnd,
-    hValue,
-    hOffset,
-    hColor,
+    onTouchStart,
+    onTouchMove,
+    onTouchEnd,
+    offset,
   };
+}
+
+export function useHue(offset: Ref<number>) {
+  const hValue = computed(() => {
+    return 3.6 * offset.value;
+  });
+  const hColor = computed(() => {
+    return `hsl(${Math.round(hValue.value)},100%,50%)`;
+  });
+
+  return { hValue, hColor };
+}
+
+export function useAlpha(offset: Ref<number>) {
+  const aValue = computed(() => {
+    return (100 - offset.value) / 100;
+  });
+
+  return { aValue };
 }
 
 /**
