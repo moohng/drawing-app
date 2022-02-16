@@ -116,7 +116,7 @@ const hslaValue = computed(() => {
   position: absolute;
   width: 16rpx;
   height: 16rpx;
-  border: 4rpx solid #fff;
+  border: 6rpx solid #fff;
   border-radius: 100%;
   box-shadow: 0 0 4rpx 0 rgba(0, 0, 0, 1), inset 0 0 2rpx 0 rgba(0, 0, 0, 1);
   transform: translate(-50%, -50%);
@@ -126,15 +126,15 @@ const hslaValue = computed(() => {
   margin-top: 16rpx;
   display: flex;
   .color-preview {
-    width: 76rpx;
-    height: 76rpx;
+    width: 96rpx;
+    height: 96rpx;
   }
   .color-ha-bd {
     flex: 1;
   }
   .h-bar {
     position: relative;
-    height: 30rpx;
+    height: 40rpx;
     overflow: hidden;
     &.hue {
       background: linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%);
