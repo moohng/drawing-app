@@ -21,7 +21,7 @@ export const initState: State = {
   path: [],
   colorIndex: 0,
   backgroundColorIndex: 0,
-  width: 4,
+  width: 2,
   /** 历史记录数据 */
   currentPathIndex: -1, // 记录path操作记录指针
   historyStepList: [],
