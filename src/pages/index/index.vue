@@ -46,7 +46,7 @@
   <!-- <Avatar @click="goMyPage"></Avatar> -->
 
   <!-- 底部内容区域 -->
-  <view class="container" @click="onClick">
+  <view class="container">
     <!-- 配置面板 -->
     <Panel>
       <PanelTool></PanelTool>
