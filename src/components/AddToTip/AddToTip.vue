@@ -1,5 +1,5 @@
 <template>
-  <view class="add-to-mine" v-if="showAddTip" @click="hideAddTip">将“涂图了”添加到我的小程序，方便下次使用</view>
+  <view class="add-to-mine" v-if="showAddTip" @click="hideAddTip">将“涂图了”添加到我的小程序，方便下次继续使用</view>
 </template>
 
 <script lang="ts" setup>
@@ -16,13 +16,12 @@ const hideAddTip = () => {
 <style lang="scss" scoped>
 .add-to-mine {
   position: fixed;
-  padding: 8rpx 16rpx;
+  padding: 8rpx 20rpx;
   top: 16rpx;
   right: 16rpx;
   width: 360rpx;
-  color: #666;
-  font-size: 26rpx;
-  background-color: rgba(0, 0, 0, 0.06);
+  font-size: 28rpx;
+  background-color: rgba($color: $bgColor, $alpha: 0.9);
   border-radius: 16rpx;
 
   &::after {
@@ -31,7 +30,7 @@ const hideAddTip = () => {
     bottom: 100%;
     left: 60%;
     border: 12rpx solid transparent;
-    border-bottom-color: rgba(0, 0, 0, 0.06);
+    border-bottom-color: rgba($color: $bgColor, $alpha: 0.9);
   }
 }
 </style>
