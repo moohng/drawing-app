@@ -46,13 +46,15 @@
   <!-- <Avatar @click="goMyPage"></Avatar> -->
 
   <!-- 底部内容区域 -->
-  <view class="container" @click="onClick">
+  <view class="container" :class="{ safeBottom }">
     <!-- 配置面板 -->
     <Panel>
       <PanelTool></PanelTool>
     </Panel>
     <!-- 工具栏 -->
     <ToolBar :paint="paint" @preview="handlePreview" @save="handleSave" />
+    <!-- banner -->
+    <BottomAd @hide="safeBottom = true" />
   </view>
 
   <!-- 预览时的遮罩层 -->
@@ -75,6 +77,7 @@ import { shareConfig } from '@/commons/config';
 import Panel from './components/Panel.vue';
 import PanelTool from './components/PanelTool.vue';
 import ToolBar from './components/ToolBar.vue';
+import BottomAd from './components/BottomAd.vue';
 import { useCanvasEvent } from './uses/useCanvasEvent';
 import { useWXUserInfo } from './uses/useWXUserInfo';
 import { TypeKeys } from '@/store/modules/user';
@@ -179,6 +182,9 @@ const goMyPage = () => {
     });
   }
 };
+
+/** 底部距离控制 */
+const safeBottom = ref(false);
 </script>
 
 <style lang="scss" scoped>
@@ -187,11 +193,15 @@ const goMyPage = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 32rpx;
-  bottom: env(safe-area-inset-bottom);
-  bottom: constant(safe-area-inset-bottom);
+  padding: 24rpx 32rpx 8rpx;
   box-sizing: border-box;
   border-radius:44rpx 44rpx 0 0;
+  background-color: #ccc;
+  &.safeBottom {
+    padding-bottom: 24rpx;
+    bottom: env(safe-area-inset-bottom);
+    bottom: constant(safe-area-inset-bottom);
+  }
 }
 
 .canvas-bg {
