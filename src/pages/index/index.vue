@@ -1,5 +1,6 @@
 <template>
   <view class="canvas canvas-bg" :style="{ backgroundColor: getters.backgroundColor }"></view>
+  <!-- 照着画功能 -->
   <movable-area
     class="canvas canvas-img mask"
     :class="{ cover: isBgEdit }"
@@ -79,7 +80,6 @@ import { shareConfig } from '@/commons/config';
 import Panel from './components/Panel.vue';
 import PanelTool from './components/PanelTool.vue';
 import ToolBar from './components/ToolBar.vue';
-import BottomAd from './components/BottomAd.vue';
 import { useCanvasEvent } from './uses/useCanvasEvent';
 import { useWXUserInfo } from './uses/useWXUserInfo';
 import { TypeKeys } from '@/store/modules/user';
@@ -198,7 +198,6 @@ const safeBottom = ref(false);
   padding: 24rpx 32rpx 8rpx;
   box-sizing: border-box;
   border-radius: 44rpx 44rpx 0 0;
-  // background-color: #ccc;
   &.safeBottom {
     padding-bottom: 24rpx;
     bottom: env(safe-area-inset-bottom);
