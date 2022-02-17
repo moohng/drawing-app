@@ -187,6 +187,9 @@ const onInputChange = (key: keyof typeof form, e: any) => {
     }
   } else {
     value = value.toUpperCase();
+    if (!/^#/.test(value)) {
+      value = '#' + value;
+    }
   }
   form[key] = value as never;
 
@@ -199,6 +202,8 @@ const onInputChange = (key: keyof typeof form, e: any) => {
   } else {
     setDefaultValue(form.hex);
   }
+
+  onValueChanged();
 };
 </script>
 
@@ -278,6 +283,7 @@ const onInputChange = (key: keyof typeof form, e: any) => {
 
   .icon-qiehuan {
     margin-left: 32rpx;
+    padding: 0 8rpx;
     font-size: 48rpx;
     transform: rotate(90deg);
   }
