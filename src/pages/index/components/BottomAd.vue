@@ -1,6 +1,6 @@
 <template>
   <view class="bottom-ad" v-if="showAd">
-    <ad unit-id="adunit-b9f439209aac273a" :ad-intervals="30000" @error="closeAd = true" @close="closeAd = true"></ad>
+    <ad unit-id="adunit-b9f439209aac273a" :ad-intervals="30" @error="onClose" @close="closeAd = true"></ad>
     <view class="tip" v-if="closeAd" @click="onClose">感谢您的支持！点击关闭广告位</view>
   </view>
 </template>

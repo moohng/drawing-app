@@ -2,7 +2,7 @@
   <view>
     <view class="row">
       <view class="label">笔宽</view>
-      <slider class="slider" :value="state.width" :min="1" :max="40" :activeColor="getters.color" show-value :block-size="24" @change="handleWidthSelect"></slider>
+      <slider class="slider" :value="state.width" :min="1" :max="20" :activeColor="getters.color" show-value :block-size="24" @change="handleWidthSelect"></slider>
     </view>
     <view class="row">
       <view class="label">颜色</view>
@@ -101,7 +101,7 @@ const handleConfigColor = (type = 'color') => {
 
     &.color-block.selected::before {
       transform: scale(1.4);
-      box-shadow: 0 0 8rpx 0;
+      box-shadow: $shadow;
     }
 
     &.button {

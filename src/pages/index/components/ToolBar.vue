@@ -32,7 +32,9 @@ const { state, getters, commit } = useStore();
 /** 操作 */
 
 const handleUndo = () => {
-  if (state.currentStepIndex < 0) return uni.showToast({ title: '没有上一步了~', icon: 'none' });
+  if (state.currentStepIndex < 0) {
+    return uni.showToast({ title: (state.historyStepList.length ? '长按可清空画布~' : '没有上一步了~'), icon: 'none' });
+  }
   commit(TypeKeys.OPERATION_UNDO);
   props.paint?.clear();
   props.paint?.setImageData(getters.currentStep || state.lastStep);

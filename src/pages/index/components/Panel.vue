@@ -36,9 +36,9 @@ const handleToggle = () => {
 
 .container {
   position: absolute;
-  transition: all 0.4s;
-  transform: scale(0.01) translateZ(0);
-  transform-origin: 60rpx calc(100% - 60rpx);
+  transition: all 0.3s;
+  transform: scale(0) translateZ(0);
+  transform-origin: 40rpx calc(100% + 80rpx);
   background-color: rgba($bgColor, $alpha: 0.9);
   border-radius: 32rpx;
   z-index: 9999;
@@ -63,9 +63,7 @@ const handleToggle = () => {
   background-color: rgba($color: $bgColor, $alpha: 0.9);
 
   &.visible {
-    // background-color: transparent;
-    // box-shadow: none;
-    // z-index: 99999;
+    z-index: 99999;
   }
 
   .iconfont {
