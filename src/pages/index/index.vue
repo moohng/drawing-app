@@ -46,6 +46,8 @@
   <!-- 个人中心 -->
   <!-- <Avatar @click="goMyPage"></Avatar> -->
 
+  <ModeSwitch />
+
   <!-- 底部内容区域 -->
   <view class="container" :class="{ safeBottom }">
     <view class="bottom-bar">
@@ -80,6 +82,7 @@ import { shareConfig } from '@/commons/config';
 import Panel from './components/Panel.vue';
 import PanelTool from './components/PanelTool.vue';
 import ToolBar from './components/ToolBar.vue';
+import ModeSwitch from './components/ModeSwitch.vue';
 import { useCanvasEvent } from './uses/useCanvasEvent';
 import { useWXUserInfo } from './uses/useWXUserInfo';
 import { TypeKeys } from '@/store/modules/user';
