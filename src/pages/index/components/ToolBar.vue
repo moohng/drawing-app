@@ -1,9 +1,9 @@
 <template>
   <!-- 操作区域 -->
   <view class="toolbar" :style="{ color: getters.color }">
-    <button class="button" @click="handleUndo"><text class="iconfont icon-undo"></text></button>
+    <button class="button" @click="handleUndo" @longpress="handleClear"><text class="iconfont icon-undo"></text></button>
     <button class="button" @click="handleRedo"><text class="iconfont icon-undo redo"></text></button>
-    <button class="button" @click="handleClear"><text class="iconfont icon-clear"></text></button>
+    <!-- <button class="button" @click="handleClear"><text class="iconfont icon-clear"></text></button> -->
     <button class="button" @click="handlePreview"><text class="iconfont icon-play"></text></button>
     <button class="button" @click="handleDownload"><text class="iconfont icon-download"></text></button>
     <button class="button" @click="handleShare"><text class="iconfont icon-share"></text></button>
@@ -119,10 +119,9 @@ const handleShare = () => {
 
 <style lang="scss" scoped>
 .toolbar {
+  padding: 0 16rpx;
   display: flex;
   justify-content: space-around;
-  top: 0;
-  left: 50%;
   background-color: rgba($bgColor, 0.9);
   border-radius: 200rpx;
   box-shadow: $shadow;

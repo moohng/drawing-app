@@ -47,12 +47,14 @@
 
   <!-- 底部内容区域 -->
   <view class="container" :class="{ safeBottom }">
-    <!-- 配置面板 -->
-    <Panel>
-      <PanelTool></PanelTool>
-    </Panel>
-    <!-- 工具栏 -->
-    <ToolBar :paint="paint" @preview="handlePreview" @save="handleSave" />
+    <view class="bottom-bar">
+      <!-- 配置面板 -->
+      <Panel>
+        <PanelTool></PanelTool>
+      </Panel>
+      <!-- 工具栏 -->
+      <ToolBar :paint="paint" @preview="handlePreview" @save="handleSave" />
+    </view>
     <!-- banner -->
     <BottomAd @hide="safeBottom = true" />
   </view>
@@ -195,12 +197,19 @@ const safeBottom = ref(false);
   bottom: 0;
   padding: 24rpx 32rpx 8rpx;
   box-sizing: border-box;
-  border-radius:44rpx 44rpx 0 0;
-  background-color: #ccc;
+  border-radius: 44rpx 44rpx 0 0;
+  // background-color: #ccc;
   &.safeBottom {
     padding-bottom: 24rpx;
     bottom: env(safe-area-inset-bottom);
     bottom: constant(safe-area-inset-bottom);
+  }
+
+  .bottom-bar {
+    display: flex;
+    tool-bar {
+      flex: 1;
+    }
   }
 }
 

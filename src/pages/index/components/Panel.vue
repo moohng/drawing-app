@@ -27,16 +27,14 @@ const handleToggle = () => {
 </script>
 
 <style lang="scss" scoped>
-$left: 32rpx;
-$bottom: 160rpx;
-
 .panel {
+  position: relative;
+  margin-right: 24rpx;
   --color: #333;
   color: var(--color);
 }
 
 .container {
-  padding-bottom: 84rpx;
   position: absolute;
   transition: all 0.4s;
   transform: scale(0.01) translateZ(0);
@@ -44,9 +42,9 @@ $bottom: 160rpx;
   background-color: rgba($bgColor, $alpha: 0.9);
   border-radius: 32rpx;
   z-index: 9999;
-  left: $left;
-  right: $left;
-  bottom: $bottom;
+  left: 0;
+  bottom: 120rpx;
+  width: 750rpx - 32rpx * 2;
   opacity: 0;
   box-shadow: $shadow;
 
@@ -58,7 +56,6 @@ $bottom: 160rpx;
 
 .button {
   position: relative;
-  margin-bottom: 32rpx;
   width: 96rpx;
   height: 96rpx;
   border-radius: 200rpx;
@@ -66,9 +63,9 @@ $bottom: 160rpx;
   background-color: rgba($color: $bgColor, $alpha: 0.9);
 
   &.visible {
-    background-color: transparent;
-    box-shadow: none;
-    z-index: 99999;
+    // background-color: transparent;
+    // box-shadow: none;
+    // z-index: 99999;
   }
 
   .iconfont {
