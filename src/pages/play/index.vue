@@ -31,6 +31,7 @@ import { pathFallback } from '@/commons/utils';
 import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { Path } from '@/store/types';
 import { useGenerateImage } from '@/uses/useGenerateImage';
+// import { useInterstitialAd } from '@/uses/useAd';
 
 let shareImageUrl = '';
 
@@ -61,10 +62,20 @@ let localState: {
   pwd: string;
 };
 
-// 生成分享图片
+// const { interstitialAd } = useInterstitialAd();
+
 watch(isPlaying, async (value) => {
+  // 播放暂停时
   if (!value) {
+    // 生成分享图片
     shareImageUrl = await useGenerateImage('drawCanvas');
+
+    // 弹窗广告
+    try {
+      // interstitialAd.value?.show();
+    } catch (err) {
+      //
+    }
   }
 });
 
