@@ -11,7 +11,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineEmits } from 'vue';
 import { useStore } from 'vuex';
 import { Paint } from '@/commons/Paint';
 import { useToolAction } from '../uses/useToolAction';
