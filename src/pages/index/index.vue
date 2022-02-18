@@ -253,7 +253,6 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
   }
 }
 
-.canvas,
 .canvas-bg,
 .canvas-cover {
   position: absolute;

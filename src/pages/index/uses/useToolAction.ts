@@ -66,6 +66,20 @@ export  function useToolAction(emit: Emits, props: Props) {
       return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
     }
 
+    // #ifdef MP
+    const res = await uni.getSetting({});
+    // @ts-ignore
+    if (!res?.authSetting?.['scope.writePhotosAlbum']) {
+      return uni.openSetting({
+        success: ({ authSetting }) => {
+          if (authSetting['scope.writePhotosAlbum']) {
+            handleDownload();
+          }
+        },
+      });
+    }
+    // #endif
+
     showLoading('正在生成图片...');
     // 绘制背景
     props.paint?.setBackground(getters.backgroundColor);
@@ -82,13 +96,10 @@ export  function useToolAction(emit: Emits, props: Props) {
     uni.saveImageToPhotosAlbum({
       filePath: shareImg,
       success: () => {
-        uni.showToast({ title: '已保存！', icon: 'none' });
+        uni.showToast({ title: '保存成功！', icon: 'none' });
       },
       fail: () => {
         uni.showToast({ title: '保存失败！', icon: 'none' });
-      },
-      complete: () => {
-        uni.hideLoading();
       },
     });
     // #endif

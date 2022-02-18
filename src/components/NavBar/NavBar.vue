@@ -19,6 +19,10 @@ const { statusBarHeight, navHeight } = state;
 
 <style lang="scss" scoped>
 .nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   background-color: rgba($color: $bgColor, $alpha: 0.9);
   .header {
     display: flex;
@@ -26,5 +30,6 @@ const { statusBarHeight, navHeight } = state;
     align-items: center;
     font-size: 36rpx;
   }
+  z-index: 9;
 }
 </style>
