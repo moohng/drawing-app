@@ -52,20 +52,23 @@
   <MenuButton @click="openMenu" />
   <view class="main-menu mask" :class="[showMenu ? 'cover' : null]">
     <!-- 广告位 -->
-    <view class="banner" v-if="showMenu">
+    <!-- <view class="banner" v-if="showMenu">
       <BottomAd></BottomAd>
-    </view>
+    </view> -->
     <!-- 主页面 -->
     <view class="full-page">
       <view class="app-title">涂图了</view>
       <text class="iconfont icon-close" @click="hideMenu"></text>
-      <view class="menu-item" @click="toggleMode(PageMode.FREE)">
+      <view class="menu-item" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.FREE)">
         <view class="title">自由画</view>
         <view class="desc">一张白板随意画</view>
       </view>
-      <view class="menu-item" @click="toggleMode(PageMode.COPY)">
+      <view class="menu-item" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.COPY)">
         <view class="title">照着画</view>
         <view class="desc">不会画？选择一张图片照着画</view>
+      </view>
+      <view class="menu-ad">
+        <BottomAd></BottomAd>
       </view>
     </view>
   </view>
@@ -106,6 +109,7 @@ import MenuButton from './components/MenuButton.vue';
 import { useCanvasEvent } from './uses/useCanvasEvent';
 // import { useWXUserInfo } from './uses/useWXUserInfo';
 import { useSaveAction, usePreviewAction, useMenuAction } from './uses/useToolAction';
+import { generalBgColor } from '@/commons/utils';
 
 enum PageMode {
   FREE,
@@ -304,10 +308,12 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
     transition: all 0.3s;
     background-color: #fff;
     border-radius: 32rpx 32rpx 0 0;
+    display: flex;
+    flex-direction: column;
 
     .icon-close {
       position: absolute;
-      top: 24rpx;
+      top: 32rpx;
       right: 32rpx;
       font-size: 44rpx;
     }
@@ -315,6 +321,7 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
 
   .app-title {
     margin-bottom: 36rpx;
+    padding: 8rpx;
     text-align: center;
     font-size: 36rpx;
   }
@@ -336,6 +343,11 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
       margin-top: 8rpx;
       font-size: 28rpx;
     }
+  }
+
+  .menu-ad {
+    margin-top: auto;
+    height: fit-content;
   }
 }
 </style>

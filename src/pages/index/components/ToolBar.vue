@@ -16,7 +16,7 @@ import { useStore } from 'vuex';
 import { Paint } from '@/commons/Paint';
 import { useToolAction } from '../uses/useToolAction';
 
-const { paint } = defineProps<{
+const props = defineProps<{
   paint?: Paint;
 }>();
 
@@ -30,7 +30,7 @@ const emit = defineEmits<Emits>();
 const { getters } = useStore();
 
 /** 操作 */
-const { handleUndo, handleRedo, handleClear, handlePreview, handleDownload, handleShare } = useToolAction(emit, paint);
+const { handleUndo, handleRedo, handleClear, handlePreview, handleDownload, handleShare } = useToolAction(emit, props);
 
 </script>
 

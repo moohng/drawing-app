@@ -12,7 +12,11 @@ export interface Emits {
   (event: 'preview'): void;
 }
 
-export  function useToolAction(emit: Emits, paint?: Paint) {
+export interface Props {
+  paint?: Paint;
+}
+
+export  function useToolAction(emit: Emits, props: Props) {
 
   const { state, getters, commit } = useStore();
 
@@ -21,15 +25,15 @@ export  function useToolAction(emit: Emits, paint?: Paint) {
       return uni.showToast({ title: (state.historyStepList.length ? '长按可清空画布~' : '没有上一步了~'), icon: 'none' });
     }
     commit(TypeKeys.OPERATION_UNDO);
-    paint?.clear();
-    paint?.setImageData(getters.currentStep || state.lastStep);
+    props.paint?.clear();
+    props.paint?.setImageData(getters.currentStep || state.lastStep);
   };
 
   const handleRedo = () => {
     if (state.currentStepIndex >= state.historyStepList.length - 1) return uni.showToast({ title: '已经是最后一步了~', icon: 'none' });
     commit(TypeKeys.OPERATION_REDO);
-    paint?.clear();
-    paint?.setImageData(getters.currentStep);
+    props.paint?.clear();
+    props.paint?.setImageData(getters.currentStep);
   };
 
   const handleClear = () => {
@@ -43,7 +47,7 @@ export  function useToolAction(emit: Emits, paint?: Paint) {
       confirmColor: '#dd524d',
       success: (res) => {
         if (res.confirm) {
-          paint?.clear();
+          props.paint?.clear();
           commit(TypeKeys.OPERATION_CLEAR);
         }
       },
@@ -64,15 +68,15 @@ export  function useToolAction(emit: Emits, paint?: Paint) {
 
     showLoading('正在生成图片...');
     // 绘制背景
-    paint?.setBackground(getters.backgroundColor);
-    paint?.setImageData(getters.currentStep);
+    props.paint?.setBackground(getters.backgroundColor);
+    props.paint?.setImageData(getters.currentStep);
 
     // 生成图片
     const shareImg = await useGenerateImage('drawCanvas');
 
     // 去掉背景
-    paint?.clear();
-    paint?.setImageData(getters.currentStep);
+    props.paint?.clear();
+    props.paint?.setImageData(getters.currentStep);
 
     // #ifndef H5
     uni.saveImageToPhotosAlbum({

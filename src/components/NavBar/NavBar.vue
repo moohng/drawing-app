@@ -10,7 +10,7 @@ import { useStore } from 'vuex';
 
 
 defineProps<{
-  title: string;
+  title?: string;
 }>();
 
 const { state } = useStore();
