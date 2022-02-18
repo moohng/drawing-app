@@ -1,7 +1,6 @@
 <template>
-  <view class="mode-switch" :style="{ color: getters.color }">
-    <button class="button"><text class="iconfont icon-qiehuan"></text></button>
-    <view class="container"></view>
+  <view class="menu-button" :style="{ color: getters.color }">
+    <button class="button" @click="$emit('click')"><text class="iconfont icon-caidan"></text></button>
   </view>
 </template>
 
@@ -12,7 +11,7 @@ const { getters } = useStore();
 </script>
 
 <style lang="scss" scoped>
-.mode-switch {
+.menu-button {
   position: fixed;
   top: 24rpx;
   right: 32rpx;
@@ -20,7 +19,7 @@ const { getters } = useStore();
   .button {
     margin: 0;
     width: 96rpx;
-    height: 56rpx;
+    height: 96rpx;
     border-radius: 200rpx;
     display: flex;
     justify-content: center;

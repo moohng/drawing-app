@@ -46,6 +46,7 @@
     "@dcloudio/uni-quickapp-webview": "^v3.0.0-alpha-3030820220114006",
     "@moohng/dan": "^2.1.0",
     "color-convert": "^2.0.1",
+    "gif.js": "^0.2.0",
     "lodash": "^4.17.21",
     "vue": "^3.2.26",
     "vue-i18n": "^9.1.9",
