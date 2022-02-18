@@ -5,8 +5,8 @@
     </button>
     <button
       v-if="mode === PageMode.COPY"
-      class="button ghost"
-      :style="{ opacity: eyeActive ? 1 : '' }"
+      class="button"
+      :class="{ ghost: !eyeActive }"
       @click="clickEye"
       @longpress="onLongPressEye"
     >
@@ -76,6 +76,7 @@ const setEyeActive = () => {
     font-weight: normal;
     background-color: rgba($color: $bgColor, $alpha: 0.9);
     box-shadow: $shadow;
+    transition: opacity 0.3s;
 
     &::after {
       border: none;
@@ -93,14 +94,13 @@ const setEyeActive = () => {
     }
 
     + .button {
-      margin-top: 16rpx;
+      margin-top: 32rpx;
     }
 
     &.ghost {
       background-color: transparent;
       box-shadow: none;
       opacity: 0.4;
-      transition: opacity 0.3s;
     }
   }
 }

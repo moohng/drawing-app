@@ -97,16 +97,16 @@ const onColorChange = (v: any) => {
     &.color-block::before {
       content: '';
       display: block;
-      width: 48rpx;
-      height: 48rpx;
+      width: 44rpx;
+      height: 44rpx;
       background-color: currentColor;
       border-radius: 200rpx;
       transition: all .4s;
     }
 
     &.color-block.selected::before {
-      transform: scale(1.4);
-      box-shadow: 0 0 8rpx 0;
+      transform: scale(1.36);
+      box-shadow: $shadow;
     }
   }
 }
