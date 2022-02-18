@@ -1,17 +1,61 @@
 <template>
   <view class="menu-button" :style="{ color: getters.color, top: toTop + 'px' }">
-    <button class="button" @click="$emit('click')"><text class="iconfont icon-caidan"></text></button>
+    <button class="button" @click="$emit('clickMenu')">
+      <text class="iconfont icon-caidan"></text>
+    </button>
+    <button
+      v-if="mode === PageMode.COPY"
+      class="button ghost"
+      :style="{ opacity: eyeActive ? 1 : '' }"
+      @click="clickEye"
+      @longpress="onLongPressEye"
+    >
+      <text class="iconfont icon-xianshikejian" v-if="eyeOpen"></text>
+      <text class="iconfont icon-yincangbukejian" v-else></text>
+    </button>
   </view>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
+import { PageMode } from '../types';
+
+const props = defineProps<{
+  mode: PageMode;
+}>();
+
+const emit = defineEmits<{
+  (event: 'clickMenu'): void;
+  (event: 'toggleEye', eyeOpen: boolean): void;
+  (event: 'longPressEdit'): void;
+}>();
 
 const { state, getters } = useStore();
 const toTop = computed(() => {
   return state.headerHeight + 32 * state.windowWidth / 750;
 });
+
+const eyeActive = ref(false);
+const eyeOpen = ref(true);
+const clickEye = () => {
+  setEyeActive();
+  eyeOpen.value = !eyeOpen.value;
+  emit('toggleEye', eyeOpen.value);
+};
+const onLongPressEye = () => {
+  eyeOpen.value = true;
+  emit('toggleEye', eyeOpen.value);
+  emit('longPressEdit');
+};
+let timer: number;
+const setEyeActive = () => {
+  clearTimeout(timer);
+  eyeActive.value = true;
+  timer = setTimeout(() => {
+    eyeActive.value = false;
+  }, 3000);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -46,6 +90,17 @@ const toTop = computed(() => {
 
     .iconfont {
       font-size: 56rpx;
+    }
+
+    + .button {
+      margin-top: 16rpx;
+    }
+
+    &.ghost {
+      background-color: transparent;
+      box-shadow: none;
+      opacity: 0.4;
+      transition: opacity 0.3s;
     }
   }
 }

@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2748127 */
-  src: url('https://at.alicdn.com/t/font_2748127_deismna5g6.woff2?t=1645161474258') format('woff2'),
-       url('https://at.alicdn.com/t/font_2748127_deismna5g6.woff?t=1645161474258') format('woff'),
-       url('https://at.alicdn.com/t/font_2748127_deismna5g6.ttf?t=1645161474258') format('truetype');
+  src: url('https://at.alicdn.com/t/font_2748127_h3gua75r9vu.woff2?t=1645201468576') format('woff2'),
+       url('https://at.alicdn.com/t/font_2748127_h3gua75r9vu.woff?t=1645201468576') format('woff'),
+       url('https://at.alicdn.com/t/font_2748127_h3gua75r9vu.ttf?t=1645201468576') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,30 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-move:before {
+  content: "\e616";
+}
+
+.icon-yidong:before {
+  content: "\e653";
+}
+
+.icon-xianshikejian:before {
+  content: "\e8d4";
+}
+
+.icon-yincangbukejian:before {
+  content: "\e8d5";
+}
+
+.icon-yanjing_xianshi_o:before {
+  content: "\ebcc";
+}
+
+.icon-yanjing_yincang_o:before {
+  content: "\ebcd";
 }
 
 .icon-caidan:before {

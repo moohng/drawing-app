@@ -9,7 +9,14 @@
     :style="isBgEdit && { zIndex: 99 }"
   >
     <view class="canvas-img-confirm" v-if="isBgEdit" :style="{ color: getters.color }" @click="isBgEdit = false">放置</view>
-    <movable-view class="canvas-img-wrap" direction="all" :y="220" out-of-bounds scale>
+    <movable-view
+      class="canvas-img-wrap"
+      :style="{ opacity: bgShow ? 1 : 0 }"
+      :y="90"
+      direction="all"
+      out-of-bounds
+      scale
+    >
       <image :src="canvasBg" mode="widthFix"></image>
     </movable-view>
   </movable-area>
@@ -48,8 +55,10 @@
   <!-- 个人中心 -->
   <!-- <Avatar @click="goMyPage"></Avatar> -->
 
+  <!-- 右上角按钮 -->
+  <MenuButton :mode="mode" @clickMenu="openMenu" @toggleEye="onToggleBg" @longPressEdit="isBgEdit = true" />
+
   <!-- 主菜单 -->
-  <MenuButton @click="openMenu" />
   <view class="main-menu mask" :class="[showMenu ? 'cover' : null]">
     <!-- 广告位 -->
     <!-- <view class="banner" v-if="showMenu">
@@ -110,27 +119,28 @@ import { useCanvasEvent } from './uses/useCanvasEvent';
 // import { useWXUserInfo } from './uses/useWXUserInfo';
 import { useSaveAction, usePreviewAction, useMenuAction } from './uses/useToolAction';
 import { generalBgColor } from '@/commons/utils';
+import { PageMode } from './types';
 
-enum PageMode {
-  FREE,
-  COPY,
-}
 
 const { getters } = useStore();
 
+/** 模式切换 */
 const mode = ref(PageMode.FREE);
 
 const toggleMode = (pageMode: PageMode) => {
-  mode.value = pageMode;
   hideMenu();
   if (pageMode === PageMode.COPY) {
     openAlbum();
+  } else {
+    mode.value = pageMode;
+    canvasBg.value = undefined;
   }
 };
 
-
+/** 照着画 */
 const canvasBg = ref<string>();
 const isBgEdit = ref(false);
+const bgShow = ref(true);
 
 const openAlbum = () => {
   uni.chooseImage({
@@ -138,8 +148,18 @@ const openAlbum = () => {
     success: ({ tempFilePaths }) => {
       isBgEdit.value = true;
       canvasBg.value = tempFilePaths[0];
+      mode.value = PageMode.COPY;
+    },
+    fail: () => {
+      if (mode.value !== PageMode.COPY) {
+        uni.showToast({ title: '请选择一张图片', icon: 'none' });
+      }
     },
   });
+};
+
+const onToggleBg = (isOpen: boolean) => {
+  bgShow.value = isOpen;
 };
 
 /** 屏幕常亮 */
