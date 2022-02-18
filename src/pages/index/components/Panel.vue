@@ -1,6 +1,6 @@
 <template>
   <view class="panel">
-    <view class="mask" v-if="visible" @touchend="handleToggle"></view>
+    <view class="mask" v-if="visible"></view>
     <view class="container" :class="{ visible }">
       <slot></slot>
     </view>
@@ -32,6 +32,10 @@ const handleToggle = () => {
   margin-right: 24rpx;
   --color: #333;
   color: var(--color);
+
+  .mask {
+    pointer-events: none;
+  }
 }
 
 .container {

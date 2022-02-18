@@ -1,5 +1,5 @@
 <template>
-  <view>
+  <view class="panel-tool">
     <view class="row">
       <view class="label">笔宽</view>
       <slider class="slider" :value="state.width" :min="1" :max="20" :activeColor="getters.color" show-value :block-size="24" @change="handleWidthSelect"></slider>
@@ -59,8 +59,11 @@ const handleConfigColor = (type = 'color') => {
 </script>
 
 <style lang="scss" scoped>
+.panel-tool {
+  padding: 8rpx 0;
+}
 .row {
-  margin: 24rpx 0;
+  margin: 16rpx 0;
   display: flex;
   align-items: center;
   white-space: nowrap;
@@ -71,20 +74,21 @@ const handleConfigColor = (type = 'color') => {
   }
 
   .slider {
+    margin: 12rpx 56rpx;
     flex: 1;
   }
 }
 
 .list {
-  margin: 0 24rpx;
+  margin-left: 28rpx;
   display: flex;
   align-items: center;
   flex: 1;
 
   .item {
-    margin-right: 16rpx;
-    width: 76rpx;
-    height: 76rpx;
+    margin-right: 20rpx;
+    width: 72rpx;
+    height: 72rpx;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -92,19 +96,20 @@ const handleConfigColor = (type = 'color') => {
     &.color-block::before {
       content: '';
       display: block;
-      width: 48rpx;
-      height: 48rpx;
+      width: 44rpx;
+      height: 44rpx;
       background-color: currentColor;
       border-radius: 200rpx;
       transition: all .4s;
     }
 
     &.color-block.selected::before {
-      transform: scale(1.4);
+      transform: scale(1.36);
       box-shadow: $shadow;
     }
 
     &.button {
+      margin: 0;
       margin-left: 8rpx;
       .iconfont {
         font-size: 56rpx;

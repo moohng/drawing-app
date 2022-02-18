@@ -6,10 +6,10 @@
     v-if="mode === PageMode.COPY"
     class="canvas canvas-img mask"
     :class="{ cover: isBgEdit }"
-    :style="isBgEdit && { zIndex: 1, opacity: 1 }"
+    :style="isBgEdit && { zIndex: 99 }"
   >
     <view class="canvas-img-confirm" v-if="isBgEdit" :style="{ color: getters.color }" @click="isBgEdit = false">放置</view>
-    <movable-view class="canvas-img-wrap" direction="all" :y="100" out-of-bounds scale>
+    <movable-view class="canvas-img-wrap" direction="all" :y="220" out-of-bounds scale>
       <image :src="canvasBg" mode="widthFix"></image>
     </movable-view>
   </movable-area>
@@ -57,11 +57,11 @@
     </view> -->
     <!-- 主页面 -->
     <view class="full-page">
-      <view class="app-title">涂图了</view>
+      <view class="app-title">画图模式</view>
       <text class="iconfont icon-close" @click="hideMenu"></text>
       <view class="menu-item" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.FREE)">
         <view class="title">自由画</view>
-        <view class="desc">一张白板随意画</view>
+        <view class="desc">一张“白板”随意画</view>
       </view>
       <view class="menu-item" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.COPY)">
         <view class="title">照着画</view>
@@ -227,7 +227,6 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
   background-size: contain;
   background-position: center;
   z-index: -1;
-  opacity: 0.8;
 
   &-confirm {
     position: fixed;
@@ -246,6 +245,7 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
   &-wrap {
     width: 100%;
     height: fit-content;
+    opacity: 0.6;
     image {
       display: block;
       width: 100%;
