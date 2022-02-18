@@ -59,7 +59,8 @@
   <MenuButton :mode="mode" @clickMenu="openMenu" @toggleEye="onToggleBg" @longPressEdit="isBgEdit = true" />
 
   <!-- 主菜单 -->
-  <view class="main-menu mask" :class="[showMenu ? 'cover' : null]">
+  <view class="main-menu" :class="[showMenu ? 'show' : null]">
+    <view class="mask cover" @click="hideMenu"></view>
     <!-- 广告位 -->
     <!-- <view class="banner" v-if="showMenu">
       <BottomAd></BottomAd>
@@ -303,21 +304,29 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
 }
 
 .main-menu {
-  transition: all 0.3s;
-  opacity: 0;
-  pointer-events: none;
-  &.cover {
-    pointer-events: all;
-    opacity: 1;
+  position: fixed;
+  z-index: 9998;
+  .mask {
+    transition: all 0.3s;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  &.show {
+    .mask {
+      pointer-events: all;
+      opacity: 1;
+    }
     .full-page {
       transform: translate(0) translateZ(0);
     }
   }
+
   .banner {
     padding: 0 16rpx;
   }
   .full-page {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
