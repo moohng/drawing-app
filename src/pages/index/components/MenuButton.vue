@@ -1,19 +1,23 @@
 <template>
-  <view class="menu-button" :style="{ color: getters.color }">
+  <view class="menu-button" :style="{ color: getters.color, top: toTop + 'px' }">
     <button class="button" @click="$emit('click')"><text class="iconfont icon-caidan"></text></button>
   </view>
 </template>
 
 <script lang="ts" setup>
+import { computed } from 'vue';
 import { useStore } from 'vuex';
 
-const { getters } = useStore();
+const { state, getters } = useStore();
+const toTop = computed(() => {
+  return state.headerHeight + 32 * state.windowWidth / 750;
+});
 </script>
 
 <style lang="scss" scoped>
 .menu-button {
   position: fixed;
-  top: 24rpx;
+  top: 84rpx;
   right: 32rpx;
 
   .button {

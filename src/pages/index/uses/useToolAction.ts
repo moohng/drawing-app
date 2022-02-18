@@ -168,7 +168,7 @@ export function usePreviewAction(paint: Ref<Paint | undefined>) {
 }
 
 export function useMenuAction() {
-  const showMenu = ref(true);
+  const showMenu = ref(false);
 
   const openMenu = () => {
     showMenu.value = true;

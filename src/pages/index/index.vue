@@ -1,12 +1,14 @@
 <template>
+  <NavBar>涂图了</NavBar>
   <view class="canvas canvas-bg" :style="{ backgroundColor: getters.backgroundColor }"></view>
   <!-- 照着画功能 -->
   <movable-area
+    v-if="mode === PageMode.COPY"
     class="canvas canvas-img mask"
     :class="{ cover: isBgEdit }"
     :style="isBgEdit && { zIndex: 1, opacity: 1 }"
   >
-    <view class="canvas-img-confirm" :style="{ color: getters.color }" @click="isBgEdit = false">放置</view>
+    <view class="canvas-img-confirm" v-if="isBgEdit" :style="{ color: getters.color }" @click="isBgEdit = false">放置</view>
     <movable-view class="canvas-img-wrap" direction="all" :y="100" out-of-bounds scale>
       <image :src="canvasBg" mode="widthFix"></image>
     </movable-view>
@@ -50,15 +52,18 @@
   <MenuButton @click="openMenu" />
   <view class="main-menu mask" :class="[showMenu ? 'cover' : null]">
     <!-- 广告位 -->
+    <view class="banner" v-if="showMenu">
+      <BottomAd></BottomAd>
+    </view>
     <!-- 主页面 -->
     <view class="full-page">
       <view class="app-title">涂图了</view>
       <text class="iconfont icon-close" @click="hideMenu"></text>
-      <view class="menu-item">
+      <view class="menu-item" @click="toggleMode(PageMode.FREE)">
         <view class="title">自由画</view>
         <view class="desc">一张白板随意画</view>
       </view>
-      <view class="menu-item">
+      <view class="menu-item" @click="toggleMode(PageMode.COPY)">
         <view class="title">照着画</view>
         <view class="desc">不会画？选择一张图片照着画</view>
       </view>
@@ -102,12 +107,28 @@ import { useCanvasEvent } from './uses/useCanvasEvent';
 // import { useWXUserInfo } from './uses/useWXUserInfo';
 import { useSaveAction, usePreviewAction, useMenuAction } from './uses/useToolAction';
 
+enum PageMode {
+  FREE,
+  COPY,
+}
+
 const { getters } = useStore();
+
+const mode = ref(PageMode.FREE);
+
+const toggleMode = (pageMode: PageMode) => {
+  mode.value = pageMode;
+  hideMenu();
+  if (pageMode === PageMode.COPY) {
+    openAlbum();
+  }
+};
+
 
 const canvasBg = ref<string>();
 const isBgEdit = ref(false);
 
-const onClick = () => {
+const openAlbum = () => {
   uni.chooseImage({
     count: 1,
     success: ({ tempFilePaths }) => {
@@ -205,11 +226,13 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
   opacity: 0.8;
 
   &-confirm {
-    position: absolute;
-    padding: 8rpx 32rpx;
-    right: 32rpx;
-    top: 32rpx;
+    position: fixed;
+    padding: 14rpx 48rpx;
+    left: 50%;
+    bottom: 360rpx;
+    transform: translateX(-50%);
     font-weight: bold;
+    font-size: 32rpx;
     background-color: #fff;
     border-radius: 100rpx;
     box-shadow: $shadow;
@@ -226,6 +249,7 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
   }
 }
 
+.canvas,
 .canvas-bg,
 .canvas-cover {
   position: absolute;
@@ -266,13 +290,16 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
       transform: translate(0) translateZ(0);
     }
   }
+  .banner {
+    padding: 0 16rpx;
+  }
   .full-page {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
+    top: 280rpx;
     padding: 32rpx;
-    height: 80%;
     transform: translateY(100%) translateZ(0);
     transition: all 0.3s;
     background-color: #fff;
@@ -289,6 +316,7 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
   .app-title {
     margin-bottom: 36rpx;
     text-align: center;
+    font-size: 36rpx;
   }
 
   .menu-item {
