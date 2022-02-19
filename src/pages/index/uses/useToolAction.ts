@@ -6,6 +6,7 @@ import { download, showLoading } from '@/commons/utils';
 import { Paint } from '@/commons/Paint';
 import { Ref, ref } from 'vue';
 import { addPath } from '@/commons/api';
+import { PageMode } from '../types';
 
 export interface Emits {
   (event: 'save', code: string): void;
@@ -194,4 +195,38 @@ export function useMenuAction() {
   };
 
   return { showMenu, openMenu, hideMenu };
+}
+
+export function useCopyAction(mode: Ref<PageMode>) {
+  const canvasBg = ref<string>();
+  const isBgEdit = ref(false);
+  const bgShow = ref(true);
+
+  const openAlbum = () => {
+    uni.chooseImage({
+      count: 1,
+      success: ({ tempFilePaths }) => {
+        isBgEdit.value = true;
+        canvasBg.value = tempFilePaths[0];
+        mode.value = PageMode.COPY;
+      },
+      fail: () => {
+        if (mode.value !== PageMode.COPY) {
+          uni.showToast({ title: '请选择一张图片', icon: 'none' });
+        }
+      },
+    });
+  };
+
+  const onToggleBg = (isOpen: boolean) => {
+    bgShow.value = isOpen;
+  };
+
+  return {
+    canvasBg,
+    isBgEdit,
+    bgShow,
+    openAlbum,
+    onToggleBg,
+  };
 }

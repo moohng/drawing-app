@@ -118,7 +118,7 @@ import ToolBar from './components/ToolBar.vue';
 import MenuButton from './components/MenuButton.vue';
 import { useCanvasEvent } from './uses/useCanvasEvent';
 // import { useWXUserInfo } from './uses/useWXUserInfo';
-import { useSaveAction, usePreviewAction, useMenuAction } from './uses/useToolAction';
+import { useSaveAction, usePreviewAction, useMenuAction, useCopyAction } from './uses/useToolAction';
 import { generalBgColor } from '@/commons/utils';
 import { PageMode } from './types';
 
@@ -139,29 +139,7 @@ const toggleMode = (pageMode: PageMode) => {
 };
 
 /** 照着画 */
-const canvasBg = ref<string>();
-const isBgEdit = ref(false);
-const bgShow = ref(true);
-
-const openAlbum = () => {
-  uni.chooseImage({
-    count: 1,
-    success: ({ tempFilePaths }) => {
-      isBgEdit.value = true;
-      canvasBg.value = tempFilePaths[0];
-      mode.value = PageMode.COPY;
-    },
-    fail: () => {
-      if (mode.value !== PageMode.COPY) {
-        uni.showToast({ title: '请选择一张图片', icon: 'none' });
-      }
-    },
-  });
-};
-
-const onToggleBg = (isOpen: boolean) => {
-  bgShow.value = isOpen;
-};
+const { canvasBg, isBgEdit, bgShow, openAlbum, onToggleBg } = useCopyAction(mode);
 
 /** 屏幕常亮 */
 // #ifndef H5
