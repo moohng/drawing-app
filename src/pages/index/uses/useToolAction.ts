@@ -7,6 +7,7 @@ import { Paint } from '@/commons/Paint';
 import { Ref, ref } from 'vue';
 import { addPath } from '@/commons/api';
 import { PageMode } from '../types';
+import { useRewardedVideoAd } from '@/uses/useAd';
 
 export interface Emits {
   (event: 'save', code: string): void;
@@ -20,6 +21,8 @@ export interface Props {
 export  function useToolAction(emit: Emits, props: Props) {
 
   const { state, getters, commit } = useStore();
+
+  const { showRewardedVideoAd } = useRewardedVideoAd();
 
   const handleUndo = () => {
     if (state.currentStepIndex < 0) {
@@ -68,6 +71,13 @@ export  function useToolAction(emit: Emits, props: Props) {
     }
 
     // #ifdef MP
+    try {
+      const isEnded = await showRewardedVideoAd?.();
+      if (!isEnded) {
+        return uni.showToast({ title: '请完整观看视频！', icon: 'none' });
+      }
+    } catch (err) {}
+
     const res = await uni.getSetting({});
     // @ts-ignore
     if (!res?.authSetting?.['scope.writePhotosAlbum']) {
@@ -75,7 +85,12 @@ export  function useToolAction(emit: Emits, props: Props) {
         success: ({ authSetting }) => {
           if (authSetting['scope.writePhotosAlbum']) {
             handleDownload();
+          } else {
+            uni.showToast({ title: '请允许获取系统相册权限', icon: 'none' });
           }
+        },
+        fail: () => {
+          uni.showToast({ title: '请允许获取系统相册权限', icon: 'none' });
         },
       });
     }

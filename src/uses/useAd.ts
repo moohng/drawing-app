@@ -26,16 +26,14 @@ export function useInterstitialAd(unitId = 'adunit-c0ef209d582bf665') {
 
 export function useRewardedVideoAd(unitId = 'adunit-a2b0b5949ea23f97') {
   let rewardedVideoAd: UniApp.RewardedVideoAdContext;
-  interface CloseCallback {
-    (isEnded: boolean): void;
-  }
-  let onCLose: CloseCallback;
 
-  const showRewardedVideoAd = (closeCallback: CloseCallback) => {
-    onCLose = closeCallback;
-    return rewardedVideoAd?.show().catch(() => {
-      rewardedVideoAd.load().then(() => rewardedVideoAd.show()).catch(() => {
-        console.log('激励视频广告显示失败！');
+  let onClose: (isEnded: boolean) => void;
+
+  const showRewardedVideoAd = () => {
+    return new Promise<boolean>((resolve, reject) => {
+      onClose = resolve;
+      rewardedVideoAd?.show().catch(() => {
+        rewardedVideoAd.load().then(() => rewardedVideoAd.show()).catch(reject);
       });
     });
   };
@@ -45,7 +43,7 @@ export function useRewardedVideoAd(unitId = 'adunit-a2b0b5949ea23f97') {
     rewardedVideoAd.onLoad(() => {});
     rewardedVideoAd.onError(() => {});
     rewardedVideoAd.onClose(({ isEnded }) => {
-      onCLose?.(isEnded);
+      onClose?.(isEnded);
     });
   });
 
