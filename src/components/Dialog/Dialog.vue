@@ -72,18 +72,15 @@ watch(() => props.visible,
 <style lang="scss" scoped>
 .tui-dialog {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   transition: all .2s;
+  z-index: 9998;
 }
 
 .tui-dialog__body {
-  margin-top: -15%;
+  position: fixed;
+  top: 44%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 640rpx;
   max-width: 90%;
   line-height: 1.4;

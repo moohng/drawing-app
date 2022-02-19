@@ -8,23 +8,13 @@
     </view>
     <view class="border-line"></view>
     <ColorPicker :value="currentColor" @change="onColorChange"></ColorPicker>
-    <!-- <view class="color-bar" :style="{ backgroundColor: `hsla(${hsl.h},${hsl.s}%,${hsl.l}%,${hsl.a})`}"></view> -->
-    <!-- <view class="row">
-      <view class="label">H</view>
-      <slider class="slider" :value="hsl.h" :min="0" :max="360" :activeColor="getters.color" show-value :block-size="24" @changing="handleHSelect" @change="handleHSelectEnd"></slider>
+  </view>
+  <!-- 视频广告 -->
+  <view class="video-ad">
+    <view class="wrap">
+      <ad class="ad" unit-id="adunit-f373a3a6ed2e650c" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
+      <!-- <ad class="ad" unit-id="adunit-f373a3a6ed2e650c" ad-type="video" ad-theme="white" :ad-intervals="30"></ad> -->
     </view>
-    <view class="row">
-      <view class="label">S</view>
-      <slider class="slider" :value="hsl.s" :min="0" :max="100" :activeColor="getters.color" show-value :block-size="24" @changing="handleSSelect" @change="handleSSelectEnd"></slider>
-    </view>
-    <view class="row">
-      <view class="label">L</view>
-      <slider class="slider" :value="hsl.l" :min="0" :max="100" :activeColor="getters.color" show-value :block-size="24" @changing="handleLSelect" @change="handleLSelectEnd"></slider>
-    </view>
-    <view class="row">
-      <view class="label">A</view>
-      <slider class="slider" :value="hsl.a" :min="0" :max="1" :step="0.01" :activeColor="getters.color" show-value :block-size="24" @changing="handleASelect" @change="handleASelectEnd"></slider>
-    </view> -->
   </view>
 </template>
 
@@ -68,22 +58,19 @@ const onColorChange = (v: any) => {
 <style lang="scss" scoped>
 .container {
   margin: 32rpx;
-  padding: 32rpx;
+  padding: 16rpx 32rpx;
   background-color: $bgColor;
   border-radius: 32rpx;
+  box-shadow: $shadow;
 }
 
 .border-line {
-  margin: 48rpx 0;
+  margin: 32rpx 0;
   border-bottom: 1rpx solid $uni-border-color;
 }
 
-.color-bar {
-  height: 48rpx;
-}
-
 .row {
-  margin: 32rpx 0;
+  margin: 24rpx 0;
   display: flex;
   align-items: center;
   white-space: nowrap;
@@ -91,10 +78,6 @@ const onColorChange = (v: any) => {
   .label {
     margin-right: 36rpx;
     font-weight: bold;
-  }
-
-  .slider {
-    flex: 1;
   }
 }
 
@@ -114,17 +97,32 @@ const onColorChange = (v: any) => {
     &.color-block::before {
       content: '';
       display: block;
-      width: 48rpx;
-      height: 48rpx;
+      width: 44rpx;
+      height: 44rpx;
       background-color: currentColor;
       border-radius: 200rpx;
       transition: all .4s;
     }
 
     &.color-block.selected::before {
-      transform: scale(1.4);
-      box-shadow: 0 0 8rpx 0;
+      transform: scale(1.36);
+      box-shadow: $shadow;
     }
+  }
+}
+
+.video-ad {
+  margin: 32rpx;
+  padding: 24rpx;
+  background-color: #fff;
+  box-shadow: $shadow;
+  border-radius: 32rpx;
+
+  .wrap {
+    overflow: hidden;
+  }
+  .ad + .ad {
+    margin-top: 16rpx;
   }
 }
 </style>

@@ -16,6 +16,11 @@ if (!bgColorList) {
   uni.setStorageSync('BACKGROUND_COLOR_LIST', bgColorList);
 }
 
+const { statusBarHeight = 20, windowWidth } = uni.getSystemInfoSync();
+const { top, bottom } = uni.getMenuButtonBoundingClientRect();
+
+const navHeight = top + bottom - 2 * statusBarHeight;
+
 export const initState: State = {
   /** 绘制数据 */
   path: [],
@@ -32,6 +37,11 @@ export const initState: State = {
 
   colorList,
   bgColorList,
+
+  statusBarHeight,
+  navHeight,
+  windowWidth,
+  headerHeight: statusBarHeight + navHeight,
 }
 
 const store = createStore({

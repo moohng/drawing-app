@@ -21,7 +21,7 @@ const emit = defineEmits<{
   height: 96rpx;
   border-radius: 96rpx;
   background-color: rgba($bgColor, 0.9);
-  box-shadow: 0 4rpx 16rpx 0 rgba($bgColor, 0.4);
+  box-shadow: $shadow;
   overflow: hidden;
 }
 </style>

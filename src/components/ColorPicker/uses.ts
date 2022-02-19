@@ -37,7 +37,7 @@ export function useRange(selector: string, onValueChanged?: () => void) {
     } else if (x > 100) {
       x = 100
     }
-    offset.value = Math.round(x);
+    offset.value = x;
   };
 
   return {

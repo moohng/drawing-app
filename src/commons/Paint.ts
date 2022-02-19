@@ -12,13 +12,14 @@ export class Paint {
   private path: Path[] = [];
   public isComplete = false;
 
-  constructor(private ctx: CanvasRenderingContext2D, color?: string, width: number = 6) {
+  private canvas?: HTMLCanvasElement
+
+  constructor(private ctx: CanvasRenderingContext2D, canvas?: HTMLCanvasElement) {
     this.setBackground();
 
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
-    this.width = width;
-    this.setColor(color);
+    this.canvas = canvas;
   }
 
   setColor(color = this.defaultColor, alpha?: number) {
@@ -199,10 +200,29 @@ export class Paint {
      * todo: 可优化点，不用每次都保存整张画布，而是根据当前绘制的笔记自动计算出对应大小的画布和位置，减少内存占用
      * 方法：遍历当前笔记坐标数组，找到最小 (x, y) 和 最大 (x, y) 的值，并记录起来，下次在对应位置再进行绘制
      */
+    // #ifdef MP
     return this.ctx.getImageData(0, 0, windowWidth * pixelRatio, windowHeight * pixelRatio);
+    // #endif
   }
 
   setImageData(imageData?: ImageData) {
     imageData && this.ctx.putImageData(imageData, 0, 0);
+  }
+
+  drawImage(url: string) {
+    // #ifdef MP
+    // @ts-ignore
+    const image = this.canvas.createImage();
+    image.onload = () => {
+      const width = windowWidth;
+      const height = width * image.height / image.width;
+      this.ctx.drawImage(image, -width * 0.5, -height * 0.5, width, height);
+    };
+    image.src = url;
+    // #endif
+    // #ifndef MP
+    // @ts-ignore
+    this.ctx.drawImage(url, 0, 0);
+    // #endif
   }
 }

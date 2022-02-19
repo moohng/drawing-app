@@ -1,6 +1,6 @@
 <template>
   <view class="panel">
-    <view class="mask" v-if="visible" @touchend="handleToggle"></view>
+    <view class="mask" v-if="visible"></view>
     <view class="container" :class="{ visible }">
       <slot></slot>
     </view>
@@ -27,28 +27,30 @@ const handleToggle = () => {
 </script>
 
 <style lang="scss" scoped>
-$left: 32rpx;
-$bottom: 160rpx;
-
 .panel {
+  position: relative;
+  margin-right: 24rpx;
   --color: #333;
   color: var(--color);
+
+  .mask {
+    pointer-events: none;
+  }
 }
 
 .container {
-  padding-bottom: 84rpx;
   position: absolute;
-  transition: all 0.4s;
-  transform: scale(0.01) translateZ(0);
-  transform-origin: 60rpx calc(100% - 60rpx);
+  transition: all 0.3s;
+  transform: scale(0) translateZ(0);
+  transform-origin: 40rpx calc(100% + 80rpx);
   background-color: rgba($bgColor, $alpha: 0.9);
   border-radius: 32rpx;
   z-index: 9999;
-  left: $left;
-  right: $left;
-  bottom: $bottom;
+  left: 0;
+  bottom: 120rpx;
+  width: 750rpx - 32rpx * 2;
   opacity: 0;
-  box-shadow: 0 4rpx 16rpx 0 rgba($bgColor, 0.4);
+  box-shadow: $shadow;
 
   &.visible {
     transform: scale(1) translateZ(0);
@@ -58,16 +60,13 @@ $bottom: 160rpx;
 
 .button {
   position: relative;
-  margin-bottom: 32rpx;
   width: 96rpx;
   height: 96rpx;
   border-radius: 200rpx;
-  box-shadow: 0 4rpx 16rpx 0 rgba($bgColor, 0.4);
+  box-shadow: $shadow;
   background-color: rgba($color: $bgColor, $alpha: 0.9);
 
   &.visible {
-    background-color: transparent;
-    box-shadow: none;
     z-index: 99999;
   }
 

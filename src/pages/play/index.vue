@@ -5,9 +5,11 @@
   <view class="mask cover preview-cover" v-if="!isPlaying">
     <view class="share-tips">点击右上角“···”，可分享到“朋友圈”</view>
     <text class="iconfont icon-play" @click="handlePlayToggle"></text>
-    <view class="bottom">
-      <button class="btn" open-type="share">分享给好友</button>
-      <view class="btn" @click="handleGoPlay">我也要玩~</view>
+    <view class="bottom" :class="{ safeBottom }">
+      <button class="btn" open-type="share">分享给好友<text class="iconfont icon-share"></text></button>
+      <view class="btn" @click="handleGoPlay">我也要玩<text class="iconfont icon-pen"></text></view>
+      <!-- banner -->
+      <BottomAd unit-id="adunit-f990e4999b6ab2ce" @hide="safeBottom = true" />
     </view>
   </view>
 
@@ -29,6 +31,7 @@ import { pathFallback } from '@/commons/utils';
 import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { Path } from '@/store/types';
 import { useGenerateImage } from '@/uses/useGenerateImage';
+// import { useInterstitialAd } from '@/uses/useAd';
 
 let shareImageUrl = '';
 
@@ -59,10 +62,20 @@ let localState: {
   pwd: string;
 };
 
-// 生成分享图片
+// const { interstitialAd } = useInterstitialAd();
+
 watch(isPlaying, async (value) => {
+  // 播放暂停时
   if (!value) {
+    // 生成分享图片
     shareImageUrl = await useGenerateImage('drawCanvas');
+
+    // 弹窗广告
+    try {
+      // interstitialAd.value?.show();
+    } catch (err) {
+      //
+    }
   }
 });
 
@@ -113,8 +126,12 @@ const handlePlayToggle = () => {
     paint.value?.pause();
     isPlaying.value = false;
   } else {
-    paint.value?.play();
-    isPlaying.value = true;
+    if (localState?.path.length) {
+      paint.value?.play();
+      isPlaying.value = true;
+    } else {
+      handleGoPlay();
+    }
   }
 };
 
@@ -142,27 +159,35 @@ const handleErrorClick = async () => {
     uni.reLaunch({ url: '/pages/index/index' });
   }
 };
+
+const safeBottom = ref(false);
 </script>
 
 <style lang="scss" scoped>
 .preview-cover {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   z-index: 0;
 
   .icon-play {
-  padding: 24rpx 24rpx 88rpx;
+    position: absolute;
+    padding: 24rpx;
+    left: 50%;
+    top: 30%;
+    transform: translateX(-50%);
     color: #fff;
     font-size: 88rpx;
   }
 
   .bottom {
     position: absolute;
-    bottom: 100rpx;
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-bottom: constant(safe-area-inset-bottom);
+    left: 32rpx;
+    right: 32rpx;
+    bottom: 32rpx;
+    &.safeBottom {
+      padding-bottom: 120rpx;
+    }
 
     .btn {
       margin: 40rpx 0;
@@ -172,7 +197,13 @@ const handleErrorClick = async () => {
       font-size: 36rpx;
       font-weight: bold;
       background-color: #fff;
-      border-radius: 12rpx;
+      border-radius: 120rpx;
+      box-shadow: $shadow;
+
+      .iconfont {
+        margin-left: 8rpx;
+        font-size: inherit;
+      }
 
       &:first-child {
         padding: 0 32rpx;
@@ -194,14 +225,14 @@ const handleErrorClick = async () => {
 .share-tips {
   position: absolute;
   padding: 24rpx 32rpx;
-  top: 40rpx;
-  left: 60rpx;
-  right: 60rpx;
+  top: 32rpx;
+  left: 56rpx;
+  right: 56rpx;
   text-align: center;
   color: #fff;
-  font-size: 48rpx;
+  font-size: 38rpx;
   font-weight: bold;
-  border: 10rpx dashed;
+  border: 8rpx dashed;
   border-radius: 40%;
 }
 </style>

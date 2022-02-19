@@ -13,8 +13,10 @@
  */
 
 /* 颜色变量 */
-$bgColor: #f2f2f2;
+$bgColor: #fafafa;
 $bgColorHover: #dfdfdf;
+
+$shadow: 0 4rpx 12rpx 0 rgba(0, 0, 0, 0.1);
 
 /* 行为相关颜色 */
 $uni-color-primary: #007aff;
@@ -36,7 +38,7 @@ $uni-bg-color-hover:#f1f1f1;//点击状态颜色
 $uni-bg-color-mask:rgba(0, 0, 0, 0.4);//遮罩颜色
 
 /* 边框颜色 */
-$uni-border-color:#c8c7cc;
+$uni-border-color: $bgColorHover;
 
 /* 尺寸变量 */
 

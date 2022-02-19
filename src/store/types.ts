@@ -28,6 +28,11 @@ export interface State {
 
   colorList: ColorOption[];
   bgColorList: ColorOption[];
+
+  statusBarHeight: number,
+  navHeight: number,
+  windowWidth: number,
+  headerHeight: number,
 }
 
 export enum TypeKeys {

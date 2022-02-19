@@ -27,7 +27,7 @@ export default function usePaint(selector: string) {
     ctx.scale(pixelRatio, pixelRatio);
     // #endif
 
-    paint.value = new Paint(ctx);
+    paint.value = new Paint(ctx, canvas);
   };
 
   onReady(() => {

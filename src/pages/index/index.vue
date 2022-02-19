@@ -1,5 +1,25 @@
 <template>
+  <NavBar>涂图了</NavBar>
   <view class="canvas canvas-bg" :style="{ backgroundColor: getters.backgroundColor }"></view>
+  <!-- 照着画功能 -->
+  <movable-area
+    v-if="mode === PageMode.COPY"
+    class="canvas canvas-img mask"
+    :class="{ cover: isBgEdit }"
+    :style="isBgEdit && { zIndex: 99 }"
+  >
+    <view class="canvas-img-confirm" v-if="isBgEdit" :style="{ color: getters.color }" @click="isBgEdit = false">放置</view>
+    <movable-view
+      class="canvas-img-wrap"
+      :style="{ opacity: bgShow ? 1 : 0 }"
+      :y="90"
+      direction="all"
+      out-of-bounds
+      scale
+    >
+      <image :src="canvasBg" mode="widthFix"></image>
+    </movable-view>
+  </movable-area>
   <!-- #ifdef MP-WEIXIN -->
   <canvas
     id="drawCanvas"
@@ -29,27 +49,59 @@
 
   <!-- 添加小程序提示 -->
   <!-- #ifdef MP -->
-  <view class="add-to-mine" v-if="showAddTip" @click="hideAddTip">将“涂图了”添加到我的小程序，方便下次使用</view>
+  <AddToTip></AddToTip>
   <!-- #endif -->
 
   <!-- 个人中心 -->
   <!-- <Avatar @click="goMyPage"></Avatar> -->
 
+  <!-- 右上角按钮 -->
+  <MenuButton :mode="mode" @clickMenu="openMenu" @toggleEye="onToggleBg" @longPressEdit="isBgEdit = true" />
+
+  <!-- 主菜单 -->
+  <view class="main-menu" :class="[showMenu ? 'show' : null]">
+    <view class="mask cover" @click="hideMenu"></view>
+    <!-- 广告位 -->
+    <!-- <view class="banner" v-if="showMenu">
+      <BottomAd></BottomAd>
+    </view> -->
+    <!-- 主页面 -->
+    <view class="full-page">
+      <view class="app-title">画图模式</view>
+      <text class="iconfont icon-close" @click="hideMenu"></text>
+      <view class="menu-item" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.FREE)">
+        <view class="title">自由画</view>
+        <view class="desc">一张“白板”随意画</view>
+      </view>
+      <view class="menu-item" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.COPY)">
+        <view class="title">照着画</view>
+        <view class="desc">不会画？选择一张图片照着画</view>
+      </view>
+      <view class="menu-ad">
+        <BottomAd unit-id="adunit-8c87109d0e3eaafc"></BottomAd>
+      </view>
+    </view>
+  </view>
+
   <!-- 底部内容区域 -->
-  <view class="container">
-    <!-- 配置面板 -->
-    <Panel>
-      <PanelTool></PanelTool>
-    </Panel>
-    <!-- 工具栏 -->
-    <ToolBar :paint="paint" @preview="handlePreview" @save="handleSave" />
+  <view class="container" :class="{ safeBottom }">
+    <view class="bottom-bar">
+      <!-- 配置面板 -->
+      <Panel>
+        <PanelTool></PanelTool>
+      </Panel>
+      <!-- 工具栏 -->
+      <ToolBar :paint="paint" @preview="handlePreview" @save="handleSave" />
+    </view>
+    <!-- banner -->
+    <BottomAd unit-id="adunit-b9f439209aac273a" @hide="safeBottom = true" />
   </view>
 
   <!-- 预览时的遮罩层 -->
   <view class="mask preview-cover" v-if="isPreview" @click="handleEndPreview"></view>
 
   <!-- 输入口令弹窗 -->
-  <Dialog :visible="showDialog" title="是否设置口令？" :buttons="['不设置', '设置']" @click="handleClick">
+  <Dialog :visible="showDialog" title="是否设置口令？" :buttons="['不设置', '设置']" @click="handleSaveConfirm">
     <input placeholder-class="placeholder" v-model="pwd" type="text" placeholder="点击设置" />
   </Dialog>
 </template>
@@ -58,20 +110,38 @@
 import { onMounted, ref, watch } from 'vue';
 import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { useStore } from 'vuex';
-import * as dan from '@moohng/dan';
 import { usePaint } from '@/uses';
-import { addPath } from '@/commons/api';
 import { shareConfig } from '@/commons/config';
 import Panel from './components/Panel.vue';
 import PanelTool from './components/PanelTool.vue';
 import ToolBar from './components/ToolBar.vue';
+import MenuButton from './components/MenuButton.vue';
 import { useCanvasEvent } from './uses/useCanvasEvent';
-import { useWXUserInfo } from './uses/useWXUserInfo';
-import { TypeKeys } from '@/store/modules/user';
+// import { useWXUserInfo } from './uses/useWXUserInfo';
+import { useSaveAction, usePreviewAction, useMenuAction, useCopyAction } from './uses/useToolAction';
+import { generalBgColor } from '@/commons/utils';
+import { PageMode } from './types';
 
-const { state, getters, commit } = useStore();
 
-// 屏幕常亮
+const { getters } = useStore();
+
+/** 模式切换 */
+const mode = ref(PageMode.FREE);
+
+const toggleMode = (pageMode: PageMode) => {
+  hideMenu();
+  if (pageMode === PageMode.COPY) {
+    openAlbum();
+  } else {
+    mode.value = pageMode;
+    canvasBg.value = undefined;
+  }
+};
+
+/** 照着画 */
+const { canvasBg, isBgEdit, bgShow, openAlbum, onToggleBg } = useCopyAction(mode);
+
+/** 屏幕常亮 */
 // #ifndef H5
 onMounted(() => {
   uni.setKeepScreenOn({ keepScreenOn: true });
@@ -81,16 +151,15 @@ onMounted(() => {
 });
 // #endif
 
-// 分享
+/** 分享 */
 onShareAppMessage(() => shareConfig);
 
-// 分享朋友圈
 onShareTimeline(() => shareConfig);
 
-// 画笔
+/** 画笔 */
 const paint = usePaint('drawCanvas');
 
-// 初始化
+/** 初始化 */
 watch(paint, () => {
   paint.value?.setImageData(getters.currentStep);
 });
@@ -99,71 +168,31 @@ watch(paint, () => {
 const { handleTouchStart, handleTouchMove, handleTouchEnd } = useCanvasEvent(paint);
 
 /** 预览 */
-const isPreview = ref(false);
-
-const handlePreview = () => {
-  isPreview.value = true;
-  paint.value?.clear();
-  paint.value?.playPath((getters.currentPathList), handleEndPreview);
-};
-
-const handleEndPreview = () => {
-  isPreview.value = false;
-  paint.value?.pause();
-  paint.value?.clear();
-  paint.value?.setImageData(getters.currentStep);
-};
+const { isPreview, handlePreview, handleEndPreview } = usePreviewAction(paint);
 
 /** 保存 */
-const showDialog = ref(false);
-const pwd = ref('');
-let code: string;
-
-const handleSave = (text = dan.random(8) as string) => {
-  code = text;
-  showDialog.value = true;
-};
-
-const handleClick = (index: number | string) => {
-  if (index === 1 && !pwd.value) {
-    return uni.showToast({ title: '请输入一个口令', icon: 'none' });
-  }
-  if (index !== 'mask') {
-    addPath({
-      code,
-      path: getters.currentPathList,
-      pwd: pwd.value,
-      background: getters.backgroundColor,
-    }).then(() => {
-      uni.navigateTo({ url: '/pages/play/index?code=' + code });
-    });
-  }
-  showDialog.value = false;
-  pwd.value = '';
-};
+const { showDialog, pwd, handleSave, handleSaveConfirm } = useSaveAction();
 
 /** 个人中心 */
-const goMyPage = () => {
-  if (state.user.openId) {
-    uni.navigateTo({ url: '/pages/my/index' });
-  } else {
-    useWXUserInfo((userInfo) => {
-      // 获取 openId
+// const goMyPage = () => {
+//   if (state.user.openId) {
+//     uni.navigateTo({ url: '/pages/my/index' });
+//   } else {
+//     useWXUserInfo((userInfo) => {
+//       // 获取 openId
 
-      // 保存数据并跳转
-      commit(TypeKeys.SET_USER_INFO, userInfo);
-      uni.navigateTo({ url: '/pages/my/index' });
-    });
-  }
-};
+//       // 保存数据并跳转
+//       commit(TypeKeys.SET_USER_INFO, userInfo);
+//       uni.navigateTo({ url: '/pages/my/index' });
+//     });
+//   }
+// };
 
-// 添加到我的小程序
-const isFirst = !uni.getStorageSync('__NEW__KEY__');
-const showAddTip = ref(isFirst);
-const hideAddTip = () => {
-  showAddTip.value = false;
-  uni.setStorageSync('__NEW__KEY__', Date.now());
-};
+/** 底部距离控制 */
+const safeBottom = ref(false);
+
+/** 菜单 */
+const { showMenu, openMenu, hideMenu } = useMenuAction();
 </script>
 
 <style lang="scss" scoped>
@@ -172,15 +201,55 @@ const hideAddTip = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 32rpx;
-  bottom: env(safe-area-inset-bottom);
-  bottom: constant(safe-area-inset-bottom);
+  padding: 24rpx 32rpx 8rpx;
   box-sizing: border-box;
-  border-radius:44rpx 44rpx 0 0;
+  border-radius: 44rpx 44rpx 0 0;
+  &.safeBottom {
+    padding-bottom: 24rpx;
+    bottom: env(safe-area-inset-bottom);
+    bottom: constant(safe-area-inset-bottom);
+  }
+
+  .bottom-bar {
+    display: flex;
+    tool-bar {
+      flex: 1;
+    }
+  }
 }
 
 .canvas-bg {
+  z-index: -2;
+}
+.canvas-img {
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
   z-index: -1;
+
+  &-confirm {
+    position: fixed;
+    padding: 14rpx 48rpx;
+    left: 50%;
+    bottom: 360rpx;
+    transform: translateX(-50%);
+    font-weight: bold;
+    font-size: 32rpx;
+    background-color: #fff;
+    border-radius: 100rpx;
+    box-shadow: $shadow;
+    z-index: 9;
+  }
+
+  &-wrap {
+    width: 100%;
+    height: fit-content;
+    opacity: 0.6;
+    image {
+      display: block;
+      width: 100%;
+    }
+  }
 }
 
 .canvas-bg,
@@ -212,24 +281,79 @@ const hideAddTip = () => {
   z-index: 0;
 }
 
-.add-to-mine {
+.main-menu {
   position: fixed;
-  padding: 8rpx 16rpx;
-  top: 16rpx;
-  right: 16rpx;
-  width: 360rpx;
-  color: #666;
-  font-size: 26rpx;
-  background-color: rgba(0, 0, 0, 0.06);
-  border-radius: 16rpx;
+  z-index: 9998;
+  .mask {
+    transition: all 0.3s;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  &.show {
+    .mask {
+      pointer-events: all;
+      opacity: 1;
+    }
+    .full-page {
+      transform: translate(0) translateZ(0);
+    }
+  }
 
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 100%;
-    left: 60%;
-    border: 12rpx solid transparent;
-    border-bottom-color: rgba(0, 0, 0, 0.06);
+  .banner {
+    padding: 0 16rpx;
+  }
+  .full-page {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 280rpx;
+    padding: 32rpx;
+    transform: translateY(100%) translateZ(0);
+    transition: all 0.3s;
+    background-color: #fff;
+    border-radius: 32rpx 32rpx 0 0;
+    display: flex;
+    flex-direction: column;
+
+    .icon-close {
+      position: absolute;
+      top: 32rpx;
+      right: 32rpx;
+      font-size: 44rpx;
+    }
+  }
+
+  .app-title {
+    margin-bottom: 36rpx;
+    padding: 8rpx;
+    text-align: center;
+    font-size: 36rpx;
+  }
+
+  .menu-item {
+    padding: 40rpx;
+    color: #fff;
+    text-align: center;
+    background-color: rgb(42, 190, 235);
+    border-radius: 16rpx;
+    box-shadow: $shadow;
+    + .menu-item {
+      margin-top: 32rpx;
+    }
+    .title {
+      font-size: 36rpx;
+    }
+    .desc {
+      margin-top: 8rpx;
+      font-size: 28rpx;
+    }
+  }
+
+  .menu-ad {
+    margin-top: auto;
+    height: fit-content;
   }
 }
 </style>
