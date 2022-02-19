@@ -9,7 +9,7 @@
       <button class="btn" open-type="share">分享给好友<text class="iconfont icon-share"></text></button>
       <view class="btn" @click="handleGoPlay">我也要玩<text class="iconfont icon-pen"></text></view>
       <!-- banner -->
-      <BottomAd @hide="safeBottom = true" />
+      <BottomAd unit-id="adunit-f990e4999b6ab2ce" @hide="safeBottom = true" />
     </view>
   </view>
 

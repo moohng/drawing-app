@@ -1,12 +1,19 @@
 <template>
   <view class="bottom-ad" v-if="showAd">
-    <ad unit-id="adunit-b9f439209aac273a" :ad-intervals="30" @error="onClose" @close="closeAd = true"></ad>
+    <ad class="ad" :unit-id="unitId" :ad-intervals="30" @error="onClose" @close="closeAd = true"></ad>
     <view class="tip" v-if="closeAd" @click="onClose">感谢您的支持！点击关闭广告位</view>
   </view>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue';
+
+const props = defineProps({
+  unitId: {
+    type: String,
+    default: 'adunit-b9f439209aac273a',
+  },
+});
 
 const emit = defineEmits<{
   (event: 'hide'): void;
@@ -25,7 +32,7 @@ const onClose = () => {
 .bottom-ad {
   position: relative;
   background-color: rgba($color: $bgColor, $alpha: 0.9);
-  ad {
+  .ad {
     margin-top: 16rpx;
   }
   .tip {

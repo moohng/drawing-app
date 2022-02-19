@@ -78,7 +78,7 @@
         <view class="desc">不会画？选择一张图片照着画</view>
       </view>
       <view class="menu-ad">
-        <BottomAd></BottomAd>
+        <BottomAd unit-id="adunit-8c87109d0e3eaafc"></BottomAd>
       </view>
     </view>
   </view>
@@ -94,7 +94,7 @@
       <ToolBar :paint="paint" @preview="handlePreview" @save="handleSave" />
     </view>
     <!-- banner -->
-    <BottomAd @hide="safeBottom = true" />
+    <BottomAd unit-id="adunit-b9f439209aac273a" @hide="safeBottom = true" />
   </view>
 
   <!-- 预览时的遮罩层 -->
