@@ -5,7 +5,7 @@
       <view class="h-bg">
         <view class="h-inner"></view>
       </view>
-      <view class="sl-mark" :style="{ left: point.x + '%', top: point.y + '%' }"></view>
+      <view class="mark sl-mark" :style="{ left: point.x + '%', top: point.y + '%' }"></view>
     </view>
     <!-- 色相、透明度选择 -->
     <view class="color-ha">
@@ -14,11 +14,11 @@
       </view>
       <view class="color-ha-bd">
         <view class="h-bar hue" id="colorH" @touchstart="onHTouchStart" @touchmove="onHTouchMove" @touchend="onHTouchEnd" @touchcancel="onHTouchEnd">
-          <view class="h-mark" :style="{ left: hOffset + '%' }"></view>
+          <view class="mark h-mark" :style="{ left: hOffset + '%' }"></view>
         </view>
         <view class="trans-bg" style="margin-top: 16rpx;">
           <view class="h-bar" id="colorA" :style="{ background: `linear-gradient(to right, ${hslValue}, ${hslValue.replace('rgb(', 'rgba(').replace(')', `,0)`)})` }" @touchstart="onATouchStart" @touchmove="onATouchMove" @touchend="onATouchEnd" @touchcancel="onATouchEnd">
-            <view class="h-mark" :style="{ left: aOffset + '%' }"></view>
+            <view class="mark h-mark" :style="{ left: aOffset + '%' }"></view>
           </view>
         </view>
       </view>
@@ -27,35 +27,35 @@
     <view class="color-form">
       <view class="form-body col-3" v-if="mode === MODE.RGB">
         <view class="field">
-          <input :value="form.r" type="number" @blur="onInputChange('r', $event)" @confirm="onInputChange('r', $event)">
+          <input class="input" :value="form.r" type="number" @blur="onInputChange('r', $event)" @confirm="onInputChange('r', $event)">
           <view class="label">R</view>
         </view>
         <view class="field">
-          <input :value="form.g" type="number" @blur="onInputChange('g', $event)" @confirm="onInputChange('g', $event)">
+          <input class="input" :value="form.g" type="number" @blur="onInputChange('g', $event)" @confirm="onInputChange('g', $event)">
           <view class="label">G</view>
         </view>
         <view class="field">
-          <input :value="form.b" type="number" @blur="onInputChange('b', $event)" @confirm="onInputChange('b', $event)">
+          <input class="input" :value="form.b" type="number" @blur="onInputChange('b', $event)" @confirm="onInputChange('b', $event)">
           <view class="label">B</view>
         </view>
       </view>
       <view class="form-body col-3" v-else-if="mode === MODE.HSL">
         <view class="field">
-          <input :value="form.h" type="number" @blur="onInputChange('h', $event)" @confirm="onInputChange('h', $event)">
+          <input class="input" :value="form.h" type="number" @blur="onInputChange('h', $event)" @confirm="onInputChange('h', $event)">
           <view class="label">H</view>
         </view>
         <view class="field">
-          <input :value="form.s" type="number" @blur="onInputChange('s', $event)" @confirm="onInputChange('s', $event)">
+          <input class="input" :value="form.s" type="number" @blur="onInputChange('s', $event)" @confirm="onInputChange('s', $event)">
           <view class="label">S</view>
         </view>
         <view class="field">
-          <input :value="form.l" type="number" @blur="onInputChange('l', $event)" @confirm="onInputChange('l', $event)">
+          <input class="input" :value="form.l" type="number" @blur="onInputChange('l', $event)" @confirm="onInputChange('l', $event)">
           <view class="label">L</view>
         </view>
       </view>
       <view class="form-body" v-else>
         <view class="field">
-          <input :value="form.hex" type="text" @blur="onInputChange('hex', $event)" @confirm="onInputChange('hex', $event)">
+          <input class="input" :value="form.hex" type="text" @blur="onInputChange('hex', $event)" @confirm="onInputChange('hex', $event)">
           <view class="label">HEX</view>
         </view>
       </view>
@@ -227,7 +227,7 @@ const onInputChange = (key: keyof typeof form, e: any) => {
   }
 }
 
-[class*="-mark"] {
+.mark {
   position: absolute;
   width: 16rpx;
   height: 16rpx;
@@ -289,7 +289,7 @@ const onInputChange = (key: keyof typeof form, e: any) => {
   }
 
   .field {
-    input {
+    .input {
       padding: 2rpx 16rpx;
       width: 220rpx;
       color: $uni-text-color;
@@ -307,7 +307,7 @@ const onInputChange = (key: keyof typeof form, e: any) => {
 
   .form-body.col-3 {
     justify-content: space-between;
-    .field input {
+    .field .input {
       width: 120rpx;
     }
   }
