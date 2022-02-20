@@ -100,7 +100,7 @@ const setEyeActive = () => {
     &.ghost {
       background-color: transparent;
       box-shadow: none;
-      opacity: 0.4;
+      opacity: 0.6;
     }
   }
 }

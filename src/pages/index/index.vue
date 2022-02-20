@@ -11,7 +11,7 @@
     <view class="canvas-img-confirm" v-if="isBgEdit" :style="{ color: getters.color }" @click="isBgEdit = false">放置</view>
     <movable-view
       class="canvas-img-wrap"
-      :style="{ opacity: bgShow ? 1 : 0 }"
+      :style="{ opacity: bgShow ? (isBgEdit ? 0.8 : 1) : 0 }"
       :y="90"
       direction="all"
       out-of-bounds
@@ -243,8 +243,7 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
 
   &-wrap {
     width: 100%;
-    height: fit-content;
-    opacity: 0.6;
+    opacity: 0.8;
     image {
       display: block;
       width: 100%;
