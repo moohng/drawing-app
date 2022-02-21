@@ -1,5 +1,5 @@
 export const shareConfig = {
-  title: '【涂图了】让笔尖舞动起来~',
+  title: '发现一个好玩的画图小程序，快来看看我最新的大作吧~',
   content: '找到一款神奇的绘图工具，快来体验一下吧！',
 };
 
