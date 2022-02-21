@@ -67,19 +67,30 @@
     </view> -->
     <!-- 主页面 -->
     <view class="full-page">
-      <view class="app-title">画图模式</view>
-      <text class="iconfont icon-close" @click="hideMenu"></text>
-      <view class="menu-item" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.FREE)">
-        <view class="title">自由画</view>
-        <view class="desc">一张“白板”随意画</view>
+      <view class="page-header">
+        <view class="app-title">画图模式</view>
+        <text class="iconfont icon-close" @click="hideMenu"></text>
       </view>
-      <view class="menu-item" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.COPY)">
-        <view class="title">照着画</view>
-        <view class="desc">不会画？选择一张图片照着画</view>
-      </view>
-      <view class="menu-ad">
-        <BottomAd unit-id="adunit-8c87109d0e3eaafc"></BottomAd>
-      </view>
+      <scroll-view class="page-scroll" scroll-y>
+        <view class="page-body">
+          <view class="menu-item" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.FREE)">
+            <view class="title">自由画</view>
+            <view class="desc">一张“白板”随意画</view>
+          </view>
+          <view class="menu-item" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.COPY)">
+            <view class="title">照着画</view>
+            <view class="desc">不会画？选择一张图片照着画</view>
+          </view>
+          <view class="menu-item video-ad">
+            <view style="overflow: hidden;">
+              <ad class="ad" unit-id="adunit-af124415d4eba99e" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
+            </view>
+          </view>
+          <!-- <view class="menu-ad">
+            <BottomAd unit-id="adunit-8c87109d0e3eaafc"></BottomAd>
+          </view> -->
+        </view>
+      </scroll-view>
     </view>
   </view>
 
@@ -308,38 +319,51 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
     left: 0;
     right: 0;
     top: 280rpx;
-    padding: 32rpx;
     transform: translateY(100%) translateZ(0);
     transition: all 0.3s;
     background-color: #fff;
     border-radius: 32rpx 32rpx 0 0;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
 
-    .icon-close {
-      position: absolute;
-      top: 32rpx;
-      right: 32rpx;
-      font-size: 44rpx;
+    .page-header {
+      position: relative;
+      padding: 32rpx 32rpx 0;
+      background-color: #fff;
+      .app-title {
+        padding: 8rpx;
+        text-align: center;
+        font-size: 36rpx;
+      }
+      .icon-close {
+        position: absolute;
+        top: 32rpx;
+        right: 32rpx;
+        font-size: 44rpx;
+      }
+    }
+
+    .page-scroll {
+      height: 800rpx;
+      flex: 1;
+    }
+
+    .page-body {
+      padding: 0 32rpx 32rpx;
+      overflow: hidden;
     }
   }
 
-  .app-title {
-    margin-bottom: 36rpx;
-    padding: 8rpx;
-    text-align: center;
-    font-size: 36rpx;
-  }
-
   .menu-item {
+    margin-top: 32rpx;
     padding: 40rpx;
     color: #fff;
     text-align: center;
-    background-color: rgb(42, 190, 235);
     border-radius: 16rpx;
     box-shadow: $shadow;
-    + .menu-item {
-      margin-top: 32rpx;
+    &.video-ad {
+      padding: 24rpx;
     }
     .title {
       font-size: 36rpx;
@@ -351,8 +375,7 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
   }
 
   .menu-ad {
-    margin-top: auto;
-    height: fit-content;
+    margin-top: 32rpx;
   }
 }
 </style>
