@@ -18,7 +18,7 @@ export interface Props {
   paint?: Paint;
 }
 
-export  function useToolAction(emit: Emits, props: Props) {
+export function useToolAction(emit: Emits, props: Props) {
 
   const { state, getters, commit } = useStore();
 
@@ -80,19 +80,23 @@ export  function useToolAction(emit: Emits, props: Props) {
 
     const res = await uni.getSetting({});
     // @ts-ignore
-    if (!res?.authSetting?.['scope.writePhotosAlbum']) {
-      return uni.openSetting({
-        success: ({ authSetting }) => {
-          if (authSetting['scope.writePhotosAlbum']) {
-            handleDownload();
-          } else {
-            uni.showToast({ title: '请允许获取系统相册权限', icon: 'none' });
-          }
-        },
-        fail: () => {
-          uni.showToast({ title: '请允许获取系统相册权限', icon: 'none' });
-        },
-      });
+    if (res?.authSetting?.['scope.writePhotosAlbum'] === undefined) {
+      try {
+        await uni.authorize({ scope: 'scope.writePhotosAlbum' });
+      } catch {
+        return uni.showToast({ title: '请允许获取系统相册权限', icon: 'none' });
+      }
+      // @ts-ignore
+    } else if (!res?.authSetting?.['scope.writePhotosAlbum']) {
+      try {
+        // @ts-ignore
+        const { authSetting } = await uni.openSetting({});
+        if (!authSetting['scope.writePhotosAlbum']) {
+          throw new Error();
+        }
+      } catch (err) {
+        return uni.showToast({ title: '请允许获取系统相册权限', icon: 'none' });
+      }
     }
     // #endif
 
