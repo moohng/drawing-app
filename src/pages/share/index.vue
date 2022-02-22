@@ -1,6 +1,6 @@
 <template>
   <view class="top">
-    <CanvasVideo :path="state.path" :background="getters.backgroundColor" :canvasImg="getters.currentStep"></CanvasVideo>
+    <CanvasVideo :path="getters.currentPathList" :background="getters.backgroundColor" :canvasImg="getters.currentStep"></CanvasVideo>
   </view>
   <view class="list">
     <view class="item">
@@ -78,6 +78,11 @@ const { handleDownload } = useDownloadImage(paint, 'imgCanvas');
     padding: 8rpx 0;
     display: flex;
     align-items: center;
+
+    .label {
+      margin-right: 32rpx;
+      white-space: nowrap;
+    }
 
     .input {
       margin-left: auto;

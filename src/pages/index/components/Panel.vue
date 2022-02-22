@@ -21,6 +21,7 @@
 
 <script lang="ts" setup>
 import { Paint } from '@/commons/Paint';
+import { PaintType, TypeKeys } from '@/store/types';
 import { ref } from 'vue';
 import { useStore } from 'vuex';
 import { usePanelAction } from '../uses/useToolAction';
@@ -36,7 +37,7 @@ interface Emits {
 
 const emit = defineEmits<Emits>();
 
-const { getters } = useStore();
+const { getters, commit } = useStore();
 
 const { handleUndo, handleRedo, handleClear, handlePreview } = usePanelAction(emit, props);
 
@@ -48,7 +49,7 @@ const handleToggle = () => {
 const isActive = ref(false);
 const handleSwitch = () => {
   isActive.value = !isActive.value;
-  props.paint!.ctx.globalCompositeOperation = isActive.value ? 'destination-out' : 'source-over';
+  commit(TypeKeys.SET_PAINT_TYPE, isActive.value ? PaintType.ERASER : PaintType.PEN);
 };
 </script>
 

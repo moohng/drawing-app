@@ -2,7 +2,7 @@ import { getRandomColorList } from '@/commons/utils';
 import { createStore } from 'vuex';
 import { user } from './modules/user';
 import mutations from './mutations';
-import { State } from './types';
+import { PaintType, State } from './types';
 
 let colorList = uni.getStorageSync('COLOR_LIST');
 if (!colorList) {
@@ -27,6 +27,7 @@ export const initState: State = {
   colorIndex: 0,
   backgroundColorIndex: 0,
   width: 2,
+  paintType: PaintType.PEN,
   /** 历史记录数据 */
   currentPathIndex: -1, // 记录path操作记录指针
   historyStepList: [],

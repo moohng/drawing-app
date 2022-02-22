@@ -16,6 +16,9 @@ const mutations: MutationTree<State> = {
   [TypeKeys.SET_WIDTH] (state, width) {
     state.width = width;
   },
+  [TypeKeys.SET_PAINT_TYPE] (state, paintType) {
+    state.paintType = paintType;
+  },
   [TypeKeys.OPERATION_UNDO] (state) {
     if (state.currentStepIndex > -1) {
       state.currentStepIndex--;

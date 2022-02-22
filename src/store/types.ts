@@ -3,10 +3,16 @@ export interface Dot {
   y: number;
 }
 
+export enum PaintType {
+  PEN = 'PEN', // 画笔，默认
+  ERASER = 'ERASER', // 橡皮擦
+}
+
 export interface Path {
   pos: Dot[];
   color?: string;
   width?: number;
+  type?: PaintType;
 }
 
 export interface ColorOption {
@@ -19,6 +25,7 @@ export interface State {
   colorIndex: number;
   backgroundColorIndex: number;
   width: number;
+  paintType: PaintType;
   historyStepList: ImageData[];
   currentPathIndex: number;
   currentStepIndex: number;
@@ -40,6 +47,7 @@ export enum TypeKeys {
   SET_PLAY = 'SET_PLAY',
   SET_COLOR_INDEX = 'SET_COLOR_INDEX',
   SET_WIDTH = 'SET_WIDTH',
+  SET_PAINT_TYPE = 'SET_PAINT_TYPE',
   SET_BACKGROUND_COLOR_INDEX = 'SET_BACKGROUND_COLOR_INDEX',
   SET_ENV = 'SET_ENV',
   EDIT_COLOR_LIST_BY_INDEX = 'EDIT_COLOR_LIST_BY_INDEX',

@@ -1,4 +1,4 @@
-import { Dot, Path } from '@/store/types';
+import { Dot, PaintType, Path } from '@/store/types';
 
 const { windowWidth, windowHeight, pixelRatio } = uni.getSystemInfoSync();
 
@@ -51,11 +51,12 @@ export class Paint {
    * @param color 轨迹颜色
    * @param width 轨迹宽度
    */
-  start({ x, y }: Dot, color = this.defaultColor, width = this.defaultWidth, alpha = 1) {
+  start({ x, y }: Dot, { color = this.defaultColor, width = this.defaultWidth, alpha = 1, type = PaintType.PEN }) {
     this.ctx.beginPath();
     this.ctx.moveTo(x, y);
     this.setColor(color, alpha);
     this.width = width;
+    this.ctx.globalCompositeOperation = type === PaintType.ERASER ? 'destination-out' : 'source-over';
   }
 
   /**
@@ -129,8 +130,8 @@ export class Paint {
     this.stop = false;
     this.isComplete = false;
 
-    const { pos, color, width } = path[0];
-    this.start(pos[0], color, width);
+    const { pos, color, width, type } = path[0];
+    this.start(pos[0], { color, width, type });
 
     this.run(completed);
     if (completed) {
@@ -159,18 +160,20 @@ export class Paint {
         this.drawLine(points[this.column], points[this.column - 1]);
       }
       this.column++;
-      setTimeout(() => this.run(), 16.7);
+      // @ts-ignore
+      this.canvas?.requestAnimationFrame(() => this.run());
     } else {
       // 一条轨迹制完成
       if (++this.row < this.path.length) {
         // 初始化下一条轨迹
         this.column = 0;
-        const { pos, color, width } = this.path[this.row];
-        this.start(pos[0], color, width);
+        const { pos, color, width, type } = this.path[this.row];
+        this.start(pos[0], { color, width, type });
 
         // 延时一会儿开始绘制下一条轨迹
         setTimeout(() => {
-          setTimeout(() => this.run(), 16.7);
+          // @ts-ignore
+          this.canvas?.requestAnimationFrame(() => this.run());
         }, 240);
       } else {
         // 结束

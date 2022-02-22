@@ -1,7 +1,7 @@
 <template>
   <view class="canvas-video" @click="handlePlayToggle">
     <!-- <canvas class="bg-canvas" id="bgCanvas" canvasId="bgCanvas" type="2d"></canvas> -->
-    <canvas class="canvas" :style="{ opacity: paint ? 1 : 0 }" id="drawCanvas" canvasId="drawCanvas" type="2d" />
+    <canvas class="canvas" :style="{ opacity: paint ? 1 : 0, background }" id="drawCanvas" canvasId="drawCanvas" type="2d" />
     <view class="mask cover" v-if="!isPlaying">
       <text class="iconfont icon-play"></text>
     </view>
@@ -36,7 +36,7 @@ const { paint } = usePaint('drawCanvas');
 const startPlay = () => {
   isPlaying.value = true;
   paint.value?.clear();
-  paint.value?.setBackground(props.background);
+  // paint.value?.setBackground(props.background);
   paint.value?.playPath(props.path as Path[], () => {
     isPlaying.value = false;
   });
@@ -80,6 +80,7 @@ onMounted(() => {
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: rgba(0, 0, 0, 0.3);
     .icon-play {
       color: #ccc;
       font-size: 64rpx;
