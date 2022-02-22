@@ -1,11 +1,7 @@
 <template>
   <!-- 操作区域 -->
-  <view class="toolbar" :style="{ color: getters.color }">
-    <button class="button" @click="handleUndo" @longpress="handleClear"><text class="iconfont icon-undo"></text></button>
-    <button class="button" @click="handleRedo"><text class="iconfont icon-undo redo"></text></button>
-    <!-- <button class="button" @click="handleClear"><text class="iconfont icon-clear"></text></button> -->
-    <button class="button" @click="handlePreview"><text class="iconfont icon-play"></text></button>
-    <button class="button" @click="handleDownload"><text class="iconfont icon-download"></text></button>
+  <view class="toolbar" :style="{ backgroundColor: getters.color }">
+    <!-- <button class="button" @click="handleDownload"><text class="iconfont icon-download"></text></button> -->
     <button class="button" @click="handleShare"><text class="iconfont icon-share"></text></button>
   </view>
 </template>
@@ -29,13 +25,12 @@ const emit = defineEmits<Emits>();
 const { getters } = useStore();
 
 /** 操作 */
-const { handleUndo, handleRedo, handleClear, handlePreview, handleDownload, handleShare } = useToolAction(emit, props);
-
+const { handleDownload, handleShare } = useToolAction(emit, props);
 </script>
 
 <style lang="scss" scoped>
 .toolbar {
-  padding: 0 16rpx;
+  // padding: 0 16rpx;
   display: flex;
   justify-content: space-around;
   background-color: rgba($bgColor, 0.9);
@@ -47,13 +42,15 @@ const { handleUndo, handleRedo, handleClear, handlePreview, handleDownload, hand
   margin: 0;
   width: 96rpx;
   height: 96rpx;
-  border-radius: 200rpx;
   display: flex;
   justify-content: center;
   align-items: center;
   color: currentColor;
   font-weight: normal;
   background-color: transparent;
+  line-height: 1;
+  border-radius: 0;
+  color: #fff;
 
   &::after {
     border: none;
@@ -68,10 +65,6 @@ const { handleUndo, handleRedo, handleClear, handlePreview, handleDownload, hand
 
   .iconfont {
     font-size: 56rpx;
-  }
-
-  .redo {
-    transform: rotateY(180deg);
   }
 }
 </style>

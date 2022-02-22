@@ -18,11 +18,8 @@ export interface Props {
   paint?: Paint;
 }
 
-export function useToolAction(emit: Emits, props: Props) {
-
+export function usePanelAction(emit: Emits, props: Props) {
   const { state, getters, commit } = useStore();
-
-  const { showRewardedVideoAd } = useRewardedVideoAd();
 
   const handleUndo = () => {
     if (state.currentStepIndex < 0) {
@@ -64,6 +61,15 @@ export function useToolAction(emit: Emits, props: Props) {
     }
     emit('preview');
   };
+
+  return { handleUndo, handleRedo, handleClear, handlePreview };
+}
+
+export function useToolAction(emit: Emits, props: Props) {
+
+  const { state, getters } = useStore();
+
+  const { showRewardedVideoAd } = useRewardedVideoAd();
 
   const handleDownload = async () => {
     if (state.currentPathIndex < 0) {
@@ -134,15 +140,13 @@ export function useToolAction(emit: Emits, props: Props) {
       return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
     }
     // 生成随机口令
-    const code = dan.random(8) as string;
-    emit('save', code);
+    // const code = dan.random(8) as string;
+    // emit('save', code);
+
+    uni.navigateTo({ url: '/pages/share/index' });
   };
 
   return {
-    handleUndo,
-    handleRedo,
-    handleClear,
-    handlePreview,
     handleDownload,
     handleShare,
   };

@@ -14,7 +14,7 @@ export class Paint {
 
   private canvas?: HTMLCanvasElement
 
-  constructor(private ctx: CanvasRenderingContext2D, canvas?: HTMLCanvasElement) {
+  constructor(public ctx: CanvasRenderingContext2D, canvas?: HTMLCanvasElement) {
     this.setBackground();
 
     this.ctx.lineCap = 'round';
@@ -144,17 +144,17 @@ export class Paint {
       return;
     }
 
-    const path = this.path[this.row].pos;
-    if (this.column < path.length) {
+    const points = this.path[this.row].pos;
+    if (this.column < points.length) {
       // 绘制第 n 条轨迹
-      if (this.column < 2 || this.column >= path.length - 1) {
-        this.drawLine(path[this.column]);
+      if (this.column < 2 || this.column >= points.length - 1) {
+        this.drawLine(points[this.column]);
       } else {
         if (this.column === 2) {
           // this.clear();
-          this.ctx.moveTo(path[0].x, path[0].y);
+          this.ctx.moveTo(points[0].x, points[0].y);
         }
-        this.drawLine(path[this.column], path[this.column - 1]);
+        this.drawLine(points[this.column], points[this.column - 1]);
       }
       this.column++;
       setTimeout(() => this.run(), 16.7);

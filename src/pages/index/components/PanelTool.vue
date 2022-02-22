@@ -62,6 +62,7 @@ const handleConfigColor = (type = 'color') => {
 .panel-tool {
   padding: 8rpx 0;
 }
+
 .row {
   margin: 16rpx 0;
   display: flex;
@@ -109,7 +110,6 @@ const handleConfigColor = (type = 'color') => {
     }
 
     &.button {
-      margin: 0;
       margin-left: 8rpx;
       .iconfont {
         font-size: 56rpx;

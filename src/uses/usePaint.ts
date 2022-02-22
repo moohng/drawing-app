@@ -34,6 +34,7 @@ export default function usePaint(selector: string) {
     // #ifdef MP
     uni
       .createSelectorQuery()
+      .in(getCurrentInstance())
       .select('#' + selector)
       // #ifdef MP-TOUTIAO
       // @ts-ignore

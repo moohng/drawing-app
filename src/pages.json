@@ -24,6 +24,15 @@
 				"navigationStyle": "custom"
 				// #endif
 			}
+		},
+		{
+			"path": "pages/share/index",
+			"style": {
+				"navigationBarTitleText": "分享",
+				// #ifdef H5
+				"navigationStyle": "custom"
+				// #endif
+			}
 		}
 		// {
 		// 	"path": "pages/my/index",

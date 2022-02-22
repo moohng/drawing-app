@@ -98,11 +98,11 @@
   <view class="container" :class="{ safeBottom }">
     <view class="bottom-bar">
       <!-- 配置面板 -->
-      <Panel>
+      <Panel :paint="paint" @preview="handlePreview">
         <PanelTool></PanelTool>
       </Panel>
       <!-- 工具栏 -->
-      <ToolBar :paint="paint" @preview="handlePreview" @save="handleSave" />
+      <ToolBar :paint="paint" @save="handleSave" />
     </view>
     <!-- banner -->
     <BottomAd unit-id="adunit-b9f439209aac273a" @hide="safeBottom = true" />
@@ -119,7 +119,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
+import { onHide, onShareAppMessage, onShareTimeline, onShow } from '@dcloudio/uni-app';
 import { useStore } from 'vuex';
 import { usePaint } from '@/uses';
 import { shareConfig } from '@/commons/config';
@@ -154,11 +154,11 @@ const { canvasBg, isBgEdit, bgShow, openAlbum, onToggleBg } = useCopyAction(mode
 
 /** 屏幕常亮 */
 // #ifndef H5
-onMounted(() => {
+onShow(() => {
   uni.setKeepScreenOn({ keepScreenOn: true });
-  return () => {
-    uni.setKeepScreenOn({ keepScreenOn: false });
-  };
+});
+onHide(() => {
+  uni.setKeepScreenOn({ keepScreenOn: false });
 });
 // #endif
 
@@ -223,7 +223,7 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
 
   .bottom-bar {
     display: flex;
-    tool-bar {
+    panel {
       flex: 1;
     }
   }
