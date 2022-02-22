@@ -17,12 +17,12 @@ export function useDownloadImage(paint: Ref<Paint | undefined>, canvasSelect: st
     }
 
     // #ifdef MP
-    // try {
-    //   const isEnded = await showRewardedVideoAd?.();
-    //   if (!isEnded) {
-    //     return uni.showToast({ title: '请完整观看视频！', icon: 'none' });
-    //   }
-    // } catch (err) {}
+    try {
+      const isEnded = await showRewardedVideoAd?.();
+      if (!isEnded) {
+        return uni.showToast({ title: '请完整观看视频！', icon: 'none' });
+      }
+    } catch (err) {}
 
     const res = await uni.getSetting({});
     // @ts-ignore
