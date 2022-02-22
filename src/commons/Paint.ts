@@ -62,10 +62,12 @@ export class Paint {
    * 设置背景
    * @param color 背景颜色
    */
-  setBackground(color?: string) {
+  setBackground(color?: string, under = false) {
     if (!color) return;
     this.ctx.fillStyle = color;
+    under && (this.ctx.globalCompositeOperation = 'destination-over');
     this.ctx.fillRect(-windowWidth * 0.5, -windowHeight * 0.5, windowWidth, windowHeight);
+    under && (this.ctx.globalCompositeOperation = 'source-out');
     // #ifndef MP
     // @ts-ignore
     this.ctx.draw(true);

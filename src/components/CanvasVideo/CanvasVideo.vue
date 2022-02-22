@@ -42,11 +42,6 @@ const startPlay = () => {
   });
 };
 
-// const drawBg = () => {
-//   bgPaint.value?.setBackground(props.background);
-//   bgPaint.value?.setImageData(props.canvasImg);
-// };
-
 const handlePlayToggle = () => {
   if (paint.value?.isComplete) {
     startPlay();
@@ -63,7 +58,6 @@ const handlePlayToggle = () => {
 
 onMounted(() => {
   setTimeout(() => {
-    // drawBg();
     startPlay();
   }, 1000);
 });

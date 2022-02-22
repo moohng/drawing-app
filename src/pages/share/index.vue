@@ -28,7 +28,6 @@ import { generalBgColor } from '@/commons/utils';
 import { useStore } from 'vuex';
 import { addPath } from '@/commons/api';
 import { useDownloadImage } from '@/uses/useDownloadImage';
-import { Paint } from '@/commons/Paint';
 import { usePaint } from '@/uses';
 
 // 分享
@@ -63,7 +62,7 @@ const handleSave = () => {
   });
 };
 
-const { handleDownload } = useDownloadImage(paint, canvas);
+const { handleDownload } = useDownloadImage(paint, 'imgCanvas');
 </script>
 
 <style lang="scss" scoped>
@@ -114,11 +113,9 @@ const { handleDownload } = useDownloadImage(paint, canvas);
 }
 
 .img-canvas {
-  // position: fixed;
-  // opacity: 0;
-  // transform: translateX(10000px);
-  width: 100vw;
-  height: 100vh;
+  position: fixed;
+  opacity: 0;
+  transform: translateX(10000px);
 }
 
 </style>

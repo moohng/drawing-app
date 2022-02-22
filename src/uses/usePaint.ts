@@ -1,5 +1,5 @@
-import { onReady } from '@dcloudio/uni-app';
-import { getCurrentInstance, ref } from 'vue';
+
+import { getCurrentInstance, onMounted, ref } from 'vue';
 import { Paint } from '@/commons/Paint';
 
 /**
@@ -31,7 +31,7 @@ export default function usePaint(selector: string) {
     paint.value = new Paint(ctx, canvas);
   };
 
-  onReady(() => {
+  onMounted(() => {
     // #ifdef MP
     uni
       .createSelectorQuery()
