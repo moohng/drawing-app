@@ -48,7 +48,7 @@ onShareTimeline(() => ({
 }));
 
 // 画笔
-const paint = usePaint('drawCanvas');
+const { paint, canvas } = usePaint('drawCanvas');
 
 const isPlaying = ref(true);
 
@@ -68,7 +68,7 @@ watch(isPlaying, async (value) => {
   // 播放暂停时
   if (!value) {
     // 生成分享图片
-    shareImageUrl = await useGenerateImage('drawCanvas');
+    shareImageUrl = await useGenerateImage(canvas.value);
 
     // 弹窗广告
     try {

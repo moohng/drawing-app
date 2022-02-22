@@ -9,6 +9,7 @@ import { Paint } from '@/commons/Paint';
  */
 export default function usePaint(selector: string) {
   const paint = ref<Paint>();
+  const canvas = ref();
 
   const initCanvas = (canvas: any) => {
     const { windowWidth, windowHeight, pixelRatio } = uni.getSystemInfoSync();
@@ -39,8 +40,9 @@ export default function usePaint(selector: string) {
       // #ifdef MP-TOUTIAO
       // @ts-ignore
       .node()
-      .exec(([{ node: canvas }]) => {
-        initCanvas(canvas);
+      .exec(([{ node: cs }]) => {
+        canvas.value = cs;
+        initCanvas(cs);
       })
       // #endif
       // #ifndef MP-TOUTIAO
@@ -50,8 +52,9 @@ export default function usePaint(selector: string) {
           node: true,
           size: true,
         },
-        ({ node: canvas }: any) => {
-          initCanvas(canvas);
+        ({ node: cs }: any) => {
+          canvas.value = cs;
+          initCanvas(cs);
         }
       ).exec();
       // #endif
@@ -64,5 +67,5 @@ export default function usePaint(selector: string) {
     // #endif
   });
 
-  return paint;
+  return { paint, canvas };
 }

@@ -1,31 +1,23 @@
 <template>
   <!-- 操作区域 -->
   <view class="toolbar" :style="{ backgroundColor: getters.color }">
-    <!-- <button class="button" @click="handleDownload"><text class="iconfont icon-download"></text></button> -->
     <button class="button" @click="handleShare"><text class="iconfont icon-share"></text></button>
   </view>
 </template>
 
 <script setup lang="ts">
 import { useStore } from 'vuex';
-import { Paint } from '@/commons/Paint';
-import { useToolAction } from '../uses/useToolAction';
 
-const props = defineProps<{
-  paint?: Paint;
-}>();
-
-interface Emits {
-  (event: 'save', code: string): void;
-  (event: 'preview'): void;
-}
-
-const emit = defineEmits<Emits>();
-
-const { getters } = useStore();
+const { state, getters } = useStore();
 
 /** 操作 */
-const { handleDownload, handleShare } = useToolAction(emit, props);
+const handleShare = () => {
+  if (state.currentPathIndex < 0) {
+    return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
+  }
+
+  uni.navigateTo({ url: '/pages/share/index' });
+};
 </script>
 
 <style lang="scss" scoped>

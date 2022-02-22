@@ -1,7 +1,8 @@
 <template>
-  <view class="canvas-video">
-    <canvas class="canvas" :style="{ opacity: paint ? 1 : 0 }" id="drawCanvas" canvasId="drawCanvas" type="2d" @click="handlePlayToggle" />
-    <view class="mask cover" v-if="!isPlaying" @click="handlePlayToggle">
+  <view class="canvas-video" @click="handlePlayToggle">
+    <!-- <canvas class="bg-canvas" id="bgCanvas" canvasId="bgCanvas" type="2d"></canvas> -->
+    <canvas class="canvas" :style="{ opacity: paint ? 1 : 0 }" id="drawCanvas" canvasId="drawCanvas" type="2d" />
+    <view class="mask cover" v-if="!isPlaying">
       <text class="iconfont icon-play"></text>
     </view>
   </view>
@@ -21,11 +22,16 @@ const props = defineProps({
     type: String,
     default: '#fff',
   },
+  canvasImg: {
+    type: ImageData,
+    default: undefined,
+  },
 });
 
 const isPlaying = ref(true);
 
-const paint = usePaint('drawCanvas');
+const { paint } = usePaint('drawCanvas');
+// const bgPaint = usePaint('bgCanvas');
 
 const startPlay = () => {
   isPlaying.value = true;
@@ -35,6 +41,11 @@ const startPlay = () => {
     isPlaying.value = false;
   });
 };
+
+// const drawBg = () => {
+//   bgPaint.value?.setBackground(props.background);
+//   bgPaint.value?.setImageData(props.canvasImg);
+// };
 
 const handlePlayToggle = () => {
   if (paint.value?.isComplete) {
@@ -51,7 +62,10 @@ const handlePlayToggle = () => {
 };
 
 onMounted(() => {
-  setTimeout(startPlay, 1000);
+  setTimeout(() => {
+    // drawBg();
+    startPlay();
+  }, 1000);
 });
 </script>
 
@@ -61,6 +75,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   background-color: #000;
+  overflow: hidden;
   .canvas {
     margin: auto;
     width: 50%;
@@ -76,5 +91,14 @@ onMounted(() => {
       font-size: 64rpx;
     }
   }
+  // .bg-canvas {
+  //   position: absolute;
+  //   left: 0;
+  //   width: 100vw;
+  //   height: 100vh;
+  //   top: 50%;
+  //   transform: translateY(-50%);
+  //   z-index: -1;
+  // }
 }
 </style>

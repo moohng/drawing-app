@@ -1,36 +1,23 @@
 /**
  * 根据 Canvas 生成图片
- * @param selector canvas选择器
+ * @param canvas canvas
  * @returns 图片路径
  */
-export const useGenerateImage = async (selector: string): Promise<string> => {
+export const useGenerateImage = async (canvas: any): Promise<string> => {
   return new Promise((resolve, reject) => {
     // #ifdef MP-WEIXIN
-    uni
-    .createSelectorQuery()
-    .select('#' + selector)
-    .fields(
-      {
-        // @ts-ignore
-        node: true,
-        size: true,
+    uni.canvasToTempFilePath({
+      // @ts-ignore
+      canvas,
+      success: ({ tempFilePath }) => {
+        resolve(tempFilePath);
       },
-      ({ node: canvas }: any) => {
-        uni.canvasToTempFilePath({
-          // @ts-ignore
-          canvas,
-          success: ({ tempFilePath }) => {
-            resolve(tempFilePath);
-          },
-          fail: reject,
-        });
-      }
-    )
-    .exec();
+      fail: reject,
+    });
     // #endif
     // #ifndef MP-WEIXIN
     uni.canvasToTempFilePath({
-      canvasId: selector,
+      canvasId: 'drawCanvas',
       success: ({ tempFilePath }) => {
         resolve(tempFilePath);
       },

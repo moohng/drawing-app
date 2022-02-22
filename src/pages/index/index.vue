@@ -102,7 +102,7 @@
         <PanelTool></PanelTool>
       </Panel>
       <!-- 工具栏 -->
-      <ToolBar :paint="paint" @save="handleSave" />
+      <ToolBar />
     </view>
     <!-- banner -->
     <BottomAd unit-id="adunit-b9f439209aac273a" @hide="safeBottom = true" />
@@ -118,7 +118,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { onHide, onShareAppMessage, onShareTimeline, onShow } from '@dcloudio/uni-app';
 import { useStore } from 'vuex';
 import { usePaint } from '@/uses';
@@ -168,7 +168,7 @@ onShareAppMessage(() => shareConfig);
 onShareTimeline(() => shareConfig);
 
 /** 画笔 */
-const paint = usePaint('drawCanvas');
+const { paint } = usePaint('drawCanvas');
 
 /** 初始化 */
 watch(paint, () => {
