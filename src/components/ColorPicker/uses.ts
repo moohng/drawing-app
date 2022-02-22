@@ -1,4 +1,6 @@
-import { computed, getCurrentInstance, onMounted, reactive, Ref, ref } from 'vue';
+import { rgb } from 'color-convert';
+import { HSL } from 'color-convert/conversions';
+import { computed, getCurrentInstance, onMounted, reactive, Ref, ref, watch } from 'vue';
 
 /**
  * 范围选择
@@ -133,5 +135,57 @@ export function useSLRange(onValueChanged?: () => void) {
     point,
     sValue,
     lValue,
+  };
+}
+
+export enum MODE {
+  RGB = 1,
+  HSL = 2,
+  HEX = 3,
+}
+
+export function useModeSwitch(hslValue: Ref<string>) {
+  const mode = ref(MODE.RGB);
+  const form = reactive({
+    r: 0,
+    g: 0,
+    b: 0,
+    h: 0,
+    s: 0,
+    l: 0,
+    hex: '#000',
+  });
+
+  const setForm = (v: string) => {
+    const rgbValue = v.match(/\d+/g) as unknown as HSL;
+    if (mode.value === MODE.RGB) {
+      const [r, g, b] = rgbValue;
+      form.r = r;
+      form.g = g;
+      form.b = b;
+    } else if (mode.value === MODE.HSL) {
+      const [h, s, l] = rgb.hsl(rgbValue);
+      form.h = h;
+      form.s = s;
+      form.l = l;
+    } else {
+      form.hex = '#' + rgb.hex(rgbValue);
+    }
+  };
+
+  const onSwitch = () => {
+    mode.value = mode.value % 3 + 1;
+    console.log('模式切换', mode.value);
+    setForm(hslValue.value);
+  };
+
+  watch(hslValue, (v) => {
+    setForm(v);
+  }, { immediate: true });
+
+  return {
+    mode,
+    form,
+    onSwitch,
   };
 }

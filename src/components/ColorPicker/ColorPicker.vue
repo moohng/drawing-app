@@ -65,10 +65,10 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { rgb, hex, hsv, hsl } from 'color-convert';
-import { useAlpha, useHue, useRange, useSLRange } from './uses';
-import { HSL, HSV, RGB } from 'color-convert/conversions';
+import { MODE, useAlpha, useHue, useModeSwitch, useRange, useSLRange } from './uses';
+import { HSL, RGB } from 'color-convert/conversions';
 
 const props = defineProps({
   value: {
@@ -81,16 +81,7 @@ const emit = defineEmits<{
   (event: 'change', value: string): void;
 }>();
 
-const form = reactive({
-  r: 0,
-  g: 0,
-  b: 0,
-  h: 0,
-  s: 0,
-  l: 0,
-  hex: '#000',
-});
-
+// 触发change事件
 const onValueChanged = () => {
   emit('change', hslValue.value);
 }
@@ -123,6 +114,7 @@ const setDefaultValue = (v: string) => {
   point.y = 100 - defaultHSV[2];
 }
 
+// 设置默认值（颜色面板）
 watch(() => props.value, (v) => {
   setDefaultValue(v);
 }, { immediate: true });
@@ -136,40 +128,8 @@ const hslaValue = computed(() => {
   return hslValue.value.replace('rgb(', 'rgba(').replace(')', `,${aValue.value})`);
 });
 
-watch(hslValue, (v) => {
-  setForm(v);
-});
-
-const setForm = (v: string) => {
-  const rgbValue = v.match(/\d+/g) as unknown as HSL;
-  if (mode.value === MODE.RGB) {
-    const [r, g, b] = rgbValue;
-    form.r = r;
-    form.g = g;
-    form.b = b;
-  } else if (mode.value === MODE.HSL) {
-    const [h, s, l] = rgb.hsl(rgbValue);
-    form.h = h;
-    form.s = s;
-    form.l = l;
-  } else {
-    form.hex = '#' + rgb.hex(rgbValue);
-  }
-};
-
 /** 模式切换 */
-enum MODE {
-  RGB = 1,
-  HSL = 2,
-  HEX = 3,
-}
-const mode = ref(MODE.RGB);
-
-const onSwitch = () => {
-  mode.value = mode.value % 3 + 1;
-  console.log('模式切换', mode.value);
-  setForm(hslValue.value);
-};
+const { mode, form, onSwitch } = useModeSwitch(hslValue);
 
 const onInputChange = (key: keyof typeof form, e: any) => {
   let { value } = e.detail;
