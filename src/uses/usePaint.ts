@@ -7,7 +7,7 @@ import { Paint } from '@/commons/Paint';
  * @param selector
  * @returns
  */
-export default function usePaint(selector: string) {
+export default function usePaint(selector: string, onLoad?: () => void) {
   const paint = ref<Paint>();
   const canvas = ref();
 
@@ -43,6 +43,7 @@ export default function usePaint(selector: string) {
       .exec(([{ node: cs }]) => {
         canvas.value = cs;
         initCanvas(cs);
+        onLoad?.();
       })
       // #endif
       // #ifndef MP-TOUTIAO
@@ -55,6 +56,7 @@ export default function usePaint(selector: string) {
         ({ node: cs }: any) => {
           canvas.value = cs;
           initCanvas(cs);
+          onLoad?.();
         }
       ).exec();
       // #endif
@@ -64,8 +66,9 @@ export default function usePaint(selector: string) {
     const ctx = uni.createCanvasContext(selector, getCurrentInstance());
     ctx.translate(windowWidth / 2, windowHeight / 2);
     paint.value = new Paint(ctx as unknown as CanvasRenderingContext2D);
+    onLoad?.();
     // #endif
   });
 
-  return { paint, canvas };
+  return { paint };
 }

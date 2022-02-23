@@ -64,15 +64,11 @@ const BG_COLOR_LIST = [generalBgColor(), generalBgColor()];
 
 const { getters } = useStore();
 
-const { paint } = usePaint('imgCanvas');
-
-onLoad(() => {
-  setTimeout(async () => {
-    if (!shareImageUrl && paint.value) {
-      useDrawImage(paint);
-      shareImageUrl = await useGenerateImage('#imgCanvas');
-    }
-  }, 1000);
+const { paint } = usePaint('imgCanvas', async () => {
+  useDrawImage(paint, getters);
+  if (!shareImageUrl && paint.value) {
+    shareImageUrl = await useGenerateImage('#imgCanvas');
+  }
 });
 
 const pwd = ref('');
@@ -91,8 +87,8 @@ const handleSave = async () => {
     showDialog.value = true;
   });
   if (!shareImageUrl) {
-    useDrawImage(paint);
-    shareImageUrl = await useGenerateImage('imgCanvas');
+    useDrawImage(paint, getters);
+    shareImageUrl = await useGenerateImage('#imgCanvas');
   }
 };
 
