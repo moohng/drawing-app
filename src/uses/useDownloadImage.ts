@@ -9,7 +9,9 @@ export function useDownloadImage(paint: Ref<Paint | undefined>, canvasSelect: st
 
   const { state, getters } = useStore();
 
+  // #ifdef MP
   const { showRewardedVideoAd } = useRewardedVideoAd();
+  // #endif
 
   const handleDownload = async () => {
     if (state.currentPathIndex < 0) {

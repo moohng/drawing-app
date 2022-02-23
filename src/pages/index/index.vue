@@ -1,5 +1,7 @@
 <template>
+  <!-- #ifndef H5 -->
   <NavBar>涂图了</NavBar>
+  <!-- #endif -->
   <view class="canvas canvas-bg" :style="{ backgroundColor: getters.backgroundColor }"></view>
   <!-- 照着画功能 -->
   <movable-area
@@ -105,7 +107,9 @@
       <ToolBar />
     </view>
     <!-- banner -->
+    <!-- #ifndef H5 -->
     <BottomAd unit-id="adunit-b9f439209aac273a" @hide="safeBottom = true" />
+    <!-- #endif -->
   </view>
 
   <!-- 预览时的遮罩层 -->

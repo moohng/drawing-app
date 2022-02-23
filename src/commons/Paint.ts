@@ -161,7 +161,7 @@ export class Paint {
       }
       this.column++;
       // @ts-ignore
-      this.canvas?.requestAnimationFrame(() => this.run());
+      this.requestAnimationFrame(() => this.run());
     } else {
       // 一条轨迹制完成
       if (++this.row < this.path.length) {
@@ -173,7 +173,7 @@ export class Paint {
         // 延时一会儿开始绘制下一条轨迹
         setTimeout(() => {
           // @ts-ignore
-          this.canvas?.requestAnimationFrame(() => this.run());
+          this.requestAnimationFrame(() => this.run());
         }, 240);
       } else {
         // 结束
@@ -228,6 +228,16 @@ export class Paint {
     // #ifndef MP
     // @ts-ignore
     this.ctx.drawImage(url, 0, 0);
+    // #endif
+  }
+
+  requestAnimationFrame(callback: FrameRequestCallback) {
+    // #ifdef MP
+    // @ts-ignore
+    return this.canvas?.requestAnimationFrame(callback);
+    // #endif
+    // #ifndef MP
+    return window.requestAnimationFrame(callback);
     // #endif
   }
 }

@@ -4,7 +4,7 @@
     <view class="container" :class="{ hidden: !visible }">
       <slot></slot>
     </view>
-    <view class="bar" :style="{ color: getters.color }">
+    <view class="bar" :style="{ color: getters.themeColor }">
       <view class="button" @click="handleToggle">
         <transition name="fade">
           <text class="iconfont icon-close" v-if="visible"></text>

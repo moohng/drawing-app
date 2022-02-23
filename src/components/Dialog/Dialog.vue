@@ -7,13 +7,15 @@
         <slot>{{ content }}</slot>
       </view>
       <view class="tui-dialog__ft">
-        <view
-          class="btn"
-          v-for="(item, index) in buttons"
-          :key="index"
-          :style="(item as ButtonOption).style"
-          @click="(item as ButtonOption).click?.() || emit('click', index, item)"
-        >{{ (item as ButtonOption).name || item }}</view>
+        <slot name="footer" :buttons="buttons">
+          <view
+            class="btn"
+            v-for="(item, index) in buttons"
+            :key="index"
+            :style="(item as ButtonOption).style"
+            @click="(item as ButtonOption).click?.() || emit('click', index, item)"
+          >{{ (item as ButtonOption).name || item }}</view>
+        </slot>
       </view>
     </view>
   </view>
@@ -42,7 +44,7 @@ const emit = defineEmits<{
 }>();
 
 const initStyle = {
-  opacity: '0',
+  opacity: visible ? 1 : 0,
 }
 
 const style = ref<CSSProperties>(initStyle);
@@ -81,7 +83,7 @@ watch(() => props.visible,
   top: 44%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 640rpx;
+  width: 620rpx;
   max-width: 90%;
   line-height: 1.4;
   font-size: 32rpx;

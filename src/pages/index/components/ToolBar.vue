@@ -1,6 +1,6 @@
 <template>
   <!-- 操作区域 -->
-  <view class="toolbar" :style="{ backgroundColor: getters.color }">
+  <view class="toolbar" :style="{ backgroundColor: getters.themeColor }">
     <button class="button" @click="handleShare"><text class="iconfont icon-share"></text></button>
   </view>
 </template>

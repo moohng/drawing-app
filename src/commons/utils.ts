@@ -1,6 +1,7 @@
 import { Path, Dot, ColorOption } from '@/store/types';
 import * as dan from '@moohng/dan';
-import { hsv } from 'color-convert';
+import { hsv, rgb } from 'color-convert';
+import { RGB } from 'color-convert/conversions';
 
 export function showLoading(title = '加载中...') {
   return uni.showLoading({ title, mask: true });
@@ -95,9 +96,29 @@ export function mergeColorByAlpha(color: ColorOption) {
   return color.value.replace('rgb(', 'rgba(').replace(')', `,${color.alpha || 1})`);
 }
 
+/**
+ * 生成随机背景色
+ * @returns
+ */
 export function generalBgColor() {
   const h = dan.random(0, 360) as number;
   const s = dan.random(80, 100) as number;
+  const v = dan.random(80, 90) as number;
+
+  const [r, g, b] = hsv.rgb([h, 80, v]);
+
+  return `rgb(${r},${g},${b})`;
+}
+
+/**
+ * 根据指定颜色生成同色相随机主题色
+ * @param color
+ * @returns
+ */
+export function generalThemeColor(color: string) {
+  const rgbValue = color.match(/\d+/g) as unknown as RGB;
+
+  const [h] = rgb.hsv(rgbValue);
   const v = dan.random(80, 90) as number;
 
   const [r, g, b] = hsv.rgb([h, 80, v]);

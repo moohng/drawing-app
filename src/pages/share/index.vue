@@ -2,8 +2,9 @@
   <view class="top">
     <CanvasVideo :path="getters.currentPathList" :background="getters.backgroundColor" :canvasImg="getters.currentStep"></CanvasVideo>
   </view>
+
   <view class="list">
-    <view class="item">
+    <view class="item bottom-line">
       <view class="label">设置口令</view>
       <input class="input" v-model="pwd" type="text" placeholder="选填" placeholder-class="placeholder">
     </view>
@@ -12,10 +13,19 @@
       <textarea class="textarea" v-model="shareText" placeholder="说点什么吧..." placeholder-class="placeholder"></textarea>
     </view>
   </view>
+  <!-- 底部按钮 -->
   <view class="button-group">
     <view class="button" :style="{ backgroundColor: BG_COLOR_LIST[0] }" @click="handleSave">分享给好友</view>
     <view class="button" :style="{ backgroundColor: BG_COLOR_LIST[1] }" @click="handleDownload">生成图片</view>
   </view>
+  <!-- 分享成功 -->
+  <Dialog :visible="showDialog" title="保存成功" @click="handleSendFriend">
+    <view class="dialog-desc">赶紧发送给好友炫耀一下吧~</view>
+    <template #footer>
+      <button class="dialog-btn" :style="{ color: getters.themeColor }" open-type="share">发送给好友</button>
+    </template>
+  </Dialog>
+  <!-- 用于生成图片隐藏的canvas -->
   <canvas class="img-canvas" id="imgCanvas" type="2d"></canvas>
 </template>
 
@@ -43,12 +53,13 @@ onShareTimeline(() => ({
 
 const BG_COLOR_LIST = [generalBgColor(), generalBgColor()];
 
-const { state, getters } = useStore();
+const { getters } = useStore();
 
 const { paint, canvas } = usePaint('imgCanvas');
 
 const pwd = ref('');
 const shareText = ref('');
+const showDialog = ref(true);
 
 const handleSave = () => {
   const code = dan.random(8) as string;
@@ -58,8 +69,12 @@ const handleSave = () => {
     pwd: pwd.value,
     background: getters.backgroundColor,
   }).then(() => {
-    // 去分享
+    showDialog.value = true;
   });
+};
+
+const handleSendFriend = () => {
+  showDialog.value = false;
 };
 
 const { handleDownload } = useDownloadImage(paint, 'imgCanvas');
@@ -76,23 +91,23 @@ const { handleDownload } = useDownloadImage(paint, 'imgCanvas');
 
   .item {
     padding: 8rpx 0;
-    display: flex;
-    align-items: center;
-
-    .label {
-      margin-right: 32rpx;
-      white-space: nowrap;
-    }
 
     .input {
+      margin: 16rpx 0;
+      width: 100%;
       margin-left: auto;
-      text-align: right;
+      font-size: 100%;
     }
 
     .textarea {
       margin-top: 32rpx;
       width: 100%;
       height: 220rpx;
+      font-size: 100%;
+    }
+
+    &.bottom-line {
+      border-bottom: 1px solid $uni-border-color;
     }
   }
 
@@ -114,6 +129,20 @@ const { handleDownload } = useDownloadImage(paint, 'imgCanvas');
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+}
+
+.dialog-btn {
+  padding: 12rpx 32rpx;
+  width: 100%;
+  color: #333;
+  letter-spacing: 2rpx;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 32rpx;
+  background-color: transparent;
+  &::after {
+    border: none;
   }
 }
 
