@@ -1,4 +1,11 @@
-export const shareConfig = {
+interface CustomShareAppMessage {
+  title: string;
+  content: string;
+  imageUrl?: string;
+  path?: string;
+}
+
+export const shareConfig: CustomShareAppMessage = {
   title: '发现一个好玩的画图小程序，快来看看我最新的大作吧~',
   content: '找到一款神奇的绘图工具，快来体验一下吧！',
 };

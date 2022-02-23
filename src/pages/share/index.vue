@@ -30,38 +30,56 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
-import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
+import { ref, watch } from 'vue';
+import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import * as dan from '@moohng/dan';
 import { shareConfig } from '@/commons/config';
 import { generalBgColor } from '@/commons/utils';
 import { useStore } from 'vuex';
 import { addPath } from '@/commons/api';
-import { useDownloadImage } from '@/uses/useDownloadImage';
+import { useDownloadImage, useDrawImage } from '@/uses/useDownloadImage';
 import { usePaint } from '@/uses';
+import { useGenerateImage } from '@/uses/useGenerateImage';
+
+let path = '/pages/index/index';
+let shareImageUrl: string;
+
+const getShareConfig = () => {
+  shareConfig.path = path;
+  if (shareText.value) {
+    shareConfig.title = shareText.value;
+  }
+  if (shareImageUrl) {
+    shareConfig.imageUrl = shareImageUrl;
+  }
+  return shareConfig;
+};
 
 // 分享
-onShareAppMessage(() => ({
-  ...shareConfig,
-  title: shareText.value,
-}));
+onShareAppMessage(() => getShareConfig());
 // 分享朋友圈
-onShareTimeline(() => ({
-  ...shareConfig,
-  title: shareText.value,
-}));
+onShareTimeline(() => getShareConfig());
 
 const BG_COLOR_LIST = [generalBgColor(), generalBgColor()];
 
 const { getters } = useStore();
 
-const { paint, canvas } = usePaint('imgCanvas');
+const { paint } = usePaint('imgCanvas');
+
+onLoad(() => {
+  setTimeout(async () => {
+    if (!shareImageUrl && paint.value) {
+      useDrawImage(paint);
+      shareImageUrl = await useGenerateImage('#imgCanvas');
+    }
+  }, 1000);
+});
 
 const pwd = ref('');
 const shareText = ref('');
-const showDialog = ref(true);
+const showDialog = ref(false);
 
-const handleSave = () => {
+const handleSave = async () => {
   const code = dan.random(8) as string;
   addPath({
     code,
@@ -69,15 +87,20 @@ const handleSave = () => {
     pwd: pwd.value,
     background: getters.backgroundColor,
   }).then(() => {
+    path = '/pages/play/index?code=' + code,
     showDialog.value = true;
   });
+  if (!shareImageUrl) {
+    useDrawImage(paint);
+    shareImageUrl = await useGenerateImage('imgCanvas');
+  }
 };
 
 const handleSendFriend = () => {
   showDialog.value = false;
 };
 
-const { handleDownload } = useDownloadImage(paint, 'imgCanvas');
+const { handleDownload } = useDownloadImage(paint, '#imgCanvas');
 </script>
 
 <style lang="scss" scoped>

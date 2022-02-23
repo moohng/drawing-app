@@ -5,9 +5,17 @@ import { useStore } from 'vuex';
 import { useRewardedVideoAd } from './useAd';
 import { useGenerateImage } from './useGenerateImage';
 
+export function useDrawImage(paint: Ref<Paint | undefined>) {
+  const { getters } = useStore();
+
+  paint.value?.clear();
+  paint.value?.setImageData(getters.currentStep);
+  paint.value?.setBackground(getters.backgroundColor, true);
+}
+
 export function useDownloadImage(paint: Ref<Paint | undefined>, canvasSelect: string) {
 
-  const { state, getters } = useStore();
+  const { state } = useStore();
 
   // #ifdef MP
   const { showRewardedVideoAd } = useRewardedVideoAd();
@@ -49,12 +57,11 @@ export function useDownloadImage(paint: Ref<Paint | undefined>, canvasSelect: st
     // #endif
 
     showLoading('正在生成图片...');
-    // 绘制背景
-    paint.value?.setImageData(getters.currentStep);
-    paint.value?.setBackground(getters.backgroundColor, true);
+    // 绘制图像
+    useDrawImage(paint);
 
     // 生成图片
-    const shareImg = await useGenerateImage('#' + canvasSelect);
+    const shareImg = await useGenerateImage(canvasSelect);
 
     // #ifndef H5
     uni.saveImageToPhotosAlbum({

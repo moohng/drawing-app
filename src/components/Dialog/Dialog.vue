@@ -34,7 +34,7 @@ const props = defineProps<{
   visible: boolean;
   title?: string;
   content?: string;
-  buttons: string | ButtonOption[];
+  buttons?: string | ButtonOption[];
 }>();
 
 const { title, content, buttons, visible } = props;

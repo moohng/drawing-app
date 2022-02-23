@@ -1,13 +1,10 @@
 import * as dan from '@moohng/dan';
 import { useStore } from 'vuex';
 import { TypeKeys } from '@/store/types';
-import { useGenerateImage } from '@/uses/useGenerateImage';
-import { download, showLoading } from '@/commons/utils';
 import { Paint } from '@/commons/Paint';
 import { Ref, ref } from 'vue';
 import { addPath } from '@/commons/api';
 import { PageMode } from '../types';
-import { useRewardedVideoAd } from '@/uses/useAd';
 
 export interface Emits {
   (event: 'save', code: string): void;
