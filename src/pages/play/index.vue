@@ -6,7 +6,7 @@
     <view class="share-tips">点击右上角“···”，可分享到“朋友圈”</view>
     <text class="iconfont icon-play" @click="handlePlayToggle"></text>
     <view class="bottom" :class="{ safeBottom }">
-      <button class="btn" open-type="share">分享给好友<text class="iconfont icon-share"></text></button>
+      <button class="btn" :style="{ color: getters.themeColor }" open-type="share">分享给好友<text class="iconfont icon-share"></text></button>
       <view class="btn" @click="handleGoPlay">我也要玩<text class="iconfont icon-pen"></text></view>
       <!-- banner -->
       <BottomAd unit-id="adunit-f990e4999b6ab2ce" @hide="safeBottom = true" />
@@ -31,6 +31,7 @@ import { pathFallback } from '@/commons/utils';
 import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { Path } from '@/store/types';
 import { useGenerateImage } from '@/uses/useGenerateImage';
+import { useStore } from 'vuex';
 // import { useInterstitialAd } from '@/uses/useAd';
 
 let shareImageUrl = '';
@@ -47,8 +48,10 @@ onShareTimeline(() => ({
   imageUrl: shareImageUrl,
 }));
 
+const { getters } = useStore();
+
 // 画笔
-const paint = usePaint('drawCanvas');
+const { paint } = usePaint('drawCanvas');
 
 const isPlaying = ref(true);
 
@@ -68,7 +71,7 @@ watch(isPlaying, async (value) => {
   // 播放暂停时
   if (!value) {
     // 生成分享图片
-    shareImageUrl = await useGenerateImage('drawCanvas');
+    shareImageUrl = await useGenerateImage('#drawCanvas');
 
     // 弹窗广告
     try {

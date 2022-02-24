@@ -1,5 +1,5 @@
-import { onReady } from '@dcloudio/uni-app';
-import { getCurrentInstance, ref } from 'vue';
+
+import { getCurrentInstance, onMounted, ref } from 'vue';
 import { Paint } from '@/commons/Paint';
 
 /**
@@ -7,8 +7,9 @@ import { Paint } from '@/commons/Paint';
  * @param selector
  * @returns
  */
-export default function usePaint(selector: string) {
+export default function usePaint(selector: string, onLoad?: () => void) {
   const paint = ref<Paint>();
+  const canvas = ref();
 
   const initCanvas = (canvas: any) => {
     const { windowWidth, windowHeight, pixelRatio } = uni.getSystemInfoSync();
@@ -30,16 +31,19 @@ export default function usePaint(selector: string) {
     paint.value = new Paint(ctx, canvas);
   };
 
-  onReady(() => {
+  onMounted(() => {
     // #ifdef MP
     uni
       .createSelectorQuery()
+      .in(getCurrentInstance())
       .select('#' + selector)
       // #ifdef MP-TOUTIAO
       // @ts-ignore
       .node()
-      .exec(([{ node: canvas }]) => {
-        initCanvas(canvas);
+      .exec(([{ node: cs }]) => {
+        canvas.value = cs;
+        initCanvas(cs);
+        onLoad?.();
       })
       // #endif
       // #ifndef MP-TOUTIAO
@@ -49,8 +53,10 @@ export default function usePaint(selector: string) {
           node: true,
           size: true,
         },
-        ({ node: canvas }: any) => {
-          initCanvas(canvas);
+        ({ node: cs }: any) => {
+          canvas.value = cs;
+          initCanvas(cs);
+          onLoad?.();
         }
       ).exec();
       // #endif
@@ -60,8 +66,9 @@ export default function usePaint(selector: string) {
     const ctx = uni.createCanvasContext(selector, getCurrentInstance());
     ctx.translate(windowWidth / 2, windowHeight / 2);
     paint.value = new Paint(ctx as unknown as CanvasRenderingContext2D);
+    onLoad?.();
     // #endif
   });
 
-  return paint;
+  return { paint };
 }

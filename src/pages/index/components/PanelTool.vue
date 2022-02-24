@@ -2,7 +2,7 @@
   <view class="panel-tool">
     <view class="row">
       <view class="label">笔宽</view>
-      <slider class="slider" :value="state.width" :min="1" :max="20" :activeColor="getters.color" show-value :block-size="24" @change="handleWidthSelect"></slider>
+      <slider class="slider" :value="state.width" :min="1" :max="20" :activeColor="getters.themeColor" show-value :block-size="24" @change="handleWidthSelect"></slider>
     </view>
     <view class="row">
       <view class="label">颜色</view>
@@ -62,6 +62,7 @@ const handleConfigColor = (type = 'color') => {
 .panel-tool {
   padding: 8rpx 0;
 }
+
 .row {
   margin: 16rpx 0;
   display: flex;
@@ -109,7 +110,6 @@ const handleConfigColor = (type = 'color') => {
     }
 
     &.button {
-      margin: 0;
       margin-left: 8rpx;
       .iconfont {
         font-size: 56rpx;

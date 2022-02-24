@@ -1,8 +1,8 @@
-import { getRandomColorList } from '@/commons/utils';
+import { generalBgColor, generalThemeColor, getRandomColorList } from '@/commons/utils';
 import { createStore } from 'vuex';
 import { user } from './modules/user';
 import mutations from './mutations';
-import { State } from './types';
+import { PaintType, State } from './types';
 
 let colorList = uni.getStorageSync('COLOR_LIST');
 if (!colorList) {
@@ -17,9 +17,17 @@ if (!bgColorList) {
 }
 
 const { statusBarHeight = 20, windowWidth } = uni.getSystemInfoSync();
+// #ifdef MP
 const { top, bottom } = uni.getMenuButtonBoundingClientRect();
-
+// @ts-ignore
 const navHeight = top + bottom - 2 * statusBarHeight;
+// #endif
+// #ifdef H5
+// @ts-ignore
+const navHeight = 0;
+// #endif
+
+
 
 export const initState: State = {
   /** 绘制数据 */
@@ -27,6 +35,7 @@ export const initState: State = {
   colorIndex: 0,
   backgroundColorIndex: 0,
   width: 2,
+  paintType: PaintType.PEN,
   /** 历史记录数据 */
   currentPathIndex: -1, // 记录path操作记录指针
   historyStepList: [],
@@ -53,6 +62,7 @@ const store = createStore({
     alpha: state => state.colorList[state.colorIndex].alpha || 1,
     backgroundColor: state => state.bgColorList[state.backgroundColorIndex].value,
     backgroundAlpha: state => state.bgColorList[state.backgroundColorIndex].alpha || 1,
+    themeColor: (state, getters) => generalThemeColor(getters.color),
   },
   modules: {
     user,

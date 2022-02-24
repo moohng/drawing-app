@@ -1,13 +1,10 @@
 import * as dan from '@moohng/dan';
 import { useStore } from 'vuex';
 import { TypeKeys } from '@/store/types';
-import { useGenerateImage } from '@/uses/useGenerateImage';
-import { download, showLoading } from '@/commons/utils';
 import { Paint } from '@/commons/Paint';
 import { Ref, ref } from 'vue';
 import { addPath } from '@/commons/api';
 import { PageMode } from '../types';
-import { useRewardedVideoAd } from '@/uses/useAd';
 
 export interface Emits {
   (event: 'save', code: string): void;
@@ -18,11 +15,8 @@ export interface Props {
   paint?: Paint;
 }
 
-export  function useToolAction(emit: Emits, props: Props) {
-
+export function usePanelAction(emit: Emits, props: Props) {
   const { state, getters, commit } = useStore();
-
-  const { showRewardedVideoAd } = useRewardedVideoAd();
 
   const handleUndo = () => {
     if (state.currentStepIndex < 0) {
@@ -65,83 +59,7 @@ export  function useToolAction(emit: Emits, props: Props) {
     emit('preview');
   };
 
-  const handleDownload = async () => {
-    if (state.currentPathIndex < 0) {
-      return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
-    }
-
-    // #ifdef MP
-    try {
-      const isEnded = await showRewardedVideoAd?.();
-      if (!isEnded) {
-        return uni.showToast({ title: '请完整观看视频！', icon: 'none' });
-      }
-    } catch (err) {}
-
-    const res = await uni.getSetting({});
-    // @ts-ignore
-    if (!res?.authSetting?.['scope.writePhotosAlbum']) {
-      return uni.openSetting({
-        success: ({ authSetting }) => {
-          if (authSetting['scope.writePhotosAlbum']) {
-            handleDownload();
-          } else {
-            uni.showToast({ title: '请允许获取系统相册权限', icon: 'none' });
-          }
-        },
-        fail: () => {
-          uni.showToast({ title: '请允许获取系统相册权限', icon: 'none' });
-        },
-      });
-    }
-    // #endif
-
-    showLoading('正在生成图片...');
-    // 绘制背景
-    props.paint?.setBackground(getters.backgroundColor);
-    props.paint?.setImageData(getters.currentStep);
-
-    // 生成图片
-    const shareImg = await useGenerateImage('drawCanvas');
-
-    // 去掉背景
-    props.paint?.clear();
-    props.paint?.setImageData(getters.currentStep);
-
-    // #ifndef H5
-    uni.saveImageToPhotosAlbum({
-      filePath: shareImg,
-      success: () => {
-        uni.showToast({ title: '保存成功！', icon: 'none' });
-      },
-      fail: () => {
-        uni.showToast({ title: '保存失败！', icon: 'none' });
-      },
-    });
-    // #endif
-    // #ifdef H5
-    download(shareImg);
-    uni.hideLoading();
-    // #endif
-  };
-
-  const handleShare = () => {
-    if (state.currentPathIndex < 0) {
-      return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
-    }
-    // 生成随机口令
-    const code = dan.random(8) as string;
-    emit('save', code);
-  };
-
-  return {
-    handleUndo,
-    handleRedo,
-    handleClear,
-    handlePreview,
-    handleDownload,
-    handleShare,
-  };
+  return { handleUndo, handleRedo, handleClear, handlePreview };
 }
 
 export function useSaveAction() {

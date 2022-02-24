@@ -1,5 +1,7 @@
 <template>
+  <!-- #ifndef H5 -->
   <NavBar>涂图了</NavBar>
+  <!-- #endif -->
   <view class="canvas canvas-bg" :style="{ backgroundColor: getters.backgroundColor }"></view>
   <!-- 照着画功能 -->
   <movable-area
@@ -11,7 +13,7 @@
     <view class="canvas-img-confirm" v-if="isBgEdit" :style="{ color: getters.color }" @click="isBgEdit = false">放置</view>
     <movable-view
       class="canvas-img-wrap"
-      :style="{ opacity: bgShow ? 1 : 0 }"
+      :style="{ opacity: bgShow ? (isBgEdit ? 0.8 : 1) : 0 }"
       :y="90"
       direction="all"
       out-of-bounds
@@ -67,19 +69,30 @@
     </view> -->
     <!-- 主页面 -->
     <view class="full-page">
-      <view class="app-title">画图模式</view>
-      <text class="iconfont icon-close" @click="hideMenu"></text>
-      <view class="menu-item" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.FREE)">
-        <view class="title">自由画</view>
-        <view class="desc">一张“白板”随意画</view>
+      <view class="page-header">
+        <view class="app-title">画图模式</view>
+        <text class="iconfont icon-close" @click="hideMenu"></text>
       </view>
-      <view class="menu-item" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.COPY)">
-        <view class="title">照着画</view>
-        <view class="desc">不会画？选择一张图片照着画</view>
-      </view>
-      <view class="menu-ad">
-        <BottomAd unit-id="adunit-8c87109d0e3eaafc"></BottomAd>
-      </view>
+      <scroll-view class="page-scroll" scroll-y>
+        <view class="page-body">
+          <view class="menu-item" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.FREE)">
+            <view class="title">自由画</view>
+            <view class="desc">一张“白板”随意画</view>
+          </view>
+          <view class="menu-item" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.COPY)">
+            <view class="title">照着画</view>
+            <view class="desc">不会画？选择一张图片照着画</view>
+          </view>
+          <view class="menu-item video-ad">
+            <view style="overflow: hidden;">
+              <ad class="ad" unit-id="adunit-af124415d4eba99e" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
+            </view>
+          </view>
+          <!-- <view class="menu-ad">
+            <BottomAd unit-id="adunit-8c87109d0e3eaafc"></BottomAd>
+          </view> -->
+        </view>
+      </scroll-view>
     </view>
   </view>
 
@@ -87,14 +100,16 @@
   <view class="container" :class="{ safeBottom }">
     <view class="bottom-bar">
       <!-- 配置面板 -->
-      <Panel>
+      <Panel :paint="paint" @preview="handlePreview">
         <PanelTool></PanelTool>
       </Panel>
       <!-- 工具栏 -->
-      <ToolBar :paint="paint" @preview="handlePreview" @save="handleSave" />
+      <ToolBar />
     </view>
     <!-- banner -->
+    <!-- #ifndef H5 -->
     <BottomAd unit-id="adunit-b9f439209aac273a" @hide="safeBottom = true" />
+    <!-- #endif -->
   </view>
 
   <!-- 预览时的遮罩层 -->
@@ -107,8 +122,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
-import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
+import { ref, watch } from 'vue';
+import { onHide, onShareAppMessage, onShareTimeline, onShow } from '@dcloudio/uni-app';
 import { useStore } from 'vuex';
 import { usePaint } from '@/uses';
 import { shareConfig } from '@/commons/config';
@@ -143,11 +158,11 @@ const { canvasBg, isBgEdit, bgShow, openAlbum, onToggleBg } = useCopyAction(mode
 
 /** 屏幕常亮 */
 // #ifndef H5
-onMounted(() => {
+onShow(() => {
   uni.setKeepScreenOn({ keepScreenOn: true });
-  return () => {
-    uni.setKeepScreenOn({ keepScreenOn: false });
-  };
+});
+onHide(() => {
+  uni.setKeepScreenOn({ keepScreenOn: false });
 });
 // #endif
 
@@ -157,7 +172,7 @@ onShareAppMessage(() => shareConfig);
 onShareTimeline(() => shareConfig);
 
 /** 画笔 */
-const paint = usePaint('drawCanvas');
+const { paint } = usePaint('drawCanvas');
 
 /** 初始化 */
 watch(paint, () => {
@@ -212,7 +227,7 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
 
   .bottom-bar {
     display: flex;
-    tool-bar {
+    panel {
       flex: 1;
     }
   }
@@ -243,8 +258,7 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
 
   &-wrap {
     width: 100%;
-    height: fit-content;
-    opacity: 0.6;
+    opacity: 0.8;
     image {
       display: block;
       width: 100%;
@@ -309,38 +323,51 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
     left: 0;
     right: 0;
     top: 280rpx;
-    padding: 32rpx;
     transform: translateY(100%) translateZ(0);
     transition: all 0.3s;
     background-color: #fff;
     border-radius: 32rpx 32rpx 0 0;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
 
-    .icon-close {
-      position: absolute;
-      top: 32rpx;
-      right: 32rpx;
-      font-size: 44rpx;
+    .page-header {
+      position: relative;
+      padding: 32rpx 32rpx 0;
+      background-color: #fff;
+      .app-title {
+        padding: 8rpx;
+        text-align: center;
+        font-size: 36rpx;
+      }
+      .icon-close {
+        position: absolute;
+        top: 32rpx;
+        right: 32rpx;
+        font-size: 44rpx;
+      }
+    }
+
+    .page-scroll {
+      height: 800rpx;
+      flex: 1;
+    }
+
+    .page-body {
+      padding: 0 32rpx 32rpx;
+      overflow: hidden;
     }
   }
 
-  .app-title {
-    margin-bottom: 36rpx;
-    padding: 8rpx;
-    text-align: center;
-    font-size: 36rpx;
-  }
-
   .menu-item {
+    margin-top: 32rpx;
     padding: 40rpx;
     color: #fff;
     text-align: center;
-    background-color: rgb(42, 190, 235);
     border-radius: 16rpx;
     box-shadow: $shadow;
-    + .menu-item {
-      margin-top: 32rpx;
+    &.video-ad {
+      padding: 24rpx;
     }
     .title {
       font-size: 36rpx;
@@ -352,8 +379,7 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
   }
 
   .menu-ad {
-    margin-top: auto;
-    height: fit-content;
+    margin-top: 32rpx;
   }
 }
 </style>

@@ -1,4 +1,4 @@
-import { Dot, Path } from '@/store/types';
+import { Dot, PaintType, Path } from '@/store/types';
 
 const { windowWidth, windowHeight, pixelRatio } = uni.getSystemInfoSync();
 
@@ -14,7 +14,7 @@ export class Paint {
 
   private canvas?: HTMLCanvasElement
 
-  constructor(private ctx: CanvasRenderingContext2D, canvas?: HTMLCanvasElement) {
+  constructor(public ctx: CanvasRenderingContext2D, canvas?: HTMLCanvasElement) {
     this.setBackground();
 
     this.ctx.lineCap = 'round';
@@ -51,21 +51,24 @@ export class Paint {
    * @param color 轨迹颜色
    * @param width 轨迹宽度
    */
-  start({ x, y }: Dot, color = this.defaultColor, width = this.defaultWidth, alpha = 1) {
+  start({ x, y }: Dot, { color = this.defaultColor, width = this.defaultWidth, alpha = 1, type = PaintType.PEN }) {
     this.ctx.beginPath();
     this.ctx.moveTo(x, y);
     this.setColor(color, alpha);
     this.width = width;
+    this.ctx.globalCompositeOperation = type === PaintType.ERASER ? 'destination-out' : 'source-over';
   }
 
   /**
    * 设置背景
    * @param color 背景颜色
    */
-  setBackground(color?: string) {
+  setBackground(color?: string, under = false) {
     if (!color) return;
     this.ctx.fillStyle = color;
+    under && (this.ctx.globalCompositeOperation = 'destination-over');
     this.ctx.fillRect(-windowWidth * 0.5, -windowHeight * 0.5, windowWidth, windowHeight);
+    under && (this.ctx.globalCompositeOperation = 'source-out');
     // #ifndef MP
     // @ts-ignore
     this.ctx.draw(true);
@@ -127,8 +130,8 @@ export class Paint {
     this.stop = false;
     this.isComplete = false;
 
-    const { pos, color, width } = path[0];
-    this.start(pos[0], color, width);
+    const { pos, color, width, type } = path[0];
+    this.start(pos[0], { color, width, type });
 
     this.run(completed);
     if (completed) {
@@ -144,31 +147,33 @@ export class Paint {
       return;
     }
 
-    const path = this.path[this.row].pos;
-    if (this.column < path.length) {
+    const points = this.path[this.row].pos;
+    if (this.column < points.length) {
       // 绘制第 n 条轨迹
-      if (this.column < 2 || this.column >= path.length - 1) {
-        this.drawLine(path[this.column]);
+      if (this.column < 2 || this.column >= points.length - 1) {
+        this.drawLine(points[this.column]);
       } else {
         if (this.column === 2) {
           // this.clear();
-          this.ctx.moveTo(path[0].x, path[0].y);
+          this.ctx.moveTo(points[0].x, points[0].y);
         }
-        this.drawLine(path[this.column], path[this.column - 1]);
+        this.drawLine(points[this.column], points[this.column - 1]);
       }
       this.column++;
-      setTimeout(() => this.run(), 16.7);
+      // @ts-ignore
+      this.requestAnimationFrame(() => this.run());
     } else {
       // 一条轨迹制完成
       if (++this.row < this.path.length) {
         // 初始化下一条轨迹
         this.column = 0;
-        const { pos, color, width } = this.path[this.row];
-        this.start(pos[0], color, width);
+        const { pos, color, width, type } = this.path[this.row];
+        this.start(pos[0], { color, width, type });
 
         // 延时一会儿开始绘制下一条轨迹
         setTimeout(() => {
-          setTimeout(() => this.run(), 16.7);
+          // @ts-ignore
+          this.requestAnimationFrame(() => this.run());
         }, 240);
       } else {
         // 结束
@@ -223,6 +228,16 @@ export class Paint {
     // #ifndef MP
     // @ts-ignore
     this.ctx.drawImage(url, 0, 0);
+    // #endif
+  }
+
+  requestAnimationFrame(callback: FrameRequestCallback) {
+    // #ifdef MP
+    // @ts-ignore
+    return this.canvas?.requestAnimationFrame(callback);
+    // #endif
+    // #ifndef MP
+    return window.requestAnimationFrame(callback);
     // #endif
   }
 }

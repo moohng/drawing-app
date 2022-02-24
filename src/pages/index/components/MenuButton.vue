@@ -1,5 +1,5 @@
 <template>
-  <view class="menu-button" :style="{ color: getters.color, top: toTop + 'px' }">
+  <view class="menu-button" :style="{ color: getters.themeColor, top: toTop + 'px' }">
     <button class="button" @click="$emit('clickMenu')">
       <text class="iconfont icon-caidan"></text>
     </button>
@@ -100,7 +100,7 @@ const setEyeActive = () => {
     &.ghost {
       background-color: transparent;
       box-shadow: none;
-      opacity: 0.4;
+      opacity: 0.6;
     }
   }
 }
