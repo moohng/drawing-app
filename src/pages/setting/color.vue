@@ -6,7 +6,7 @@
         <view class="item color-block" :class="{ selected: currentColorIndex === index }" :style="{ color: mergeColorByAlpha(item) }" v-for="(item, index) in colorList" :key="index" @click="handleColorSelect(index, item)"></view>
       </view>
     </view>
-    <view class="border-line"></view>
+    <view class="bottom-line"></view>
     <ColorPicker :value="currentColor" @change="onColorChange"></ColorPicker>
   </view>
   <!-- 视频广告 -->
@@ -63,9 +63,9 @@ const onColorChange = (v: any) => {
   box-shadow: $shadow;
 }
 
-.border-line {
+.bottom-line {
   margin: 32rpx 0;
-  border-bottom: 1rpx solid $uni-border-color;
+  height: 1rpx;
 }
 
 .row {

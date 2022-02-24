@@ -75,11 +75,11 @@
       </view>
       <scroll-view class="page-scroll" scroll-y>
         <view class="page-body">
-          <view class="menu-item" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.FREE)">
+          <view class="menu-item bg-blur" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.FREE)">
             <view class="title">自由画</view>
             <view class="desc">一张“白板”随意画</view>
           </view>
-          <view class="menu-item" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.COPY)">
+          <view class="menu-item bg-blur" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.COPY)">
             <view class="title">照着画</view>
             <view class="desc">不会画？选择一张图片照着画</view>
           </view>
@@ -88,9 +88,6 @@
               <ad class="ad" unit-id="adunit-af124415d4eba99e" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
             </view>
           </view>
-          <!-- <view class="menu-ad">
-            <BottomAd unit-id="adunit-8c87109d0e3eaafc"></BottomAd>
-          </view> -->
         </view>
       </scroll-view>
     </view>
@@ -365,9 +362,9 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
     color: #fff;
     text-align: center;
     border-radius: 16rpx;
-    box-shadow: $shadow;
     &.video-ad {
       padding: 24rpx;
+      box-shadow: $shadow;
     }
     .title {
       font-size: 36rpx;

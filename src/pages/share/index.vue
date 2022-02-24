@@ -5,18 +5,23 @@
 
   <view class="list">
     <view class="item bottom-line">
-      <view class="label">设置口令</view>
+      <view class="label">设置口令<text class="tip">（好友必须输入正确的口令才能查看）</text></view>
       <input class="input" v-model="pwd" type="text" placeholder="选填" placeholder-class="placeholder">
     </view>
-    <view class="tip">设置口令后，好友必须输入正确的口令才能查看</view>
     <view class="item">
       <textarea class="textarea" v-model="shareText" placeholder="说点什么吧..." placeholder-class="placeholder"></textarea>
     </view>
   </view>
   <!-- 底部按钮 -->
   <view class="button-group">
-    <view class="button" :style="{ backgroundColor: BG_COLOR_LIST[0] }" @click="handleSave">分享给好友</view>
-    <view class="button" :style="{ backgroundColor: BG_COLOR_LIST[1] }" @click="handleDownload">生成图片</view>
+    <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[0] }" @click="handleSave">分享给好友</view>
+    <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[1] }" @click="handleDownload">生成图片</view>
+  </view>
+  <!-- 底部广告 -->
+  <view class="bottom-banner">
+    <!-- #ifndef H5 -->
+    <BottomAd unit-id="adunit-8c87109d0e3eaafc" />
+    <!-- #endif -->
   </view>
   <!-- 分享成功 -->
   <Dialog :visible="showDialog" title="保存成功" @click="handleSendFriend">
@@ -30,8 +35,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
-import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
+import { ref } from 'vue';
+import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import * as dan from '@moohng/dan';
 import { shareConfig } from '@/commons/config';
 import { generalBgColor } from '@/commons/utils';
@@ -111,8 +116,14 @@ const { handleDownload } = useDownloadImage(paint, '#imgCanvas');
   .item {
     padding: 8rpx 0;
 
+    .label {
+      display: flex;
+      align-items: baseline;
+      font-size: 36rpx;
+    }
+
     .input {
-      margin: 16rpx 0;
+      margin: 24rpx 0;
       width: 100%;
       margin-left: auto;
       font-size: 100%;
@@ -124,14 +135,10 @@ const { handleDownload } = useDownloadImage(paint, '#imgCanvas');
       height: 220rpx;
       font-size: 100%;
     }
-
-    &.bottom-line {
-      border-bottom: 1px solid $uni-border-color;
-    }
   }
 
   .tip {
-    margin-top: 8rpx;
+    margin-left: 8rpx;
     color: $uni-text-color-grey;
     font-size: $uni-font-size-sm;
   }
@@ -149,6 +156,10 @@ const { handleDownload } = useDownloadImage(paint, '#imgCanvas');
     align-items: center;
     justify-content: center;
   }
+}
+
+.bottom-banner {
+  margin: 0 32rpx 8rpx;
 }
 
 .dialog-btn {

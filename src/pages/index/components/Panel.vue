@@ -44,6 +44,10 @@ const { handleUndo, handleRedo, handleClear, handlePreview } = usePanelAction(em
 const visible = ref(true);
 const handleToggle = () => {
   visible.value = !visible.value;
+  if (isActive.value) {
+    isActive.value = false;
+    commit(TypeKeys.SET_PAINT_TYPE, PaintType.PEN);
+  }
 };
 
 const isActive = ref(false);

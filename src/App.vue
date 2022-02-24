@@ -37,4 +37,36 @@ page {
 .placeholder {
   color: $uni-border-color;
 }
+
+.bg-blur {
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    display: block;
+    left: 2rpx;
+    top: 6rpx;
+    width: 100%;
+    height: 100%;
+    background: inherit;
+    border-radius: inherit;
+    opacity: 0.6;
+    z-index: -1;
+    transform: scaleX(0.98);
+    filter: blur(12rpx);
+  }
+}
+
+.bottom-line {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    border-bottom: 1rpx solid $uni-border-color;
+    transform: scaleY(0.5);
+  }
+}
 </style>
