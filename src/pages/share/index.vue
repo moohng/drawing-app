@@ -5,12 +5,12 @@
 
   <view class="list">
     <view class="item bottom-line">
-      <view class="label">设置口令<text class="tip">（好友必须输入正确的口令才能查看）</text></view>
+      <view class="label">设置口令<text class="tip">（输入正确的口令才能查看）</text></view>
       <input class="input" v-model="pwd" type="text" placeholder="选填" placeholder-class="placeholder">
     </view>
-    <view class="item">
+    <!-- <view class="item">
       <textarea class="textarea" v-model="shareText" placeholder="说点什么吧..." placeholder-class="placeholder"></textarea>
-    </view>
+    </view> -->
   </view>
   <!-- 底部按钮 -->
   <view class="button-group">
@@ -20,7 +20,8 @@
   <!-- 底部广告 -->
   <view class="bottom-banner">
     <!-- #ifndef H5 -->
-    <BottomAd unit-id="adunit-8c87109d0e3eaafc" />
+    <ad class="ad" unit-id="adunit-e72cb196c01d4a8c" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
+    <!-- <BottomAd unit-id="adunit-8c87109d0e3eaafc" /> -->
     <!-- #endif -->
   </view>
   <!-- 分享成功 -->
@@ -52,9 +53,9 @@ let shareImageUrl: string;
 
 const getShareConfig = () => {
   shareConfig.path = path;
-  if (shareText.value) {
-    shareConfig.title = shareText.value;
-  }
+  // if (shareText.value) {
+  //   shareConfig.title = shareText.value;
+  // }
   if (shareImageUrl) {
     shareConfig.imageUrl = shareImageUrl;
   }
@@ -78,7 +79,7 @@ const { paint } = usePaint('imgCanvas', async () => {
 });
 
 const pwd = ref('');
-const shareText = ref('');
+// const shareText = ref('');
 const showDialog = ref(false);
 
 const handleSave = async () => {
@@ -169,7 +170,7 @@ const onCanvasVideoChange = (isPlay: boolean) => {
 }
 
 .bottom-banner {
-  margin: 0 32rpx 8rpx;
+  margin: 16rpx 32rpx;
 }
 
 .dialog-btn {
