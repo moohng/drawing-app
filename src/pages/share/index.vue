@@ -1,6 +1,6 @@
 <template>
   <view class="top">
-    <CanvasVideo :path="getters.currentPathList" :background="getters.backgroundColor" :canvasImg="getters.currentStep"></CanvasVideo>
+    <CanvasVideo :path="getters.currentPathList" :background="getters.backgroundColor" @change="onCanvasVideoChange"></CanvasVideo>
   </view>
 
   <view class="list">
@@ -45,6 +45,7 @@ import { addPath } from '@/commons/api';
 import { useDownloadImage, useDrawImage } from '@/uses/useDownloadImage';
 import { usePaint } from '@/uses';
 import { useGenerateImage } from '@/uses/useGenerateImage';
+import { useInterstitialAd } from '@/uses/useAd';
 
 let path = '/pages/index/index';
 let shareImageUrl: string;
@@ -102,6 +103,15 @@ const handleSendFriend = () => {
 };
 
 const { handleDownload } = useDownloadImage(paint, '#imgCanvas');
+
+// 弹窗广告
+const { showInterstitialAd } = useInterstitialAd('adunit-c0ef209d582bf665');
+
+const onCanvasVideoChange = (isPlay: boolean) => {
+  if (!isPlay && Math.random() > 0.3) {
+    showInterstitialAd();
+  }
+};
 </script>
 
 <style lang="scss" scoped>
