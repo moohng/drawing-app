@@ -1,6 +1,6 @@
 <template>
   <!-- #ifndef H5 -->
-  <NavBar>涂图了</NavBar>
+  <!-- <NavBar>涂图了</NavBar> -->
   <!-- #endif -->
   <view class="canvas canvas-bg" :style="{ backgroundColor: getters.backgroundColor }"></view>
   <!-- 照着画功能 -->
@@ -54,44 +54,11 @@
   <AddToTip></AddToTip>
   <!-- #endif -->
 
-  <!-- 个人中心 -->
-  <Avatar @click="goMyPage"></Avatar>
-
   <!-- 右上角按钮 -->
-  <MenuButton :mode="mode" @clickMenu="openMenu" @toggleEye="onToggleBg" @longPressEdit="isBgEdit = true" />
+  <MenuButton :mode="mode" @clickMenu="$refs.mainPage?.openMenu()" @toggleEye="onToggleBg" @longPressEdit="isBgEdit = true" />
 
   <!-- 主菜单 -->
-  <view class="main-menu" :class="[showMenu ? 'show' : null]">
-    <view class="mask cover" @click="hideMenu"></view>
-    <!-- 广告位 -->
-    <!-- <view class="banner" v-if="showMenu">
-      <BottomAd></BottomAd>
-    </view> -->
-    <!-- 主页面 -->
-    <view class="full-page">
-      <view class="page-header">
-        <view class="app-title">画图模式</view>
-        <text class="iconfont icon-close" @click="hideMenu"></text>
-      </view>
-      <scroll-view class="page-scroll" scroll-y>
-        <view class="page-body">
-          <view class="menu-item bg-blur" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.FREE)">
-            <view class="title">自由画</view>
-            <view class="desc">一张“白板”随意画</view>
-          </view>
-          <view class="menu-item bg-blur" :style="{ backgroundColor: generalBgColor() }" @click="toggleMode(PageMode.COPY)">
-            <view class="title">照着画</view>
-            <view class="desc">不会画？选择一张图片照着画</view>
-          </view>
-          <view class="menu-item video-ad">
-            <view style="overflow: hidden;">
-              <ad class="ad" unit-id="adunit-af124415d4eba99e" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
-            </view>
-          </view>
-        </view>
-      </scroll-view>
-    </view>
-  </view>
+  <MainPage ref="mainPage" @toggleMode="toggleMode"></MainPage>
 
   <!-- 底部内容区域 -->
   <view class="container" :class="{ safeBottom }">
@@ -123,9 +90,9 @@ import Panel from './components/Panel.vue';
 import PanelTool from './components/PanelTool.vue';
 import ToolBar from './components/ToolBar.vue';
 import MenuButton from './components/MenuButton.vue';
+import MainPage from './components/MainPage.vue';
 import { useCanvasEvent } from './uses/useCanvasEvent';
-import { usePreviewAction, useMenuAction, useCopyAction } from './uses/useToolAction';
-import { generalBgColor } from '@/commons/utils';
+import { usePreviewAction, useCopyAction } from './uses/useToolAction';
 import { PageMode } from './types';
 
 
@@ -135,7 +102,6 @@ const { getters } = useStore();
 const mode = ref(PageMode.FREE);
 
 const toggleMode = (pageMode: PageMode) => {
-  hideMenu();
   if (pageMode === PageMode.COPY) {
     openAlbum();
   } else {
@@ -176,18 +142,8 @@ const { handleTouchStart, handleTouchMove, handleTouchEnd } = useCanvasEvent(pai
 /** 预览 */
 const { isPreview, handlePreview, handleEndPreview } = usePreviewAction(paint);
 
-/** 个人中心 */
-const goMyPage = () => {
-  // if (state.openId) {
-    uni.navigateTo({ url: '/pages/my/index' });
-  // }
-};
-
 /** 底部距离控制 */
 const safeBottom = ref(false);
-
-/** 菜单 */
-const { showMenu, openMenu, hideMenu } = useMenuAction();
 </script>
 
 <style lang="scss" scoped>
@@ -255,93 +211,5 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
 
 .preview-cover {
   z-index: 0;
-}
-
-.main-menu {
-  position: fixed;
-  z-index: 9998;
-  .mask {
-    transition: all 0.3s;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 0;
-  }
-  &.show {
-    .mask {
-      pointer-events: all;
-      opacity: 1;
-    }
-    .full-page {
-      transform: translate(0) translateZ(0);
-    }
-  }
-
-  .banner {
-    padding: 0 16rpx;
-  }
-  .full-page {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    top: 280rpx;
-    transform: translateY(100%) translateZ(0);
-    transition: all 0.3s;
-    background-color: #fff;
-    border-radius: 32rpx 32rpx 0 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-
-    .page-header {
-      position: relative;
-      padding: 32rpx 32rpx 0;
-      background-color: #fff;
-      .app-title {
-        padding: 8rpx;
-        text-align: center;
-        font-size: 36rpx;
-      }
-      .icon-close {
-        position: absolute;
-        top: 32rpx;
-        right: 32rpx;
-        font-size: 44rpx;
-      }
-    }
-
-    .page-scroll {
-      height: 800rpx;
-      flex: 1;
-    }
-
-    .page-body {
-      padding: 0 32rpx 32rpx;
-      overflow: hidden;
-    }
-  }
-
-  .menu-item {
-    margin-top: 32rpx;
-    padding: 40rpx;
-    color: #fff;
-    text-align: center;
-    border-radius: 16rpx;
-    &.video-ad {
-      padding: 24rpx;
-      box-shadow: $shadow;
-    }
-    .title {
-      font-size: 36rpx;
-    }
-    .desc {
-      margin-top: 8rpx;
-      font-size: 28rpx;
-    }
-  }
-
-  .menu-ad {
-    margin-top: 32rpx;
-  }
 }
 </style>

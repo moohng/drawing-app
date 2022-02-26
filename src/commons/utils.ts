@@ -100,12 +100,10 @@ export function mergeColorByAlpha(color: ColorOption) {
  * 生成随机背景色
  * @returns
  */
-export function generalBgColor() {
+export function generalBgColor(s = 80, v = dan.random(80, 90) as number) {
   const h = dan.random(0, 360) as number;
-  const s = dan.random(80, 100) as number;
-  const v = dan.random(80, 90) as number;
 
-  const [r, g, b] = hsv.rgb([h, 80, v]);
+  const [r, g, b] = hsv.rgb([h, s, v]);
 
   return `rgb(${r},${g},${b})`;
 }
