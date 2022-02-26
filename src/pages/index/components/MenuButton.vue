@@ -1,7 +1,13 @@
 <template>
-  <view class="menu-button" :style="{ color: getters.themeColor, top: toTop + 'px' }">
-    <button class="button" @click="$emit('clickMenu')">
-      <text class="iconfont icon-caidan"></text>
+  <view
+    class="menu-button"
+    :style="{
+      color: getters.themeColor,
+      top: toTop + 'px',
+    }"
+    >
+    <button class="button bg-blur" :class="{ rotate: menuBg }" :style="{ backgroundImage: menuBg }" @click="$emit('clickMenu')">
+      <text v-if="!menuBg" class="iconfont icon-caidan"></text>
     </button>
     <button
       v-if="mode === PageMode.COPY"
@@ -32,6 +38,12 @@ const emit = defineEmits<{
 }>();
 
 const { state, getters } = useStore();
+
+const menuBg = computed(() => {
+  const { userInfo } = state.user;
+  return userInfo?.avatarUrl ? `url(${userInfo?.avatarUrl})` : '';
+});
+
 const toTop = computed(() => {
   return state.headerHeight + 32 * state.windowWidth / 750;
 });
@@ -75,10 +87,12 @@ const setEyeActive = () => {
     color: currentColor;
     font-weight: normal;
     background-color: rgba($color: $bgColor, $alpha: 0.9);
+    background-size: cover;
     box-shadow: $shadow;
     transition: opacity 0.3s;
 
     &::after {
+      content: none;
       border: none;
     }
 
@@ -87,6 +101,10 @@ const setEyeActive = () => {
     // #endif
     &.button-hover {
       background-color: rgba($bgColorHover, 0.6);
+    }
+
+    &.rotate {
+      animation: rotate 10s linear infinite;
     }
 
     .iconfont {
@@ -102,6 +120,15 @@ const setEyeActive = () => {
       box-shadow: none;
       opacity: 0.6;
     }
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>

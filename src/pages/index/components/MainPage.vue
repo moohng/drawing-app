@@ -25,10 +25,8 @@
             <view class="title">照着画</view>
             <view class="desc">不会画？选择一张图片照着画</view>
           </view>
-          <view class="menu-item video-ad">
-            <view style="overflow: hidden;">
-              <ad class="ad" unit-id="adunit-af124415d4eba99e" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
-            </view>
+          <view class="menu-ad">
+            <ad class="ad" unit-id="adunit-af124415d4eba99e" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
           </view>
         </view>
       </scroll-view>
@@ -39,13 +37,14 @@
 <script lang="ts" setup>
 import { defaultAvatarUrl } from '@/commons/config';
 import { generalBgColor } from '@/commons/utils';
-import { ref } from 'vue';
+import { TypeKeys } from '@/store/modules/user';
+import { computed } from 'vue';
 import { useStore } from 'vuex';
 import { PageMode } from '../types';
 import { useMenuAction } from '../uses/useToolAction';
 
 
-const { state, getters } = useStore();
+const { state, getters, commit } = useStore();
 
 const emit = defineEmits<{
   (event: 'toggleMode', mode: PageMode): void;
@@ -59,16 +58,14 @@ defineExpose({
   openMenu,
 });
 
-const res = uni.getStorageSync('USER_INFO_KEY');
-const userInfo = ref(res);
+const userInfo = computed(() => state.user.userInfo);
 
 const getUserInfo = () => {
   if (userInfo.value) return;
   uni.getUserProfile({
     desc: '为了更好的用户体验',
     success: (res) => {
-      userInfo.value = res.userInfo;
-      uni.setStorage({ key: 'USER_INFO_KEY', data: res.userInfo });
+      commit(TypeKeys.SET_USER_INFO, res.userInfo);
     },
   });
 };
@@ -197,6 +194,7 @@ const goMyPage = () => {
 
   .menu-ad {
     margin-top: 32rpx;
+    overflow: hidden;
   }
 }
 </style>

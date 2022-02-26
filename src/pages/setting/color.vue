@@ -11,9 +11,7 @@
   </view>
   <!-- 视频广告 -->
   <view class="video-ad">
-    <view class="wrap">
-      <ad class="ad" unit-id="adunit-f373a3a6ed2e650c" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
-    </view>
+    <ad class="ad" unit-id="adunit-f373a3a6ed2e650c" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
   </view>
 </template>
 
@@ -112,16 +110,6 @@ const onColorChange = (v: any) => {
 
 .video-ad {
   margin: 32rpx;
-  padding: 24rpx;
-  background-color: #fff;
-  box-shadow: $shadow;
-  border-radius: 32rpx;
-
-  .wrap {
-    overflow: hidden;
-  }
-  .ad + .ad {
-    margin-top: 16rpx;
-  }
+  overflow: hidden;
 }
 </style>
