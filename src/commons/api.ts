@@ -1,6 +1,5 @@
 import { Path, TypeKeys } from '@/store/types';
 import { useStore } from 'vuex';
-import { http } from './request';
 import { showLoading } from './utils';
 
 interface PaintPath {
@@ -50,10 +49,10 @@ export const fetchPathById = (id: string) => {
  * @param isMine 是否个人数据
  * @returns
  */
-export const fetchList = async (query?: PaintPath, isMine = false) => {
+export const fetchList = async (query: any) => {
   showLoading();
   const collection = wx.cloud.database().collection('canvas-path');
-  const params: any = { ...query };
+  const { isMine, pageIndex = 1, pageSize = 20, ...params } = query;
   if (isMine) {
     const { state, commit } = useStore();
     if (!state.openid) {
@@ -66,8 +65,25 @@ export const fetchList = async (query?: PaintPath, isMine = false) => {
       params._openid = state.openid;
     }
   }
-  return collection.where(params).get().catch((err: any) => {
-    uni.showToast({ title: '数据加载失败，请重试~' });
-    throw new Error(err);
-  }).finally(uni.hideLoading);
+  return collection
+    .where(params)
+    .skip(pageSize * (pageIndex - 1))
+    .limit(pageSize)
+    .get()
+    .catch((err: any) => {
+      uni.showToast({ title: '数据加载失败，请重试~' });
+      throw new Error(err);
+    }).finally(uni.hideLoading);
+};
+
+/**
+ * 图片上传
+ * @param imgUrl
+ * @returns
+ */
+export const uploadImage = (imgUrl: string) => {
+  return wx.cloud.uploadFile({
+    cloudPath: String(Date.now()) + imgUrl.match(/\.\w+$/)?.[0],
+    filePath: imgUrl,
+  });
 };

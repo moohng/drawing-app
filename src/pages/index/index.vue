@@ -55,7 +55,7 @@
   <!-- #endif -->
 
   <!-- 个人中心 -->
-  <!-- <Avatar @click="goMyPage"></Avatar> -->
+  <Avatar @click="goMyPage"></Avatar>
 
   <!-- 右上角按钮 -->
   <MenuButton :mode="mode" @clickMenu="openMenu" @toggleEye="onToggleBg" @longPressEdit="isBgEdit = true" />
@@ -115,7 +115,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { onHide, onLoad, onShareAppMessage, onShareTimeline, onShow } from '@dcloudio/uni-app';
+import { onHide, onShareAppMessage, onShareTimeline, onShow } from '@dcloudio/uni-app';
 import { useStore } from 'vuex';
 import { usePaint } from '@/uses';
 import { shareConfig } from '@/commons/config';
@@ -124,11 +124,9 @@ import PanelTool from './components/PanelTool.vue';
 import ToolBar from './components/ToolBar.vue';
 import MenuButton from './components/MenuButton.vue';
 import { useCanvasEvent } from './uses/useCanvasEvent';
-// import { useWXUserInfo } from './uses/useWXUserInfo';
 import { usePreviewAction, useMenuAction, useCopyAction } from './uses/useToolAction';
 import { generalBgColor } from '@/commons/utils';
 import { PageMode } from './types';
-import { fetchList } from '@/commons/api';
 
 
 const { getters } = useStore();
@@ -179,31 +177,17 @@ const { handleTouchStart, handleTouchMove, handleTouchEnd } = useCanvasEvent(pai
 const { isPreview, handlePreview, handleEndPreview } = usePreviewAction(paint);
 
 /** 个人中心 */
-// const goMyPage = () => {
-//   if (state.user.openId) {
-//     uni.navigateTo({ url: '/pages/my/index' });
-//   } else {
-//     useWXUserInfo((userInfo) => {
-//       // 获取 openId
-
-//       // 保存数据并跳转
-//       commit(TypeKeys.SET_USER_INFO, userInfo);
-//       uni.navigateTo({ url: '/pages/my/index' });
-//     });
-//   }
-// };
+const goMyPage = () => {
+  // if (state.openId) {
+    uni.navigateTo({ url: '/pages/my/index' });
+  // }
+};
 
 /** 底部距离控制 */
 const safeBottom = ref(false);
 
 /** 菜单 */
 const { showMenu, openMenu, hideMenu } = useMenuAction();
-
-onLoad(() => {
-  fetchList().then((res) => {
-    console.log('--------', res)
-  });
-})
 </script>
 
 <style lang="scss" scoped>

@@ -40,9 +40,9 @@ import { ref } from 'vue';
 import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import * as dan from '@moohng/dan';
 import { shareConfig } from '@/commons/config';
-import { generalBgColor } from '@/commons/utils';
+import { generalBgColor, showLoading } from '@/commons/utils';
 import { useStore } from 'vuex';
-import { addPath } from '@/commons/api';
+import { addPath, uploadImage } from '@/commons/api';
 import { useDownloadImage, useDrawImage } from '@/uses/useDownloadImage';
 import { usePaint } from '@/uses';
 import { useGenerateImage } from '@/uses/useGenerateImage';
@@ -83,18 +83,23 @@ const pwd = ref('');
 const showDialog = ref(false);
 
 const handleSave = async () => {
-  addPath({
-    path: getters.currentPathList,
-    pwd: pwd.value,
-    background: getters.backgroundColor,
-  }).then(({ _id }: any) => {
-    path = '/pages/play/index?id=' + _id,
-    showDialog.value = true;
-  });
+  showLoading('正在保存...');
   if (!shareImageUrl) {
     useDrawImage(paint, getters);
     shareImageUrl = await useGenerateImage('#imgCanvas');
   }
+  // 上传图片信息
+  const res = await uploadImage(shareImageUrl);
+  // 保存
+  addPath({
+    path: getters.currentPathList,
+    pwd: pwd.value,
+    background: getters.backgroundColor,
+    imgUrl: res.fileID,
+  }).then(({ _id }: any) => {
+    path = '/pages/play/index?id=' + _id,
+    showDialog.value = true;
+  });
 };
 
 const handleSendFriend = () => {
