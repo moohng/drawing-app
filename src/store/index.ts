@@ -35,6 +35,7 @@ export const initState: State = {
   colorIndex: 0,
   backgroundColorIndex: 0,
   width: 2,
+  cacheWidth: 2,
   paintType: PaintType.PEN,
   /** 历史记录数据 */
   currentPathIndex: -1, // 记录path操作记录指针
@@ -64,7 +65,8 @@ const store = createStore({
     alpha: state => state.colorList[state.colorIndex].alpha || 1,
     backgroundColor: state => state.bgColorList[state.backgroundColorIndex].value,
     backgroundAlpha: state => state.bgColorList[state.backgroundColorIndex].alpha || 1,
-    themeColor: (state, getters) => generalThemeColor(getters.color),
+    themeColor: (state, getters) => generalThemeColor(getters.color, 90, 90),
+    themeBgColor: (state, getters) => generalThemeColor(getters.color, 10, 100, 0.9),
   },
   modules: {
     user,

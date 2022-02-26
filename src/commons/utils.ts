@@ -100,12 +100,12 @@ export function mergeColorByAlpha(color: ColorOption) {
  * 生成随机背景色
  * @returns
  */
-export function generalBgColor(s = 80, v = dan.random(80, 90) as number) {
+export function generalBgColor(s = 80, v = dan.random(80, 90) as number, a = 1) {
   const h = dan.random(0, 360) as number;
 
   const [r, g, b] = hsv.rgb([h, s, v]);
 
-  return `rgb(${r},${g},${b})`;
+  return `rgba(${r},${g},${b},${a})`;
 }
 
 /**
@@ -113,13 +113,12 @@ export function generalBgColor(s = 80, v = dan.random(80, 90) as number) {
  * @param color
  * @returns
  */
-export function generalThemeColor(color: string) {
+export function generalThemeColor(color: string, s = 80, v = dan.random(80, 90) as number, a = 1) {
   const rgbValue = color.match(/\d+/g) as unknown as RGB;
 
   const [h] = rgb.hsv(rgbValue);
-  const v = dan.random(80, 90) as number;
 
-  const [r, g, b] = hsv.rgb([h, 80, v]);
+  const [r, g, b] = hsv.rgb([h, s, v]);
 
-  return `rgb(${r},${g},${b})`;
+  return `rgba(${r},${g},${b},${a})`;
 }

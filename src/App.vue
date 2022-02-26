@@ -49,7 +49,7 @@ page {
     position: absolute;
     display: block;
     left: 2rpx;
-    top: 6rpx;
+    top: 4rpx;
     width: 100%;
     height: 100%;
     background: inherit;
@@ -57,7 +57,7 @@ page {
     opacity: 0.6;
     z-index: -1;
     transform: scaleX(0.98);
-    filter: blur(12rpx);
+    filter: blur(8rpx);
   }
 }
 

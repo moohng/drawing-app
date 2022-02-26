@@ -38,7 +38,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
-import * as dan from '@moohng/dan';
 import { shareConfig } from '@/commons/config';
 import { generalBgColor, showLoading } from '@/commons/utils';
 import { useStore } from 'vuex';

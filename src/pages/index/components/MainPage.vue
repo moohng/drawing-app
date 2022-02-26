@@ -3,7 +3,7 @@
     <view class="mask cover" @click="hideMenu"></view>
     <!-- 主页面 -->
     <view class="full-page" :style="{ top: state.headerHeight + 'px' }">
-      <view class="bg" :style="{ backgroundColor: generalBgColor(10, 90) }"></view>
+      <view class="bg" :style="{ backgroundColor: getters.themeBgColor }"></view>
       <view class="page-header">
         <view class="user-info" @click="getUserInfo">
           <view class="avatar">

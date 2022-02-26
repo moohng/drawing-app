@@ -1,17 +1,13 @@
 <template>
   <view class="panel">
-    <view class="mask" v-if="visible"></view>
-    <view class="container" :class="{ hidden: !visible }">
+    <view class="container">
       <slot></slot>
     </view>
-    <view class="bar" :style="{ color: getters.themeColor }">
-      <view class="button" @click="handleToggle">
-        <transition name="fade">
-          <text class="iconfont icon-close" v-if="visible"></text>
-          <text class="iconfont icon-pen" v-else></text>
-        </transition>
+    <view class="bar" :style="{ '--color': getters.themeColor }">
+      <view class="button" :class="{ active: paintType === PaintType.PEN }" @click="handleSwitch(PaintType.PEN)">
+        <text class="iconfont icon-pen"></text>
       </view>
-      <view class="button" :class="{ active: isActive }" @click="handleSwitch"><text class="iconfont icon-cachu"></text></view>
+      <view class="button" :class="{ active: paintType === PaintType.ERASER }" @click="handleSwitch(PaintType.ERASER)"><text class="iconfont icon-cachu"></text></view>
       <view class="button" @click="handleUndo" @longpress="handleClear"><text class="iconfont icon-undo"></text></view>
       <view class="button" @click="handleRedo"><text class="iconfont icon-undo redo"></text></view>
       <view class="button" @click="handlePreview"><text class="iconfont icon-play"></text></view>
@@ -22,7 +18,7 @@
 <script lang="ts" setup>
 import { Paint } from '@/commons/Paint';
 import { PaintType, TypeKeys } from '@/store/types';
-import { ref } from 'vue';
+import { computed } from 'vue';
 import { useStore } from 'vuex';
 import { usePanelAction } from '../uses/useToolAction';
 
@@ -37,23 +33,14 @@ interface Emits {
 
 const emit = defineEmits<Emits>();
 
-const { getters, commit } = useStore();
+const { state, getters, commit } = useStore();
 
 const { handleUndo, handleRedo, handleClear, handlePreview } = usePanelAction(emit, props);
 
-const visible = ref(true);
-const handleToggle = () => {
-  visible.value = !visible.value;
-  if (isActive.value) {
-    isActive.value = false;
-    commit(TypeKeys.SET_PAINT_TYPE, PaintType.PEN);
-  }
-};
+const paintType = computed(() => state.paintType);
 
-const isActive = ref(false);
-const handleSwitch = () => {
-  isActive.value = !isActive.value;
-  commit(TypeKeys.SET_PAINT_TYPE, isActive.value ? PaintType.ERASER : PaintType.PEN);
+const handleSwitch = (paintType: PaintType) => {
+  commit(TypeKeys.SET_PAINT_TYPE, paintType);
 };
 </script>
 
@@ -61,80 +48,53 @@ const handleSwitch = () => {
 .panel {
   position: relative;
   margin-right: 24rpx;
-  --color: #333;
-  color: var(--color);
-
-  .mask {
-    pointer-events: none;
-  }
+  color: #333;
 }
 
 .container {
   position: absolute;
-  transition: all 0.3s;
-  transform-origin: 40rpx calc(100% + 80rpx);
   background-color: rgba($bgColor, $alpha: 0.9);
   border-radius: 32rpx;
-  z-index: 9999;
   left: 0;
   bottom: 120rpx;
   width: 750rpx - 32rpx * 2;
   box-shadow: $shadow;
-
-  &.hidden {
-    transform: scale(0) translateZ(0);
-    opacity: 0;
-  }
 }
 
 .bar {
-  padding: 0 16rpx;
   display: flex;
   justify-content: space-between;
   border-radius: 200rpx;
   box-shadow: $shadow;
   background-color: rgba($color: $bgColor, $alpha: 0.9);
+  overflow: hidden;
 }
 
 .button {
-  position: relative;
   width: 96rpx;
   height: 96rpx;
+  display: flex;
+  color: var(--color);
+  align-items: center;
+  justify-content: center;
+  &:first-child {
+    padding-left: 16rpx;
+  }
+  &:last-child {
+    padding-right: 16rpx;
+  }
 
   &.active {
     position: relative;
-    background-color: #fff;
-    &::before {
-      display: inline-block;
-      content: '';
-      position: absolute;
-      top: -10rpx;
-      right: -10rpx;
-      border: 14rpx solid transparent;
-      border-bottom-color: currentColor;
-      transform: rotate(45deg);
-    }
+    color: #fff;
+    background-color: var(--color);
   }
 
   .iconfont {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
     font-size: 56rpx;
     &.redo {
-      transform: translate(-50%, -50%) rotateY(180deg);
+      transform: rotateY(180deg);
     }
-  }
-
-  .fade-enter-active,
-  .fade-leave-active {
-    transition: opacity 0.4s;
-  }
-
-  .fade-enter-from,
-  .fade-leave-to {
-    opacity: 0;
   }
 }
 </style>

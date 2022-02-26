@@ -6,7 +6,12 @@
       top: toTop + 'px',
     }"
     >
-    <button class="button bg-blur" :class="{ rotate: menuBg }" :style="{ backgroundImage: menuBg }" @click="$emit('clickMenu')">
+    <button
+      class="button"
+      :class="{ rotate: menuBg }"
+      :style="{ backgroundImage: menuBg }"
+      @click="$emit('clickMenu')"
+    >
       <text v-if="!menuBg" class="iconfont icon-caidan"></text>
     </button>
     <button

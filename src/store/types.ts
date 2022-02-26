@@ -25,6 +25,7 @@ export interface State {
   colorIndex: number;
   backgroundColorIndex: number;
   width: number;
+  cacheWidth: number;
   paintType: PaintType;
   historyStepList: ImageData[];
   currentPathIndex: number;
