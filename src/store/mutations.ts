@@ -65,6 +65,9 @@ const mutations: MutationTree<State> = {
     state.bgColorList[state.backgroundColorIndex] = color;
     uni.setStorageSync('BACKGROUND_COLOR_LIST', state.bgColorList);
   },
+  [TypeKeys.SET_OPENID] (state, openid) {
+    state.openid = openid;
+  }
 };
 
 export default mutations;

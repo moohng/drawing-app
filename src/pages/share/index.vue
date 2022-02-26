@@ -83,14 +83,12 @@ const pwd = ref('');
 const showDialog = ref(false);
 
 const handleSave = async () => {
-  const code = dan.random(8) as string;
   addPath({
-    code,
     path: getters.currentPathList,
     pwd: pwd.value,
     background: getters.backgroundColor,
-  }).then(() => {
-    path = '/pages/play/index?code=' + code,
+  }).then(({ _id }: any) => {
+    path = '/pages/play/index?id=' + _id,
     showDialog.value = true;
   });
   if (!shareImageUrl) {

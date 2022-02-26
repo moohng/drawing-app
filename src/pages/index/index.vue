@@ -111,16 +111,11 @@
 
   <!-- 预览时的遮罩层 -->
   <view class="mask preview-cover" v-if="isPreview" @click="handleEndPreview"></view>
-
-  <!-- 输入口令弹窗 -->
-  <Dialog :visible="showDialog" title="是否设置口令？" :buttons="['不设置', '设置']" @click="handleSaveConfirm">
-    <input placeholder-class="placeholder" v-model="pwd" type="text" placeholder="点击设置" />
-  </Dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { onHide, onShareAppMessage, onShareTimeline, onShow } from '@dcloudio/uni-app';
+import { onHide, onLoad, onShareAppMessage, onShareTimeline, onShow } from '@dcloudio/uni-app';
 import { useStore } from 'vuex';
 import { usePaint } from '@/uses';
 import { shareConfig } from '@/commons/config';
@@ -130,9 +125,10 @@ import ToolBar from './components/ToolBar.vue';
 import MenuButton from './components/MenuButton.vue';
 import { useCanvasEvent } from './uses/useCanvasEvent';
 // import { useWXUserInfo } from './uses/useWXUserInfo';
-import { useSaveAction, usePreviewAction, useMenuAction, useCopyAction } from './uses/useToolAction';
+import { usePreviewAction, useMenuAction, useCopyAction } from './uses/useToolAction';
 import { generalBgColor } from '@/commons/utils';
 import { PageMode } from './types';
+import { fetchList } from '@/commons/api';
 
 
 const { getters } = useStore();
@@ -182,9 +178,6 @@ const { handleTouchStart, handleTouchMove, handleTouchEnd } = useCanvasEvent(pai
 /** 预览 */
 const { isPreview, handlePreview, handleEndPreview } = usePreviewAction(paint);
 
-/** 保存 */
-const { showDialog, pwd, handleSave, handleSaveConfirm } = useSaveAction();
-
 /** 个人中心 */
 // const goMyPage = () => {
 //   if (state.user.openId) {
@@ -205,6 +198,12 @@ const safeBottom = ref(false);
 
 /** 菜单 */
 const { showMenu, openMenu, hideMenu } = useMenuAction();
+
+onLoad(() => {
+  fetchList().then((res) => {
+    console.log('--------', res)
+  });
+})
 </script>
 
 <style lang="scss" scoped>
@@ -268,24 +267,6 @@ const { showMenu, openMenu, hideMenu } = useMenuAction();
   position: absolute;
   left: 0;
   top: 0;
-}
-
-.tui-dialog input {
-  margin: auto;
-  padding: 24rpx;
-  width: 60%;
-  text-align: center;
-  font-size: 32rpx;
-  border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
-}
-
-.tui-dialog input:focus {
-  border-color: var(--primaryColor);
-  outline: none;
-}
-
-::v-deep .tui-dialog__ft .btn:nth-child(2) {
-  color: var(--primaryColor);
 }
 
 .preview-cover {

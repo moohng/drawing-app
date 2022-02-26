@@ -15,7 +15,7 @@
 
   <!-- 口令 -->
   <Dialog :visible="showDialog" title="请输入口令：" :buttons="['确定']" @click="handleClick">
-    <input placeholder-class="placeholder" v-model="codeRef" type="text" placeholder="口令" />
+    <input placeholder-class="placeholder" v-model="pwdRef" type="text" placeholder="口令" />
   </Dialog>
 
   <!-- 异常 -->
@@ -24,10 +24,9 @@
 
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
-import { fetchPath } from '@/commons/api';
+import { fetchPathById } from '@/commons/api';
 import { shareConfig } from '@/commons/config';
 import { usePaint } from '@/uses';
-import { pathFallback } from '@/commons/utils';
 import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { Path } from '@/store/types';
 import { useGenerateImage } from '@/uses/useGenerateImage';
@@ -92,18 +91,15 @@ const startPlay = () => {
   });
 };
 
-const fetchData = (code: string) => {
-  fetchPath({ code }).then((data) => {
-    if (!data.length) {
+const fetchData = (id: string) => {
+  fetchPathById(id).then(({ data }: any) => {
+    if (!data) {
       isPlaying.value = false;
       return uni.showToast({ title: '链接已失效~', icon: 'none' });
     }
-    const { path, background = '#ffffff', code: _code, pwd } = data[0];
-    localState = data[0];
-    localState.path = _code ? path : pathFallback(path);
-    localState.background = background
+    localState = data;
 
-    if (pwd) {
+    if (data.pwd) {
       showDialog.value = true;
     } else {
       // 播放
@@ -112,11 +108,9 @@ const fetchData = (code: string) => {
   });
 };
 
-const codeRef = ref('');
-
-onLoad(({ code }) => {
-  if (code) {
-    fetchData(code);
+onLoad(({ id }) => {
+  if (id) {
+    fetchData(id);
   } else {
     errorDialog.value = true;
   }
@@ -142,11 +136,13 @@ const handleGoPlay = () => {
   uni.reLaunch({ url: '/pages/index/index' });
 };
 
+const pwdRef = ref('');
+
 const handleClick = (index: number | string) => {
   if (index !== 'mask') {
-    if (!codeRef.value) {
+    if (!pwdRef.value) {
       uni.showToast({ title: '请输入口令', icon: 'none' });
-    } else if (codeRef.value !== localState?.pwd) {
+    } else if (pwdRef.value !== localState?.pwd) {
       uni.showToast({ title: '口令不正确，请重新输入', icon: 'none' });
     } else {
       startPlay();

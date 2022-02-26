@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
 
-onLaunch(() => {});
+onLaunch(() => {
+  // #ifdef MP-WEIXIN
+  wx.cloud.init({ env: 'drawing-mp-8gojqt3581a22d46', throwOnNotFound: false });
+  // #endif
+});
 onShow(() => {});
 onHide(() => {});
 </script>

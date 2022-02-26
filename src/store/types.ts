@@ -40,6 +40,8 @@ export interface State {
   navHeight: number,
   windowWidth: number,
   headerHeight: number,
+
+  openid: string;
 }
 
 export enum TypeKeys {
@@ -57,4 +59,6 @@ export enum TypeKeys {
   OPERATION_REDO = 'OPERATION_REDO',
   OPERATION_ADD = 'OPERATION_ADD',
   OPERATION_CLEAR = 'OPERATION_CLEAR',
+  /** 用户信息 */
+  SET_OPENID = 'SET_OPENID',
 };

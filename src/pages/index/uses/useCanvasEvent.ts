@@ -1,6 +1,6 @@
 import { Ref } from 'vue';
 import { useStore } from 'vuex';
-import { PaintType, Path, TypeKeys } from '@/store/types';
+import { Path, TypeKeys } from '@/store/types';
 import { Paint } from '@/commons/Paint';
 import { getRelativeDot, getDot } from '@/commons/utils';
 import { throttle } from 'lodash';
@@ -32,9 +32,11 @@ export function useCanvasEvent(paint: Ref<Paint | undefined>) {
     };
   };
 
-  const handleTouchMove = throttle((event: TouchEvent) => {
+  const handleTouchMove = (event: TouchEvent) => {
     if (!painting) return;
     const dot = getRelativeDot(getDot(event), { width: windowWidth, height: windowHeight });
+    const lastPoint = currentLine.pos[currentLine.pos.length - 1];
+    if ((dot.x - lastPoint.x) ** 2 + (dot.y - lastPoint.y) ** 2 < 5 ** 2) return;
     if (currentLine.pos.length < 2) {
       paint.value?.drawLine(dot);
     } else {
@@ -42,7 +44,7 @@ export function useCanvasEvent(paint: Ref<Paint | undefined>) {
     }
 
     currentLine.pos.push(dot);
-  }, 16.7);
+  };
 
   const handleTouchEnd = () => {
     if (!painting) return;

@@ -51,6 +51,8 @@ export const initState: State = {
   navHeight,
   windowWidth,
   headerHeight: statusBarHeight + navHeight,
+
+  openid: '',
 }
 
 const store = createStore({
