@@ -10,7 +10,7 @@
       class="button"
       :class="{ rotate: menuBg }"
       :style="{ backgroundImage: menuBg }"
-      @click="$emit('clickMenu')"
+      @click="handleMenu"
     >
       <text v-if="!menuBg" class="iconfont icon-caidan"></text>
     </button>
@@ -24,6 +24,8 @@
       <text class="iconfont icon-xianshikejian" v-if="eyeOpen"></text>
       <text class="iconfont icon-yincangbukejian" v-else></text>
     </button>
+    <!-- 小提示 -->
+    <view class="tip" v-if="showTip">点我发现更多功能~</view>
   </view>
 </template>
 
@@ -53,6 +55,30 @@ const toTop = computed(() => {
   return state.headerHeight + 32 * state.windowWidth / 750;
 });
 
+/** 小提示 */
+const showTip = ref(false);
+let tipTimer: number;
+
+const handleMenu = () => {
+  emit('clickMenu');
+  if (tipTimer) {
+    clearTimeout(tipTimer);
+    tipTimer = 0;
+  }
+  if (showTip.value) {
+    showTip.value = false;
+  }
+  uni.setStorageSync('MENU_TIP_KEY', Date.now());
+};
+
+tipTimer = setTimeout(() => {
+  const tipKey = uni.getStorageSync('MENU_TIP_KEY');
+  if (!tipKey) {
+    showTip.value = true;
+  }
+}, 1000 * 10);
+
+/** 显示/隐藏 */
 const eyeActive = ref(false);
 const eyeOpen = ref(true);
 const clickEye = () => {
@@ -124,6 +150,28 @@ const setEyeActive = () => {
       background-color: transparent;
       box-shadow: none;
       opacity: 0.6;
+    }
+  }
+  .tip {
+    padding: 4rpx 16rpx;
+    position: absolute;
+    right: 100%;
+    top: 50rpx;
+    transform: translate(-10%, -50%);
+    color: #f1f1f1;
+    font-size: 28rpx;
+    white-space: nowrap;
+    background-color: rgba(0,0,0,0.9);
+    border-radius: 8rpx;
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 12rpx solid transparent;
+      border-left-color: rgba(0,0,0,0.9);
     }
   }
 }
