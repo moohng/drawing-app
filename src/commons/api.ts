@@ -17,12 +17,13 @@ interface PaintPath {
  */
 export const addPath = (data: PaintPath) => {
   showLoading('正在保存...');
-  return http
-    .post('/draw/path/add', {
+  const collection = wx.cloud.database().collection('canvas-path');
+  return collection.add({
+    data: {
       ...data,
       createTime: Date.now(),
-    })
-    .catch((err: any) => {
+    },
+  }).catch((err: any) => {
       uni.showToast({ title: '网络开小差了，请重试~' });
       throw new Error(err);
     })
@@ -30,8 +31,8 @@ export const addPath = (data: PaintPath) => {
 };
 
 /**
- * 获取路径
- * @param {*} query
+ * 通过ID获取路径
+ * @param {string} id
  * @returns
  */
 export const fetchPathById = (id: string) => {
@@ -43,6 +44,12 @@ export const fetchPathById = (id: string) => {
   }).finally(uni.hideLoading);
 };
 
+/**
+ * 获取数据列表
+ * @param query
+ * @param isMine 是否个人数据
+ * @returns
+ */
 export const fetchList = async (query?: PaintPath, isMine = false) => {
   showLoading();
   const collection = wx.cloud.database().collection('canvas-path');

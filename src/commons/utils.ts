@@ -1,4 +1,4 @@
-import { Path, Dot, ColorOption } from '@/store/types';
+import { Path, Point, ColorOption } from '@/store/types';
 import * as dan from '@moohng/dan';
 import { hsv, rgb } from 'color-convert';
 import { RGB } from 'color-convert/conversions';
@@ -28,7 +28,7 @@ export function pathFallback(path: Path[]): Path[] {
   return path.map((item) => {
     return {
       ...item,
-      pos: item.pos.map(({ x, y }) => ({ x: x - 180, y: y - 284 })),
+      points: item.points.map(({ x, y }) => ({ x: x - 180, y: y - 284 })),
     };
   });
 }
@@ -39,14 +39,14 @@ export function pathFallback(path: Path[]): Path[] {
  * @param param1
  * @returns
  */
-export function getRelativeDot({ x, y }: Dot, { width, height }: { width: number; height: number }): Dot {
+export function getRelativePoint({ x, y }: Point, { width, height }: { width: number; height: number }): Point {
   return {
     x: x - width * 0.5,
     y: y - height * 0.5,
   };
 }
 
-export function getDot(event: TouchEvent) {
+export function getPoint(event: TouchEvent) {
   // @ts-ignore
   const { clientX, clientY, x = clientX, y = clientY } = event.touches[0];
   return { x, y };

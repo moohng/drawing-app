@@ -1,4 +1,4 @@
-export interface Dot {
+export interface Point {
   x: number;
   y: number;
 }
@@ -9,7 +9,7 @@ export enum PaintType {
 }
 
 export interface Path {
-  pos: Dot[];
+  points: Point[];
   color?: string;
   width?: number;
   type?: PaintType;

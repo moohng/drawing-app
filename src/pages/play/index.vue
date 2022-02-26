@@ -155,7 +155,7 @@ const handleErrorClick = async () => {
   try {
     await uni.navigateBack({});
   } catch (err) {
-    uni.reLaunch({ url: '/pages/index/index' });
+    handleGoPlay();
   }
 };
 

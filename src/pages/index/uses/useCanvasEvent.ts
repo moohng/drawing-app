@@ -2,8 +2,7 @@ import { Ref } from 'vue';
 import { useStore } from 'vuex';
 import { Path, TypeKeys } from '@/store/types';
 import { Paint } from '@/commons/Paint';
-import { getRelativeDot, getDot } from '@/commons/utils';
-import { throttle } from 'lodash';
+import { getRelativePoint, getPoint } from '@/commons/utils';
 
 export function useCanvasEvent(paint: Ref<Paint | undefined>) {
   let painting = false;
@@ -15,42 +14,42 @@ export function useCanvasEvent(paint: Ref<Paint | undefined>) {
 
   const handleTouchStart = (event: TouchEvent) => {
     painting = true;
-    const dot = getRelativeDot(getDot(event), { width: windowWidth, height: windowHeight });
-    paint.value?.start(dot, {
+    const point = getRelativePoint(getPoint(event), { width: windowWidth, height: windowHeight });
+    paint.value?.start(point, {
       color: getters.color,
       width: state.width,
       alpha: getters.alpha,
       type: state.paintType,
     });
-    paint.value?.drawLine(dot);
+    paint.value?.drawLine(point);
 
     currentLine = {
       width: state.width,
       color: getters.color,
-      pos: [dot],
+      points: [point],
       type: state.paintType,
     };
   };
 
   const handleTouchMove = (event: TouchEvent) => {
     if (!painting) return;
-    const dot = getRelativeDot(getDot(event), { width: windowWidth, height: windowHeight });
-    const lastPoint = currentLine.pos[currentLine.pos.length - 1];
-    if ((dot.x - lastPoint.x) ** 2 + (dot.y - lastPoint.y) ** 2 < 5 ** 2) return;
-    if (currentLine.pos.length < 2) {
-      paint.value?.drawLine(dot);
+    const point = getRelativePoint(getPoint(event), { width: windowWidth, height: windowHeight });
+    const lastPoint = currentLine.points[currentLine.points.length - 1];
+    if ((point.x - lastPoint.x) ** 2 + (point.y - lastPoint.y) ** 2 < 5 ** 2) return;
+    if (currentLine.points.length < 2) {
+      paint.value?.drawLine(point);
     } else {
-      paint.value?.drawLine(dot, currentLine.pos[currentLine.pos.length - 1]);
+      paint.value?.drawLine(point, lastPoint);
     }
 
-    currentLine.pos.push(dot);
+    currentLine.points.push(point);
   };
 
   const handleTouchEnd = () => {
     if (!painting) return;
     painting = false;
 
-    paint.value?.drawLine(currentLine.pos[currentLine.pos.length - 1]);
+    paint.value?.drawLine(currentLine.points[currentLine.points.length - 1]);
 
     commit(TypeKeys.OPERATION_ADD, {
       currentLine,
