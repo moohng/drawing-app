@@ -73,4 +73,19 @@ page {
     transform: scaleY(0.5);
   }
 }
+
+.text-cut {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+@each $row in 2, 3 {
+  .text-cut-#{$row} {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $row;
+  }
+}
 </style>

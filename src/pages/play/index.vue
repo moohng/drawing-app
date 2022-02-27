@@ -20,22 +20,16 @@
     </view>
   </view>
 
-  <!-- 口令 -->
-  <Dialog :visible="showDialog" title="请输入口令：" :buttons="['确定']" @click="handleClick">
-    <input placeholder-class="placeholder" v-model="pwdRef" type="text" placeholder="口令" />
-  </Dialog>
-
   <!-- 异常 -->
   <Dialog :visible="errorDialog" title="数据异常！" :buttons="['确定']" @click="handleErrorClick"></Dialog>
 </template>
 
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
-import { fetchPathById } from '@/commons/api';
+import { fetchPathById, PaintPath } from '@/commons/api';
 import { shareConfig } from '@/commons/config';
 import { usePaint } from '@/uses';
 import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
-import { Path, TypeKeys } from '@/store/types';
 import { useGenerateImage } from '@/uses/useGenerateImage';
 import { useStore } from 'vuex';
 import { getPintFromLocal, savePaintToLocal } from '@/commons/utils';
@@ -54,7 +48,7 @@ onShareTimeline(() => ({
   imageUrl: shareImageUrl,
 }));
 
-const { getters, commit } = useStore();
+const { getters } = useStore();
 
 let paintId: string;
 
@@ -65,15 +59,9 @@ const { paint } = usePaint('drawCanvas', () => {
 
 const isPlaying = ref(true);
 
-const showDialog = ref(false);
 const errorDialog = ref(false);
 
-let localState = ref<{
-  title?: string;
-  path: Path[];
-  background: string;
-  pwd: string;
-}>();
+let localState = ref<PaintPath>();
 
 watch(isPlaying, async (value) => {
   // 播放暂停时
@@ -86,7 +74,7 @@ watch(isPlaying, async (value) => {
 const startPlay = () => {
   isPlaying.value = true;
   paint.value?.clear();
-  localState.value?.title && uni.setNavigationBarTitle({ title: localState.value.title });
+  // localState.value?.title && uni.setNavigationBarTitle({ title: localState.value.title });
   paint.value?.playPath(localState.value!.path, () => {
     isPlaying.value = false;
   });
@@ -95,13 +83,8 @@ const startPlay = () => {
 const fetchData = (id: string) => {
   const setPath = (data: any) => {
     localState.value = data;
-
-    if (data.pwd) {
-      showDialog.value = true;
-    } else {
-      // 播放
-      startPlay();
-    }
+    // 播放
+    startPlay();
   }
 
   // 先读取本地缓存
@@ -117,6 +100,8 @@ const fetchData = (id: string) => {
     }
     setPath(data);
     savePaintToLocal(data);
+  }).catch(() => {
+    errorDialog.value = true;
   });
 };
 
@@ -146,21 +131,6 @@ const handlePlayToggle = () => {
 
 const handleGoPlay = () => {
   uni.reLaunch({ url: '/pages/index/index' });
-};
-
-const pwdRef = ref('');
-
-const handleClick = (index: number | string) => {
-  if (index !== 'mask') {
-    if (!pwdRef.value) {
-      uni.showToast({ title: '请输入口令', icon: 'none' });
-    } else if (pwdRef.value !== localState.value?.pwd) {
-      uni.showToast({ title: '口令不正确，请重新输入', icon: 'none' });
-    } else {
-      startPlay();
-      showDialog.value = false;
-    }
-  }
 };
 
 const handleErrorClick = async () => {

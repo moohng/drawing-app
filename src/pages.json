@@ -28,7 +28,7 @@
 		{
 			"path": "pages/share/index",
 			"style": {
-				"navigationBarTitleText": "分享",
+				"navigationBarTitleText": "保存",
 				// #ifdef H5
 				"navigationStyle": "custom"
 				// #endif

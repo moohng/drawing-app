@@ -5,7 +5,7 @@ import { showLoading } from './utils';
 export interface PaintPath {
   path: Path[];
   background?: string;
-  pwd?: string;
+  title?: string;
   imgUrl?: string;
 }
 

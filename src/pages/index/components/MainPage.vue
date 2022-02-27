@@ -122,7 +122,7 @@ const goMyPage = () => {
       left: 0;
       top: 0;
       right: 0;
-      height: 340rpx;
+      height: 440rpx;
       border-radius: 0 0 16rpx 16rpx;
       z-index: -1;
     }
