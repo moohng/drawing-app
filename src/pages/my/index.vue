@@ -7,9 +7,9 @@
     </view>
     <!-- 作品列表 -->
     <view class="list" v-else>
-      <view class="item" v-for="item in list" :key="item._id" @click="goPlay(item)">
+      <view class="item bg-blur" v-for="item in list" :key="item._id" @click="goPlay(item)" @longpress="handleMore(item)">
         <image class="image" :src="item.imgUrl" mode="aspectFill" lazy-load></image>
-        <view class="preview-button" :style="{ color: getters.themeColor }">
+        <view class="preview-button" :style="{ color: getters.themeColor }" @click.stop="handlePreview(item)">
           <text class="iconfont icon-xianshikejian"></text>
         </view>
       </view>
@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts" setup>
-import { fetchList } from '@/commons/api';
+import { deleteImage, deletePathById, fetchList } from '@/commons/api';
 import { savePaintToLocal } from '@/commons/utils';
 import { ref } from 'vue';
 import { useStore } from 'vuex';
@@ -56,6 +56,27 @@ const goPlay = (item: any) => {
 
 const goStart = () => {
   uni.reLaunch({ url: '/pages/index/index' });
+};
+
+const handleMore = async (item: any) => {
+  uni.showActionSheet({
+    itemList: ['删除'],
+    alertText: '确定要删除吗？',
+    itemColor: 'red',
+    success: async ({ tapIndex }) => {
+      if (tapIndex === 0) {
+        await deletePathById([item._id]);
+        list.value = list.value.filter(({ _id }: any) => _id !== item._id);
+        deleteImage([item.imgUrl]);
+      }
+    },
+  });
+};
+
+const handlePreview = (item: any) => {
+  uni.previewImage({
+    urls: [item.imgUrl],
+  });
 };
 </script>
 

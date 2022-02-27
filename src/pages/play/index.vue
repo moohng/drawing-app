@@ -107,7 +107,7 @@ const fetchData = (id: string) => {
   // 先读取本地缓存
   const res = getPintFromLocal();
   if (res && res._id === id) {
-    setPath(res);
+    return setPath(res);
   }
 
   fetchPathById(id).then(({ data }: any) => {

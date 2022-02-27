@@ -77,6 +77,22 @@ export const fetchList = async (query: any) => {
 };
 
 /**
+ * 根据ID删除数据
+ * @param ids
+ * @returns
+ */
+export const deletePathById = (ids: string[]) => {
+  showLoading('正在删除...');
+  const db = wx.cloud.database();
+  const _ = db.command;
+  const collection = db.collection('canvas-path');
+  return collection.where({ _id: _.or(ids) }).remove().catch((err: any) => {
+    uni.showToast({ title: '数据获取失败，请重试~' });
+    throw new Error(err);
+  }).finally(uni.hideLoading);
+};
+
+/**
  * 图片上传
  * @param imgUrl
  * @returns
@@ -86,4 +102,13 @@ export const uploadImage = (imgUrl: string) => {
     cloudPath: String(Date.now()) + imgUrl.match(/\.\w+$/)?.[0],
     filePath: imgUrl,
   });
+};
+
+/**
+ * 删除图片
+ * @param fileList
+ * @returns
+ */
+export const deleteImage = (fileList: string[]) => {
+  return wx.cloud.deleteFile({ fileList })
 };
