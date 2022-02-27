@@ -20,6 +20,7 @@
 
 <script lang="ts" setup>
 import { fetchList } from '@/commons/api';
+import { savePaintToLocal } from '@/commons/utils';
 import { ref } from 'vue';
 import { useStore } from 'vuex';
 
@@ -48,8 +49,9 @@ const getList = () => {
 
 getList();
 
-const goPlay = ({ _id }: any) => {
-  uni.navigateTo({ url: '/pages/play/index?id=' + _id });
+const goPlay = (item: any) => {
+  savePaintToLocal(item);
+  uni.navigateTo({ url: '/pages/play/index?id=' + item._id });
 };
 
 const goStart = () => {

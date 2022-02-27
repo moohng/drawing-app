@@ -94,9 +94,10 @@ import MainPage from './components/MainPage.vue';
 import { useCanvasEvent } from './uses/useCanvasEvent';
 import { usePreviewAction, useCopyAction } from './uses/useToolAction';
 import { PageMode } from './types';
+// import { getPintFromLocal } from '@/commons/utils';
 
 
-const { getters } = useStore();
+const { state, getters } = useStore();
 
 /** 模式切换 */
 const mode = ref(PageMode.FREE);
@@ -129,7 +130,15 @@ onShareAppMessage(() => shareConfig);
 onShareTimeline(() => shareConfig);
 
 /** 画笔 */
-const { paint } = usePaint('drawCanvas');
+const { paint } = usePaint('drawCanvas', () => {
+  // if (!state.path.length) {
+  //   const { path } = getPintFromLocal();
+  //   if (path?.length) {
+  //     paint.value?.clear();
+  //     paint.value?.drawPath(path);
+  //   }
+  // }
+});
 
 /** 初始化 */
 watch(paint, () => {

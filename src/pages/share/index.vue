@@ -111,7 +111,7 @@ const { handleDownload } = useDownloadImage(paint, '#imgCanvas');
 const { showInterstitialAd } = useInterstitialAd('adunit-c0ef209d582bf665');
 
 const onCanvasVideoChange = (isPlay: boolean) => {
-  if (!isPlay && Math.random() > 0.3) {
+  if (!isPlay && Math.random() > 0.5) {
     showInterstitialAd();
   }
 };

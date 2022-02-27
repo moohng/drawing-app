@@ -113,6 +113,28 @@ export class Paint {
     // #endif
   }
 
+  drawPath(path: Path[], completed?: () => void) {
+    if (!path.length) return Promise.resolve();
+    for (let i = 0, len = path.length; i < len; i++) {
+      const { points, color, width, type } = path[i];
+      this.start(points[0], { color, width, type });
+      for (let j = 1, len = points.length; j < len; j++) {
+        const { x, y } = points[j];
+        if (j === len - 1) {
+          this.ctx.lineTo(x, y);
+        } else if (j > 1) {
+          const lastPoint = points[j - 1]
+          const ep = {
+            x: lastPoint.x + (x - lastPoint.x) * 0.5,
+            y: lastPoint.y + (y - lastPoint.y) * 0.5,
+          }
+          this.ctx.quadraticCurveTo(lastPoint.x, lastPoint.y, ep.x, ep.y);
+        }
+      }
+      this.ctx.stroke();
+    }
+  }
+
   /**
    * 从头绘制路径
    * @param path 路径

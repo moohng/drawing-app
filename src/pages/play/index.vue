@@ -1,5 +1,12 @@
 <template>
-  <canvas id="drawCanvas" canvasId="drawCanvas" type="2d" class="canvas" @click="handlePlayToggle" />
+  <canvas
+    id="drawCanvas"
+    class="canvas"
+    :style="{ backgroundColor: localState?.background }"
+    canvasId="drawCanvas"
+    type="2d"
+    @click="handlePlayToggle"
+  />
 
   <!-- 播放中止遮罩层 -->
   <view class="mask cover preview-cover" v-if="!isPlaying">
@@ -28,10 +35,10 @@ import { fetchPathById } from '@/commons/api';
 import { shareConfig } from '@/commons/config';
 import { usePaint } from '@/uses';
 import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
-import { Path } from '@/store/types';
+import { Path, TypeKeys } from '@/store/types';
 import { useGenerateImage } from '@/uses/useGenerateImage';
 import { useStore } from 'vuex';
-// import { useInterstitialAd } from '@/uses/useAd';
+import { getPintFromLocal, savePaintToLocal } from '@/commons/utils';
 
 let shareImageUrl = '';
 
@@ -47,57 +54,47 @@ onShareTimeline(() => ({
   imageUrl: shareImageUrl,
 }));
 
-const { getters } = useStore();
+const { getters, commit } = useStore();
+
+let paintId: string;
 
 // 画笔
-const { paint } = usePaint('drawCanvas');
+const { paint } = usePaint('drawCanvas', () => {
+  fetchData(paintId);
+});
 
 const isPlaying = ref(true);
 
 const showDialog = ref(false);
 const errorDialog = ref(false);
 
-let localState: {
+let localState = ref<{
   title?: string;
   path: Path[];
   background: string;
   pwd: string;
-};
-
-// const { interstitialAd } = useInterstitialAd();
+}>();
 
 watch(isPlaying, async (value) => {
   // 播放暂停时
   if (!value) {
     // 生成分享图片
     shareImageUrl = await useGenerateImage('#drawCanvas');
-
-    // 弹窗广告
-    try {
-      // interstitialAd.value?.show();
-    } catch (err) {
-      //
-    }
   }
 });
 
 const startPlay = () => {
   isPlaying.value = true;
   paint.value?.clear();
-  localState?.title && uni.setNavigationBarTitle({ title: localState.title });
-  paint.value?.setBackground(localState.background);
-  paint.value?.playPath(localState.path, () => {
+  localState.value?.title && uni.setNavigationBarTitle({ title: localState.value.title });
+  paint.value?.playPath(localState.value!.path, () => {
     isPlaying.value = false;
   });
 };
 
 const fetchData = (id: string) => {
-  fetchPathById(id).then(({ data }: any) => {
-    if (!data) {
-      isPlaying.value = false;
-      return uni.showToast({ title: '链接已失效~', icon: 'none' });
-    }
-    localState = data;
+  const setPath = (data: any) => {
+    localState.value = data;
 
     if (data.pwd) {
       showDialog.value = true;
@@ -105,12 +102,27 @@ const fetchData = (id: string) => {
       // 播放
       startPlay();
     }
+  }
+
+  // 先读取本地缓存
+  const res = getPintFromLocal();
+  if (res && res._id === id) {
+    setPath(res);
+  }
+
+  fetchPathById(id).then(({ data }: any) => {
+    if (!data) {
+      isPlaying.value = false;
+      return uni.showToast({ title: '链接已失效~', icon: 'none' });
+    }
+    setPath(data);
+    savePaintToLocal(data);
   });
 };
 
 onLoad(({ id }) => {
   if (id) {
-    fetchData(id);
+    paintId = id;
   } else {
     errorDialog.value = true;
   }
@@ -123,7 +135,7 @@ const handlePlayToggle = () => {
     paint.value?.pause();
     isPlaying.value = false;
   } else {
-    if (localState?.path.length) {
+    if (localState.value?.path.length) {
       paint.value?.play();
       isPlaying.value = true;
     } else {
@@ -142,7 +154,7 @@ const handleClick = (index: number | string) => {
   if (index !== 'mask') {
     if (!pwdRef.value) {
       uni.showToast({ title: '请输入口令', icon: 'none' });
-    } else if (pwdRef.value !== localState?.pwd) {
+    } else if (pwdRef.value !== localState.value?.pwd) {
       uni.showToast({ title: '口令不正确，请重新输入', icon: 'none' });
     } else {
       startPlay();

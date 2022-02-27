@@ -3,7 +3,7 @@
     <view class="mask cover" @click="hideMenu"></view>
     <!-- 主页面 -->
     <view class="full-page" :style="{ top: state.headerHeight + 'px' }">
-      <view class="bg" :style="{ backgroundColor: getters.themeBgColor }"></view>
+      <view class="bg" :style="topBg"></view>
       <view class="page-header">
         <view class="user-info" @click="getUserInfo">
           <view class="avatar">
@@ -49,6 +49,12 @@ const { state, getters, commit } = useStore();
 const emit = defineEmits<{
   (event: 'toggleMode', mode: PageMode): void;
 }>();
+
+const topBg = computed(() => {
+  return {
+    background: `linear-gradient(to bottom, ${getters.themeBgColor}, transparent)`,
+ };
+});
 
 /** 菜单 */
 const { showMenu, openMenu, hideMenu } = useMenuAction();

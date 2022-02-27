@@ -2,7 +2,7 @@ import { Path, TypeKeys } from '@/store/types';
 import { useStore } from 'vuex';
 import { showLoading } from './utils';
 
-interface PaintPath {
+export interface PaintPath {
   path: Path[];
   background?: string;
   pwd?: string;

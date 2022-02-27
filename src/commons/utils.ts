@@ -2,6 +2,7 @@ import { Path, Point, ColorOption } from '@/store/types';
 import * as dan from '@moohng/dan';
 import { hsv, rgb } from 'color-convert';
 import { RGB } from 'color-convert/conversions';
+import { PaintPath } from './api';
 
 export function showLoading(title = '加载中...') {
   return uni.showLoading({ title, mask: true });
@@ -121,4 +122,16 @@ export function generalThemeColor(color: string, s = 80, v = dan.random(80, 90) 
   const [r, g, b] = hsv.rgb([h, s, v]);
 
   return `rgba(${r},${g},${b},${a})`;
+}
+
+interface LocalPaint extends PaintPath {
+  _id: string;
+}
+
+export function savePaintToLocal(data: LocalPaint) {
+  uni.setStorageSync('LOCAL_PAINT_KEY', data);
+}
+
+export function getPintFromLocal(): LocalPaint {
+  return uni.getStorageSync('LOCAL_PAINT_KEY');
 }
