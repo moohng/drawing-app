@@ -6,14 +6,12 @@
         <view class="item color-block" :class="{ selected: currentColorIndex === index }" :style="{ color: mergeColorByAlpha(item) }" v-for="(item, index) in colorList" :key="index" @click="handleColorSelect(index, item)"></view>
       </view>
     </view>
-    <view class="border-line"></view>
+    <view class="bottom-line"></view>
     <ColorPicker :value="currentColor" @change="onColorChange"></ColorPicker>
   </view>
   <!-- 视频广告 -->
   <view class="video-ad">
-    <view class="wrap">
-      <ad class="ad" unit-id="adunit-f373a3a6ed2e650c" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
-    </view>
+    <ad class="ad" unit-id="adunit-f373a3a6ed2e650c" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
   </view>
 </template>
 
@@ -63,9 +61,9 @@ const onColorChange = (v: any) => {
   box-shadow: $shadow;
 }
 
-.border-line {
+.bottom-line {
   margin: 32rpx 0;
-  border-bottom: 1rpx solid $uni-border-color;
+  height: 1rpx;
 }
 
 .row {
@@ -112,16 +110,6 @@ const onColorChange = (v: any) => {
 
 .video-ad {
   margin: 32rpx;
-  padding: 24rpx;
-  background-color: #fff;
-  box-shadow: $shadow;
-  border-radius: 32rpx;
-
-  .wrap {
-    overflow: hidden;
-  }
-  .ad + .ad {
-    margin-top: 16rpx;
-  }
+  overflow: hidden;
 }
 </style>

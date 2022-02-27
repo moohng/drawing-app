@@ -1,4 +1,4 @@
-export interface Dot {
+export interface Point {
   x: number;
   y: number;
 }
@@ -9,7 +9,7 @@ export enum PaintType {
 }
 
 export interface Path {
-  pos: Dot[];
+  points: Point[];
   color?: string;
   width?: number;
   type?: PaintType;
@@ -25,6 +25,7 @@ export interface State {
   colorIndex: number;
   backgroundColorIndex: number;
   width: number;
+  cacheWidth: number;
   paintType: PaintType;
   historyStepList: ImageData[];
   currentPathIndex: number;
@@ -40,6 +41,8 @@ export interface State {
   navHeight: number,
   windowWidth: number,
   headerHeight: number,
+
+  openid: string;
 }
 
 export enum TypeKeys {
@@ -57,4 +60,6 @@ export enum TypeKeys {
   OPERATION_REDO = 'OPERATION_REDO',
   OPERATION_ADD = 'OPERATION_ADD',
   OPERATION_CLEAR = 'OPERATION_CLEAR',
+  /** 用户信息 */
+  SET_OPENID = 'SET_OPENID',
 };

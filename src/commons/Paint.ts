@@ -1,4 +1,4 @@
-import { Dot, PaintType, Path } from '@/store/types';
+import { Point, PaintType, Path } from '@/store/types';
 
 const { windowWidth, windowHeight, pixelRatio } = uni.getSystemInfoSync();
 
@@ -47,11 +47,11 @@ export class Paint {
 
   /**
    * 开始绘制轨迹
-   * @param dot 坐标点
+   * @param point 坐标点
    * @param color 轨迹颜色
    * @param width 轨迹宽度
    */
-  start({ x, y }: Dot, { color = this.defaultColor, width = this.defaultWidth, alpha = 1, type = PaintType.PEN }) {
+  start({ x, y }: Point, { color = this.defaultColor, width = this.defaultWidth, alpha = 1, type = PaintType.PEN }) {
     this.ctx.beginPath();
     this.ctx.moveTo(x, y);
     this.setColor(color, alpha);
@@ -86,13 +86,13 @@ export class Paint {
     // #endif
   }
 
-  private endPoint?: Dot;
+  private endPoint?: Point;
 
   /**
    * 绘制轨迹
    * @param param 坐标点
    */
-   drawLine({ x, y }: Dot, lastPoint?: Dot) {
+   drawLine({ x, y }: Point, lastPoint?: Point) {
     if (lastPoint) {
       const ep = {
         x: lastPoint.x + (x - lastPoint.x) * 0.5,
@@ -113,6 +113,28 @@ export class Paint {
     // #endif
   }
 
+  drawPath(path: Path[], completed?: () => void) {
+    if (!path.length) return Promise.resolve();
+    for (let i = 0, len = path.length; i < len; i++) {
+      const { points, color, width, type } = path[i];
+      this.start(points[0], { color, width, type });
+      for (let j = 1, len = points.length; j < len; j++) {
+        const { x, y } = points[j];
+        if (j === len - 1) {
+          this.ctx.lineTo(x, y);
+        } else if (j > 1) {
+          const lastPoint = points[j - 1]
+          const ep = {
+            x: lastPoint.x + (x - lastPoint.x) * 0.5,
+            y: lastPoint.y + (y - lastPoint.y) * 0.5,
+          }
+          this.ctx.quadraticCurveTo(lastPoint.x, lastPoint.y, ep.x, ep.y);
+        }
+      }
+      this.ctx.stroke();
+    }
+  }
+
   /**
    * 从头绘制路径
    * @param path 路径
@@ -130,8 +152,8 @@ export class Paint {
     this.stop = false;
     this.isComplete = false;
 
-    const { pos, color, width, type } = path[0];
-    this.start(pos[0], { color, width, type });
+    const { points, color, width, type } = path[0];
+    this.start(points[0], { color, width, type });
 
     this.run(completed);
     if (completed) {
@@ -147,7 +169,7 @@ export class Paint {
       return;
     }
 
-    const points = this.path[this.row].pos;
+    const { points } = this.path[this.row];
     if (this.column < points.length) {
       // 绘制第 n 条轨迹
       if (this.column < 2 || this.column >= points.length - 1) {
@@ -167,8 +189,8 @@ export class Paint {
       if (++this.row < this.path.length) {
         // 初始化下一条轨迹
         this.column = 0;
-        const { pos, color, width, type } = this.path[this.row];
-        this.start(pos[0], { color, width, type });
+        const { points, color, width, type } = this.path[this.row];
+        this.start(points[0], { color, width, type });
 
         // 延时一会儿开始绘制下一条轨迹
         setTimeout(() => {

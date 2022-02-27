@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { usePaint } from '@/uses';
 import { Path } from '@/store/types';
 
@@ -22,16 +22,19 @@ const props = defineProps({
     type: String,
     default: '#fff',
   },
-  canvasImg: {
-    type: ImageData,
-    default: undefined,
-  },
 });
+
+const emit = defineEmits<{
+  (event: 'change', isPlay: boolean): void;
+}>();
 
 const isPlaying = ref(true);
 
+watch(isPlaying, (isPlay) => {
+  emit('change', isPlay);
+});
+
 const { paint } = usePaint('drawCanvas');
-// const bgPaint = usePaint('bgCanvas');
 
 const startPlay = () => {
   isPlaying.value = true;

@@ -1,7 +1,8 @@
-import { Path, Dot, ColorOption } from '@/store/types';
+import { Path, Point, ColorOption } from '@/store/types';
 import * as dan from '@moohng/dan';
 import { hsv, rgb } from 'color-convert';
 import { RGB } from 'color-convert/conversions';
+import { PaintPath } from './api';
 
 export function showLoading(title = '加载中...') {
   return uni.showLoading({ title, mask: true });
@@ -28,7 +29,7 @@ export function pathFallback(path: Path[]): Path[] {
   return path.map((item) => {
     return {
       ...item,
-      pos: item.pos.map(({ x, y }) => ({ x: x - 180, y: y - 284 })),
+      points: item.points.map(({ x, y }) => ({ x: x - 180, y: y - 284 })),
     };
   });
 }
@@ -39,14 +40,14 @@ export function pathFallback(path: Path[]): Path[] {
  * @param param1
  * @returns
  */
-export function getRelativeDot({ x, y }: Dot, { width, height }: { width: number; height: number }): Dot {
+export function getRelativePoint({ x, y }: Point, { width, height }: { width: number; height: number }): Point {
   return {
     x: x - width * 0.5,
     y: y - height * 0.5,
   };
 }
 
-export function getDot(event: TouchEvent) {
+export function getPoint(event: TouchEvent) {
   // @ts-ignore
   const { clientX, clientY, x = clientX, y = clientY } = event.touches[0];
   return { x, y };
@@ -100,14 +101,12 @@ export function mergeColorByAlpha(color: ColorOption) {
  * 生成随机背景色
  * @returns
  */
-export function generalBgColor() {
+export function generalBgColor(s = 80, v = dan.random(80, 90) as number, a = 1) {
   const h = dan.random(0, 360) as number;
-  const s = dan.random(80, 100) as number;
-  const v = dan.random(80, 90) as number;
 
-  const [r, g, b] = hsv.rgb([h, 80, v]);
+  const [r, g, b] = hsv.rgb([h, s, v]);
 
-  return `rgb(${r},${g},${b})`;
+  return `rgba(${r},${g},${b},${a})`;
 }
 
 /**
@@ -115,13 +114,24 @@ export function generalBgColor() {
  * @param color
  * @returns
  */
-export function generalThemeColor(color: string) {
+export function generalThemeColor(color: string, s = 80, v = dan.random(80, 90) as number, a = 1) {
   const rgbValue = color.match(/\d+/g) as unknown as RGB;
 
   const [h] = rgb.hsv(rgbValue);
-  const v = dan.random(80, 90) as number;
 
-  const [r, g, b] = hsv.rgb([h, 80, v]);
+  const [r, g, b] = hsv.rgb([h, s, v]);
 
-  return `rgb(${r},${g},${b})`;
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+interface LocalPaint extends PaintPath {
+  _id: string;
+}
+
+export function savePaintToLocal(data: LocalPaint) {
+  uni.setStorageSync('LOCAL_PAINT_KEY', data);
+}
+
+export function getPintFromLocal(): LocalPaint {
+  return uni.getStorageSync('LOCAL_PAINT_KEY');
 }

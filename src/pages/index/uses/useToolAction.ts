@@ -1,13 +1,11 @@
-import * as dan from '@moohng/dan';
 import { useStore } from 'vuex';
 import { TypeKeys } from '@/store/types';
 import { Paint } from '@/commons/Paint';
 import { Ref, ref } from 'vue';
-import { addPath } from '@/commons/api';
 import { PageMode } from '../types';
 
 export interface Emits {
-  (event: 'save', code: string): void;
+  (event: 'save'): void;
   (event: 'preview'): void;
 }
 
@@ -60,39 +58,6 @@ export function usePanelAction(emit: Emits, props: Props) {
   };
 
   return { handleUndo, handleRedo, handleClear, handlePreview };
-}
-
-export function useSaveAction() {
-  const showDialog = ref(false);
-  const pwd = ref('');
-  let code: string;
-
-  const handleSave = (text = dan.random(8) as string) => {
-    code = text;
-    showDialog.value = true;
-  };
-
-  const { getters } = useStore();
-
-  const handleSaveConfirm = (index: number | string) => {
-    if (index === 1 && !pwd.value) {
-      return uni.showToast({ title: '请输入一个口令', icon: 'none' });
-    }
-    if (index !== 'mask') {
-      addPath({
-        code,
-        path: getters.currentPathList,
-        pwd: pwd.value,
-        background: getters.backgroundColor,
-      }).then(() => {
-        uni.navigateTo({ url: '/pages/play/index?code=' + code });
-      });
-    }
-    showDialog.value = false;
-    pwd.value = '';
-  };
-
-  return { pwd, showDialog, handleSave, handleSaveConfirm };
 }
 
 export function usePreviewAction(paint: Ref<Paint | undefined>) {

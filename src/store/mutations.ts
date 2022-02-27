@@ -1,6 +1,6 @@
 import { MAX_HISTORY_COUNT } from '@/commons/config';
 import { MutationTree } from 'vuex';
-import { State, TypeKeys } from './types';
+import { PaintType, State, TypeKeys } from './types';
 
 
 const mutations: MutationTree<State> = {
@@ -9,15 +9,27 @@ const mutations: MutationTree<State> = {
   },
   [TypeKeys.SET_COLOR_INDEX] (state, colorIndex) {
     state.colorIndex = colorIndex;
+    if (state.paintType === PaintType.ERASER) {
+      state.paintType = PaintType.PEN;
+      state.width = state.cacheWidth;
+    }
   },
   [TypeKeys.SET_BACKGROUND_COLOR_INDEX](state, backgroundColorIndex) {
     state.backgroundColorIndex = backgroundColorIndex;
   },
   [TypeKeys.SET_WIDTH] (state, width) {
     state.width = width;
+    if (state.paintType !== PaintType.ERASER) {
+      state.cacheWidth = width;
+    }
   },
-  [TypeKeys.SET_PAINT_TYPE] (state, paintType) {
+  [TypeKeys.SET_PAINT_TYPE] (state, paintType: PaintType) {
     state.paintType = paintType;
+    if (paintType === PaintType.ERASER) {
+      state.width = 20;
+    } else {
+      state.width = state.cacheWidth;
+    }
   },
   [TypeKeys.OPERATION_UNDO] (state) {
     if (state.currentStepIndex > -1) {
@@ -65,6 +77,9 @@ const mutations: MutationTree<State> = {
     state.bgColorList[state.backgroundColorIndex] = color;
     uni.setStorageSync('BACKGROUND_COLOR_LIST', state.bgColorList);
   },
+  [TypeKeys.SET_OPENID] (state, openid) {
+    state.openid = openid;
+  }
 };
 
 export default mutations;

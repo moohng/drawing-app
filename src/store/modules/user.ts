@@ -1,7 +1,6 @@
-import { Module } from "vuex";
+import { Module } from 'vuex';
 
 export enum TypeKeys {
-  SET_OPEN_ID = 'SET_OPEN_ID',
   SET_USER_INFO = 'SET_USER_INFO',
 }
 
@@ -22,32 +21,22 @@ interface UserInfo {
 }
 
 interface State {
-  openId: string;
   userInfo: UserInfo;
 }
 
+const userInfo = uni.getStorageSync('USER_INFO_KEY');
+
 export const user: Module<State, any> = {
   state: {
-    openId: '',
-    userInfo: {
-      nickName: '',
-      avatarUrl: '',
-      gender: 0,
-      country: '',
-      province: '',
-      city: '',
-      language: 'zh_CN',
-    },
+    userInfo,
   },
   getters: {
     genderText: state => GenderMap[state.userInfo.gender],
   },
   mutations: {
-    [TypeKeys.SET_OPEN_ID] (state, openId) {
-      state.openId = openId;
-    },
     [TypeKeys.SET_USER_INFO] (state, userInfo) {
       state.userInfo = userInfo;
+      uni.setStorage({ key: 'USER_INFO_KEY', data: userInfo });
     },
   },
 };
