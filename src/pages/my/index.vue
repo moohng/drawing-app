@@ -12,7 +12,9 @@
         <view class="preview-button" :style="{ color: getters.themeColor }" @click.stop="handlePreview(item)">
           <text class="iconfont icon-xianshikejian"></text>
         </view>
-        <view class="title text-cut-3" v-if="item.title">{{ item.title }}</view>
+        <view class="title" v-if="item.title">
+          <text class="text-cut-3">{{ item.title }}</text>
+        </view>
       </view>
     </view>
     <view class="no-more" v-if="!hasNext && pageIndex > 1">只有这么多了~</view>
@@ -98,7 +100,6 @@ const handlePreview = (item: any) => {
     box-shadow: $shadow;
     overflow: hidden;
     &:nth-child(even) {
-      // margin-left: 24rpx;
       float: right;
     }
     .image {
@@ -126,9 +127,10 @@ const handlePreview = (item: any) => {
       left: 0;
       right: 0;
       bottom: 0;
-      padding: 8rpx 12rpx;
+      padding: 8rpx 12rpx 16rpx;
       color: #fff;
       font-size: $uni-font-size-base;
+      line-height: 1.6;
       background-color: rgba(0, 0, 0, .3);
     }
   }
