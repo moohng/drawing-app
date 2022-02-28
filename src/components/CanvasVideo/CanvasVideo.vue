@@ -28,7 +28,6 @@ const emit = defineEmits<{
   (event: 'change', isPlay: boolean): void;
 }>();
 
-
 const isPlaying = ref(true);
 
 watch(isPlaying, (isPlay) => {

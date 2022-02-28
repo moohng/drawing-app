@@ -1,7 +1,18 @@
 <template>
-  <view class="menu-button" :style="{ color: getters.themeColor, top: toTop + 'px' }">
-    <button class="button" @click="$emit('clickMenu')">
-      <text class="iconfont icon-caidan"></text>
+  <view
+    class="menu-button"
+    :style="{
+      color: getters.themeColor,
+      top: toTop + 'px',
+    }"
+    >
+    <button
+      class="button"
+      :class="{ rotate: menuBg }"
+      :style="{ backgroundImage: menuBg }"
+      @click="handleMenu"
+    >
+      <text v-if="!menuBg" class="iconfont icon-caidan"></text>
     </button>
     <button
       v-if="mode === PageMode.COPY"
@@ -13,6 +24,8 @@
       <text class="iconfont icon-xianshikejian" v-if="eyeOpen"></text>
       <text class="iconfont icon-yincangbukejian" v-else></text>
     </button>
+    <!-- 小提示 -->
+    <view class="tip" v-if="showTip">点我发现更多功能~</view>
   </view>
 </template>
 
@@ -32,10 +45,40 @@ const emit = defineEmits<{
 }>();
 
 const { state, getters } = useStore();
+
+const menuBg = computed(() => {
+  const { userInfo } = state.user;
+  return userInfo?.avatarUrl ? `url(${userInfo?.avatarUrl})` : '';
+});
+
 const toTop = computed(() => {
   return state.headerHeight + 32 * state.windowWidth / 750;
 });
 
+/** 小提示 */
+const showTip = ref(false);
+let tipTimer: number;
+
+const handleMenu = () => {
+  emit('clickMenu');
+  if (tipTimer) {
+    clearTimeout(tipTimer);
+    tipTimer = 0;
+  }
+  if (showTip.value) {
+    showTip.value = false;
+  }
+  uni.setStorageSync('MENU_TIP_KEY', Date.now());
+};
+
+tipTimer = setTimeout(() => {
+  const tipKey = uni.getStorageSync('MENU_TIP_KEY');
+  if (!tipKey) {
+    showTip.value = true;
+  }
+}, 1000 * 10);
+
+/** 显示/隐藏 */
 const eyeActive = ref(false);
 const eyeOpen = ref(true);
 const clickEye = () => {
@@ -75,10 +118,12 @@ const setEyeActive = () => {
     color: currentColor;
     font-weight: normal;
     background-color: rgba($color: $bgColor, $alpha: 0.9);
+    background-size: cover;
     box-shadow: $shadow;
     transition: opacity 0.3s;
 
     &::after {
+      content: none;
       border: none;
     }
 
@@ -87,6 +132,10 @@ const setEyeActive = () => {
     // #endif
     &.button-hover {
       background-color: rgba($bgColorHover, 0.6);
+    }
+
+    &.rotate {
+      animation: rotate 10s linear infinite;
     }
 
     .iconfont {
@@ -102,6 +151,37 @@ const setEyeActive = () => {
       box-shadow: none;
       opacity: 0.6;
     }
+  }
+  .tip {
+    padding: 4rpx 16rpx;
+    position: absolute;
+    right: 100%;
+    top: 50rpx;
+    transform: translate(-10%, -50%);
+    color: #f1f1f1;
+    font-size: 28rpx;
+    white-space: nowrap;
+    background-color: rgba(0,0,0,0.9);
+    border-radius: 8rpx;
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 12rpx solid transparent;
+      border-left-color: rgba(0,0,0,0.9);
+    }
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>

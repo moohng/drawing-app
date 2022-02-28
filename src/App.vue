@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
 
-onLaunch(() => {});
+onLaunch(() => {
+  // #ifdef MP-WEIXIN
+  wx.cloud.init({ env: 'drawing-mp-8gojqt3581a22d46', throwOnNotFound: false });
+  // #endif
+});
 onShow(() => {});
 onHide(() => {});
 </script>
@@ -45,7 +49,7 @@ page {
     position: absolute;
     display: block;
     left: 2rpx;
-    top: 6rpx;
+    top: 4rpx;
     width: 100%;
     height: 100%;
     background: inherit;
@@ -53,7 +57,7 @@ page {
     opacity: 0.6;
     z-index: -1;
     transform: scaleX(0.98);
-    filter: blur(12rpx);
+    filter: blur(8rpx);
   }
 }
 
@@ -67,6 +71,21 @@ page {
     width: 100%;
     border-bottom: 1rpx solid $uni-border-color;
     transform: scaleY(0.5);
+  }
+}
+
+.text-cut {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+@each $row in 2, 3 {
+  .text-cut-#{$row} {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $row;
   }
 }
 </style>

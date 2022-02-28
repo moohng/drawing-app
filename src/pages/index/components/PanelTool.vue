@@ -2,7 +2,7 @@
   <view class="panel-tool">
     <view class="row">
       <view class="label">大小</view>
-      <slider class="slider" :value="state.width" :min="1" :max="20" :activeColor="getters.themeColor" show-value :block-size="24" @change="handleWidthSelect"></slider>
+      <slider class="slider" :value="state.width" :min="1" :max="20" :activeColor="getters.themeColor" backgroundColor="#ffffff" show-value :block-size="24" @change="handleWidthSelect"></slider>
     </view>
     <view class="row">
       <view class="label">颜色</view>
