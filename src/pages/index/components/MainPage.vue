@@ -17,13 +17,19 @@
       <!-- 用户头像 -->
       <scroll-view class="page-scroll" scroll-y>
         <view class="page-body">
-          <view class="menu-item bg-blur" :style="{ backgroundColor: generalBgColor() }" @click="hideMenu(), emit('toggleMode', PageMode.FREE)">
-            <view class="title">自由画</view>
-            <view class="desc">一张“白板”随意画</view>
+          <view class="group">
+            <view class="menu-item bg-blur" :style="{ backgroundColor: generalBgColor() }" @click="hideMenu(), emit('toggleMode', PageMode.FREE)">
+              <view class="title">自由画</view>
+              <view class="desc">一张“白板”随意画</view>
+            </view>
+            <view class="menu-item bg-blur" :style="{ backgroundColor: generalBgColor() }" @click="hideMenu(), emit('toggleMode', PageMode.COPY)">
+              <view class="title">照着画</view>
+              <view class="desc">选张图片照着画</view>
+            </view>
           </view>
-          <view class="menu-item bg-blur" :style="{ backgroundColor: generalBgColor() }" @click="hideMenu(), emit('toggleMode', PageMode.COPY)">
-            <view class="title">照着画</view>
-            <view class="desc">不会画？选择一张图片照着画</view>
+          <view class="menu-item bg-blur" :style="{ backgroundColor: generalBgColor() }" @click="handleOpenPic">
+            <view class="title">图片处理</view>
+            <view class="desc">图片裁剪、压缩、拼接一键搞定</view>
           </view>
           <view class="menu-ad">
             <ad class="ad" unit-id="adunit-af124415d4eba99e" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
@@ -79,6 +85,10 @@ const getUserInfo = () => {
 const goMyPage = () => {
   uni.navigateTo({ url: '/pages/my/index' });
 };
+
+const handleOpenPic = () => {
+  uni.navigateToMiniProgram({ appId: 'wxe6e3233ef8b8e3e5' });
+};
 </script>
 
 <style lang="scss" scoped>
@@ -129,7 +139,7 @@ const goMyPage = () => {
 
     .page-header {
       position: relative;
-      padding: 48rpx 32rpx 32rpx;
+      padding: 56rpx 32rpx 32rpx;
       // background-color: #fff;
       .user-info {
         padding-right: 96rpx;
@@ -179,9 +189,20 @@ const goMyPage = () => {
     }
   }
 
+  .group {
+    display: flex;
+    .menu-item {
+      width: 50%;
+      flex: 1;
+      + .menu-item {
+        margin-left: 32rpx;
+      }
+    }
+  }
+
   .menu-item {
     margin-top: 32rpx;
-    padding: 40rpx;
+    padding: 40rpx 20rpx;
     color: #fff;
     text-align: center;
     border-radius: 16rpx;
