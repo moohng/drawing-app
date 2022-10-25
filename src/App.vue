@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
+// import uniIdPageInit from '@/uni_modules/uni-id-pages/init.js';
 
-onLaunch(() => {
-  // #ifdef MP-WEIXIN
-  wx.cloud.init({ env: 'drawing-mp-8gojqt3581a22d46', throwOnNotFound: false });
-  // #endif
+onLaunch(async () => {
+  // await uniIdPageInit();
 });
 onShow(() => {});
 onHide(() => {});

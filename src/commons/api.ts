@@ -9,6 +9,12 @@ export interface PaintPath {
   imgUrl?: string;
 }
 
+uniCloud.init({
+  provider: 'aliyun',
+  spaceId: 'ff827abe-e27d-48d4-a09a-81355a2ce85d',
+  clientSecret: '7DdavW0Dwo6kqPo4+AwMkA==',
+});
+
 /**
  * 保存路径
  * @param {*} data
@@ -16,10 +22,11 @@ export interface PaintPath {
  */
 export const addPath = (data: PaintPath) => {
   showLoading('正在保存...');
-  const collection = wx.cloud.database().collection('canvas-path');
+  const collection = uniCloud.database().collection('canvas-path');
   return collection.add({
     data: {
       ...data,
+      openid: useStore().state.openid,
       createTime: Date.now(),
     },
   }).catch((err: any) => {
@@ -36,7 +43,7 @@ export const addPath = (data: PaintPath) => {
  */
 export const fetchPathById = (id: string) => {
   showLoading();
-  const collection = wx.cloud.database().collection('canvas-path');
+  const collection = uniCloud.database().collection('canvas-path');
   return collection.doc(id).get().catch((err: any) => {
     uni.showToast({ title: '数据获取失败，请重试~' });
     throw new Error(err);
@@ -51,20 +58,20 @@ export const fetchPathById = (id: string) => {
  */
 export const fetchList = async (query: any) => {
   showLoading();
-  const collection = wx.cloud.database().collection('canvas-path');
   const { isMine, pageIndex = 1, pageSize = 20, ...params } = query;
   if (isMine) {
     const { state, commit } = useStore();
     if (!state.openid) {
-      const res = await wx.cloud.callFunction({
+      const res = await uniCloud.callFunction({
         name: 'path',
       });
-      params._openid = res.result.openid;
+      params.openid = res.result.openid;
       commit(TypeKeys.SET_OPENID, params._openid);
     } else {
-      params._openid = state.openid;
+      params.openid = state.openid;
     }
   }
+  const collection = uniCloud.database().collection('canvas-path');
   return collection
     .where(params)
     .skip(pageSize * (pageIndex - 1))
@@ -83,7 +90,7 @@ export const fetchList = async (query: any) => {
  */
 export const deletePathById = (ids: string[]) => {
   showLoading('正在删除...');
-  const db = wx.cloud.database();
+  const db = uniCloud.database();
   const _ = db.command;
   const collection = db.collection('canvas-path');
   return collection.where({ _id: _.or(ids) }).remove().catch((err: any) => {
@@ -98,7 +105,7 @@ export const deletePathById = (ids: string[]) => {
  * @returns
  */
 export const uploadImage = (imgUrl: string) => {
-  return wx.cloud.uploadFile({
+  return uniCloud.uploadFile({
     cloudPath: String(Date.now()) + imgUrl.match(/\.\w+$/)?.[0],
     filePath: imgUrl,
   });
@@ -110,5 +117,5 @@ export const uploadImage = (imgUrl: string) => {
  * @returns
  */
 export const deleteImage = (fileList: string[]) => {
-  return wx.cloud.deleteFile({ fileList })
+  return uniCloud.deleteFile({ fileList })
 };
