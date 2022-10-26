@@ -37,9 +37,10 @@ const pageSize = 20;
 const getList = () => {
   fetchList({
     isMine: true,
-    pageIndex,
+    pageIndex: pageIndex.value,
     pageSize,
-  }).then(({ data }) => {
+  }).then(({ result }) => {
+    const { data } = result;
     list.value = pageIndex.value > 1 ? list.value.concat(data) : data;
     if (data?.length && data.length >= pageSize) {
       hasNext.value = true;

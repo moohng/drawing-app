@@ -1,5 +1,5 @@
 import { Path, TypeKeys } from '@/store/types';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { showLoading } from './utils';
 
 export interface PaintPath {
@@ -23,12 +23,11 @@ uniCloud.init({
 export const addPath = (data: PaintPath) => {
   showLoading('正在保存...');
   const collection = uniCloud.database().collection('canvas-path');
+
   return collection.add({
-    data: {
-      ...data,
-      openid: useStore().state.openid,
-      createTime: Date.now(),
-    },
+    ...data,
+    openid: store.state.openid,
+    createTime: Date.now(),
   }).catch((err: any) => {
       uni.showToast({ title: '网络开小差了，请重试~' });
       throw new Error(err);
@@ -60,15 +59,11 @@ export const fetchList = async (query: any) => {
   showLoading();
   const { isMine, pageIndex = 1, pageSize = 20, ...params } = query;
   if (isMine) {
-    const { state, commit } = useStore();
-    if (!state.openid) {
-      const res = await uniCloud.callFunction({
-        name: 'path',
-      });
-      params.openid = res.result.openid;
-      commit(TypeKeys.SET_OPENID, params._openid);
+    if (!store.state.openid) {
+      const openid = await getOpenid();
+      params.openid = openid;
     } else {
-      params.openid = state.openid;
+      params.openid = store.state.openid;
     }
   }
   const collection = uniCloud.database().collection('canvas-path');
@@ -118,4 +113,29 @@ export const uploadImage = (imgUrl: string) => {
  */
 export const deleteImage = (fileList: string[]) => {
   return uniCloud.deleteFile({ fileList })
+};
+
+export const getOpenid = () => {
+  return new Promise((resolve, reject) => {
+    uni.login({
+      provider: 'weixin',
+      success: async ({ code }) => {
+        console.log('获取code成功', code);
+        const { result } = await uniCloud.callFunction({
+          name: 'login',
+          data: {
+            code,
+          },
+        });
+        console.log('获取openid成功', result);
+        if (result.code === 0) {
+          store.commit(TypeKeys.SET_OPENID, result.openid);
+          resolve(result.openid);
+        } else {
+          reject(result);
+        }
+      },
+      fail: reject,
+    });
+  });
 };

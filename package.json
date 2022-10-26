@@ -48,6 +48,7 @@
     "color-convert": "^2.0.1",
     "gif.js": "^0.2.0",
     "lodash": "^4.17.21",
+    "pinia": "^2.0.23",
     "vue": "^3.2.26",
     "vue-i18n": "^9.1.9",
     "vuex": "^4.0.2"
@@ -60,7 +61,6 @@
     "@types/color-convert": "^2.0.0",
     "@types/lodash": "^4.14.178",
     "autoprefixer": "^10.4.2",
-    "rollup-plugin-copy": "^3.4.0",
     "sass": "^1.48.0",
     "typescript": "^4.5.2",
     "vite": "^2.7.10",

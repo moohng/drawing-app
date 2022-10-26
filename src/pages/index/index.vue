@@ -94,11 +94,11 @@ import MainPage from './components/MainPage.vue';
 import { useCanvasEvent } from './uses/useCanvasEvent';
 import { usePreviewAction, useCopyAction } from './uses/useToolAction';
 import { PageMode } from './types';
-import { TypeKeys } from '@/store/types';
+import { getOpenid } from '@/commons/api';
 // import { getPintFromLocal } from '@/commons/utils';
 
 
-const { state, commit, getters } = useStore();
+const { getters } = useStore();
 
 /** 模式切换 */
 const mode = ref(PageMode.FREE);
@@ -126,24 +126,8 @@ onHide(() => {
 // #endif
 
 onLoad(() => {
-  console.log('========= onLoad');
   setTimeout(() => {
-    uni.login({
-      provider: 'weixin',
-      success: async ({ code }) => {
-        console.log('获取code成功', code);
-        const { result } = await uniCloud.callFunction({
-          name: 'login',
-          data: {
-            code,
-          },
-        });
-        console.log('获取openid成功', result);
-        if (result.code === 0) {
-          commit(TypeKeys.SET_OPENID, result.openid);
-        }
-      }
-    });
+    getOpenid();
   }, 2000);
 });
 
