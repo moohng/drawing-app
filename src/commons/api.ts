@@ -88,7 +88,7 @@ export const deletePathById = (ids: string[]) => {
   const db = uniCloud.database();
   const _ = db.command;
   const collection = db.collection('canvas-path');
-  return collection.where({ _id: _.or(ids) }).remove().catch((err: any) => {
+  return collection.where({ _id: _.in(ids) }).remove().catch((err: any) => {
     uni.showToast({ title: '数据获取失败，请重试~' });
     throw new Error(err);
   }).finally(uni.hideLoading);
@@ -112,6 +112,7 @@ export const uploadImage = (imgUrl: string) => {
  * @returns
  */
 export const deleteImage = (fileList: string[]) => {
+  // 阿里云不支持改api
   return uniCloud.deleteFile({ fileList })
 };
 

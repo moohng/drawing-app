@@ -71,7 +71,7 @@ const handleMore = async (item: any) => {
       if (tapIndex === 0) {
         await deletePathById([item._id]);
         list.value = list.value.filter(({ _id }: any) => _id !== item._id);
-        deleteImage([item.imgUrl]);
+        // deleteImage([item.imgUrl]);
       }
     },
   });
