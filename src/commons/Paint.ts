@@ -2,6 +2,8 @@ import { Point, PaintType, Path } from '@/store/types';
 
 const { windowWidth, windowHeight, pixelRatio } = uni.getSystemInfoSync();
 
+const canvasId = 'drawCanvas';
+
 export class Paint {
   private readonly defaultWidth = 6;
   private readonly defaultColor = 'rgb(0,0,0)';
@@ -227,13 +229,33 @@ export class Paint {
      * todo: 可优化点，不用每次都保存整张画布，而是根据当前绘制的笔记自动计算出对应大小的画布和位置，减少内存占用
      * 方法：遍历当前笔记坐标数组，找到最小 (x, y) 和 最大 (x, y) 的值，并记录起来，下次在对应位置再进行绘制
      */
-    // #ifdef MP
+    // #ifdef MP-WEIXIN
     return this.ctx.getImageData(0, 0, windowWidth * pixelRatio, windowHeight * pixelRatio);
+    // #endif
+    // #ifndef MP-WEIXIN
+    return new Promise((resolve, reject) => {
+      uni.canvasGetImageData({
+        canvasId,
+        x: 0,
+        y: 0,
+        width: windowWidth,
+        height: windowHeight,
+        success: ({ data }) => {
+          resolve(data);
+        },
+        fail: reject,
+      });
+    });
     // #endif
   }
 
   setImageData(imageData?: ImageData) {
+    // #ifdef MP-WEIXIN
     imageData && this.ctx.putImageData(imageData, 0, 0);
+    // #endif
+    // #ifndef MP-WEIXIN
+    imageData && uni.canvasPutImageData({ canvasId, x: 0, y: 0, width: windowWidth * pixelRatio, height: windowHeight * pixelRatio, data: imageData });
+    // #endif
   }
 
   drawImage(url: string) {
@@ -258,8 +280,9 @@ export class Paint {
     // @ts-ignore
     return this.canvas?.requestAnimationFrame(callback);
     // #endif
-    // #ifndef MP
+    // #ifdef H5
     return window.requestAnimationFrame(callback);
     // #endif
+    return setTimeout(callback, 16.7);
   }
 }

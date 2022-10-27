@@ -124,6 +124,7 @@ export const getOpenid = () => {
         console.log('获取code成功', code);
         const { result } = await uniCloud.callFunction({
           name: 'login',
+          secretType: 'none',
           data: {
             code,
           },

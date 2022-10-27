@@ -48,6 +48,9 @@
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "涂图了",
 		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"backgroundColor": "#F8F8F8",
+    "app-plus": {
+      "bounce": "none"
+    }
 	}
 }

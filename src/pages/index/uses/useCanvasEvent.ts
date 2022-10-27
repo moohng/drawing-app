@@ -45,15 +45,16 @@ export function useCanvasEvent(paint: Ref<Paint | undefined>) {
     currentLine.points.push(point);
   };
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = async () => {
     if (!painting) return;
     painting = false;
 
     paint.value?.drawLine(currentLine.points[currentLine.points.length - 1]);
 
+    const imageData = await paint.value?.getImageData();
     commit(TypeKeys.OPERATION_ADD, {
       currentLine,
-      currentImageData: paint.value?.getImageData(),
+      currentImageData: imageData,
     });
   };
 

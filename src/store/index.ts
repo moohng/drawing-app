@@ -17,14 +17,15 @@ if (!bgColorList) {
 }
 
 const { statusBarHeight = 20, windowWidth } = uni.getSystemInfoSync();
+let navHeight = 44;
 // #ifdef MP
 const { top, bottom } = uni.getMenuButtonBoundingClientRect();
 // @ts-ignore
-const navHeight = top + bottom - 2 * statusBarHeight;
+navHeight = top + bottom - 2 * statusBarHeight;
 // #endif
 // #ifdef H5
 // @ts-ignore
-const navHeight = 0;
+navHeight = 0;
 // #endif
 
 
