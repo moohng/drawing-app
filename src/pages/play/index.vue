@@ -93,13 +93,14 @@ const fetchData = (id: string) => {
     return setPath(res);
   }
 
-  fetchPathById(id).then(({ data }: any) => {
-    if (!data) {
+  fetchPathById(id).then(({ result }: any) => {
+    const { data } = result;
+    if (!data?.length) {
       isPlaying.value = false;
       return uni.showToast({ title: '链接已失效~', icon: 'none' });
     }
-    setPath(data);
-    savePaintToLocal(data);
+    setPath(data[0]);
+    savePaintToLocal(data[0]);
   }).catch(() => {
     errorDialog.value = true;
   });

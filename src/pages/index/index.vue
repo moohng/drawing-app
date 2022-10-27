@@ -82,7 +82,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { onHide, onShareAppMessage, onShareTimeline, onShow } from '@dcloudio/uni-app';
+import { onHide, onLoad, onShareAppMessage, onShareTimeline, onShow } from '@dcloudio/uni-app';
 import { useStore } from 'vuex';
 import { usePaint } from '@/uses';
 import { shareConfig } from '@/commons/config';
@@ -94,10 +94,11 @@ import MainPage from './components/MainPage.vue';
 import { useCanvasEvent } from './uses/useCanvasEvent';
 import { usePreviewAction, useCopyAction } from './uses/useToolAction';
 import { PageMode } from './types';
+import { getOpenid } from '@/commons/api';
 // import { getPintFromLocal } from '@/commons/utils';
 
 
-const { state, getters } = useStore();
+const { getters } = useStore();
 
 /** 模式切换 */
 const mode = ref(PageMode.FREE);
@@ -123,6 +124,12 @@ onHide(() => {
   uni.setKeepScreenOn({ keepScreenOn: false });
 });
 // #endif
+
+onLoad(() => {
+  setTimeout(() => {
+    getOpenid();
+  }, 2000);
+});
 
 /** 分享 */
 onShareAppMessage(() => shareConfig);

@@ -37,9 +37,10 @@ const pageSize = 20;
 const getList = () => {
   fetchList({
     isMine: true,
-    pageIndex,
+    pageIndex: pageIndex.value,
     pageSize,
-  }).then(({ data }) => {
+  }).then(({ result }) => {
+    const { data } = result;
     list.value = pageIndex.value > 1 ? list.value.concat(data) : data;
     if (data?.length && data.length >= pageSize) {
       hasNext.value = true;
@@ -70,7 +71,7 @@ const handleMore = async (item: any) => {
       if (tapIndex === 0) {
         await deletePathById([item._id]);
         list.value = list.value.filter(({ _id }: any) => _id !== item._id);
-        deleteImage([item.imgUrl]);
+        // deleteImage([item.imgUrl]);
       }
     },
   });
