@@ -1,5 +1,9 @@
 <template>
-  <canvas id="cs" canvas-id="cs" ref="cs" type="2d" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd"></canvas>
+  <view class="page">
+    <!-- <button>颜色选择</button> -->
+    <ColorPanel v-model:value="currentColor"></ColorPanel>
+    <view>{{ currentColor }}</view>
+  </view>
 </template>
 
 <script lang="ts">
@@ -8,26 +12,10 @@ import { defineComponent } from 'vue'
 let isPressed = false;
 
 export default defineComponent({
-  onReady() {
-    const canvas = document.querySelector('.uni-canvas-canvas') as any;
-    canvas.width = 500;
-    canvas.height = 500;
-    this.ctx = canvas.getContext('2d') as any;
-    console.log(this.ctx)
-
-    this.ctx.lineWidth = 6;
-    this.ctx.lineCap = 'round';
-    this.ctx.lineJoin = 'round';
-
-    const p1 = { x: 20, y: 20 };
-    const p2 = { x: 200, y: 100 };
-    this.ctx.save();
-    this.ctx.beginPath();
-    this.ctx.moveTo(p1.x, p1.y);
-    this.ctx.quadraticCurveTo(p1.x, p1.y, 20 + (200 - 20) / 2, 20 + (100 - 20) / 2);
-    // this.ctx.lineTo(p2.x, p2.y);
-    this.ctx.stroke();
-    this.ctx.restore();
+  data() {
+    return {
+      currentColor: '#01b10a60',
+    };
   },
   methods: {
     onTouchStart(e: any) {
@@ -45,8 +33,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-canvas {
-  background-color: #e7e09bcc;
+.page {
   width: 100vw;
   height: 100vw;
 }
