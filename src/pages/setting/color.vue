@@ -7,7 +7,7 @@
       </view>
     </view>
     <view class="bottom-line"></view>
-    <mo-color-panel :value="currentColor" @update:value="onColorChange"></mo-color-panel>
+    <mo-color-panel :value="currentColor" @change="onColorChange"></mo-color-panel>
   </view>
   <!-- 视频广告 -->
   <view class="video-ad">

@@ -1,11 +1,11 @@
 <template>
   <view class="color-panel">
     <!-- 对比度、亮度先择区域 -->
-    <view class="color-sl" id="colorSL" :style="{ background: hColor }" @touchstart="onSLTouchStart" @touchmove.prevent="onSLTouchMove" @touchend="onSLTouchEnd" @touchcancel="onSLTouchEnd">
+    <view class="color-sl" id="colorSL" :style="{ background: hColor }" @touchstart="onSLTouchMove" @touchmove.prevent="onSLTouchMove" @touchend="onTouchEnd" @touchcancel="onTouchEnd">
       <view class="h-bg">
         <view class="h-inner"></view>
       </view>
-      <view class="mark sl-mark" :style="{ left: point.x + '%', top: point.y + '%' }"></view>
+      <view class="mark sl-mark" :style="{ left: pointX + '%', top: pointY + '%' }"></view>
     </view>
     <!-- 色相、透明度选择 -->
     <view class="color-ha">
@@ -13,11 +13,11 @@
         <view class="color-preview" :style="{ backgroundColor: alpha ? rgbaValue : rgbValue }"></view>
       </view>
       <view class="color-ha-bd">
-        <view class="h-bar hue" id="colorH" :style="{ height: alpha ? 'auto' : '100%' }" @touchstart="onHTouchStart" @touchmove="onHTouchMove" @touchend="onHTouchEnd" @touchcancel="onHTouchEnd">
+        <view class="h-bar hue" id="colorH" :style="{ height: alpha ? '' : '100%' }" @touchstart="onHTouchMove" @touchmove="onHTouchMove" @touchend="onTouchEnd" @touchcancel="onTouchEnd">
           <view class="mark h-mark" :style="{ left: hOffset + '%' }"></view>
         </view>
         <view class="trans-bg" style="margin-top: 16rpx;" v-if="alpha">
-          <view class="h-bar" id="colorA" :style="{ background: `linear-gradient(to right, ${rgbValue.replace('rgb(', 'rgba(').replace(')', `,0)`)}, ${rgbValue})` }" @touchstart="onATouchStart" @touchmove="onATouchMove" @touchend="onATouchEnd" @touchcancel="onATouchEnd">
+          <view class="h-bar" id="colorA" :style="{ background: `linear-gradient(to right, ${rgbValue.replace('rgb(', 'rgba(').replace(')', `,0)`)}, ${rgbValue})` }" @touchstart="onATouchMove" @touchmove="onATouchMove" @touchend="onTouchEnd" @touchcancel="onTouchEnd">
             <view class="mark h-mark" :style="{ left: aOffset + '%' }"></view>
           </view>
         </view>
@@ -25,7 +25,7 @@
     </view>
     <!-- 颜色格式转换 -->
     <view class="color-form">
-      <view class="form-body" :class="[alpha ? 'col-4' : 'col-3']" v-if="mode === MODE.RGB">
+      <view class="form-body" :class="[alpha ? 'col-4' : 'col-3']" v-if="mode === 1">
         <view class="field">
           <input class="input" :value="form.r" type="number" @blur="onInputChange('r', $event)" @confirm="onInputChange('r', $event)">
           <view class="label">R</view>
@@ -43,7 +43,7 @@
           <view class="label">A</view>
         </view>
       </view>
-      <view class="form-body" :class="[alpha ? 'col-4' : 'col-3']" v-else-if="mode === MODE.HSL">
+      <view class="form-body" :class="[alpha ? 'col-4' : 'col-3']" v-else-if="mode === 2">
         <view class="field">
           <input class="input" :value="form.h" type="number" @blur="onInputChange('h', $event)" @confirm="onInputChange('h', $event)">
           <view class="label">H</view>
@@ -72,103 +72,233 @@
   </view>
 </template>
 
-<script lang="ts" setup>
-import { computed, watch } from 'vue';
-import { hsv } from 'color-convert';
-import { MODE, useAlpha, useHue, useModeSwitch, useRange, useSLRange } from './uses';
+<script lang="ts">
+import { hsv, rgb } from 'color-convert';
+import { HSL } from 'color-convert/conversions';
 import { toHSVA } from './tools';
 
-const props = defineProps({
-  value: {
-    type: String,
-    default: '#000',
-  },
-  alpha: {
-    type: Boolean,
-    default: false,
-  },
-});
-
-const emit = defineEmits<{
-  (event: 'update:value', value: string): void;
-}>();
-
-// 触发change事件
-const onValueChanged = () => {
-  emit('update:value', props.alpha ? rgbaValue.value : rgbValue.value);
+enum MODE {
+  RGB = 1,
+  HSL = 2,
+  HEX = 3,
 }
 
-const { onSLTouchStart, onSLTouchMove, onSLTouchEnd, point, lValue, sValue } = useSLRange(onValueChanged);
+export default {
+  name: 'mo-color-panel',
+  timer: 0,
+  model: {
+    event: 'change',
+  },
+  props: {
+    value: {
+      type: String,
+      default: '#000',
+    },
+    alpha: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      pointX: 0,
+      pointY: 0,
+      slRectInfo: {},
+      hOffset: 0,
+      hRectInfo: {},
+      aOffset: 0,
+      aRectInfo: {},
 
-const { onTouchStart: onHTouchStart, onTouchMove: onHTouchMove, onTouchEnd: onHTouchEnd, offset: hOffset } = useRange('#colorH', onValueChanged);
-const { hValue, hColor } = useHue(hOffset);
-
-const { onTouchStart: onATouchStart, onTouchMove: onATouchMove, onTouchEnd: onATouchEnd, offset: aOffset } = useRange('#colorA', onValueChanged);
-const { aValue } = useAlpha(aOffset);
-
-const setDefaultValue = (v: string) => {
-  const { hsv: defaultHSV, alpha: defaultAlpha } = toHSVA(v);
-
-  console.log(v, '===> hsv', defaultHSV, defaultAlpha);
-
-  hOffset.value = defaultHSV[0] / 3.6;
-  aOffset.value = props.alpha ? defaultAlpha * 100 : 100;
-  point.x = defaultHSV[1];
-  point.y = 100 - defaultHSV[2];
-}
-
-// 设置默认值（颜色面板）
-watch(() => props.value, (v) => {
-  setDefaultValue(v);
-}, { immediate: true });
-
-const rgbValue = computed(() => {
-  const [r, g, b] = hsv.rgb([hValue.value, sValue.value, lValue.value])
-  return `rgb(${r},${g},${b})`;
-});
-
-const rgbaValue = computed(() => {
-  return rgbValue.value.replace('rgb(', 'rgba(').replace(')', `,${aValue.value})`);
-});
-
-/** 模式切换 */
-const { mode, form, onSwitch } = useModeSwitch(rgbValue, props.alpha ? aValue : undefined);
-
-const onInputChange = (key: keyof typeof form, e: any) => {
-  let { value } = e.detail;
-  console.log('onInputChange', key, value);
-  if (key !== 'hex') {
-    value = parseInt(value);
-    if (value < 0) {
-      value = 0;
-    } else if (['r', 'g', 'b'].includes(key) && value > 255) {
-      value = 255;
-    } else if (['s', 'l'].includes(key) && value > 100) {
-      value = 100;
-    } else if (key === 'h' && value > 360) {
-      value = 360;
-    } else if (key === 'a' && value > 1) {
-      value = 1;
+      form: {
+        r: 0,
+        g: 0,
+        b: 0,
+        h: 0,
+        s: 0,
+        l: 0,
+        a: 1,
+        hex: '#000',
+      },
+      mode: MODE.RGB,
     }
-  } else {
-    value = value.toUpperCase();
-    if (!/^#/.test(value)) {
-      value = '#' + value;
-    }
-  }
-  form[key] = value as never;
+  },
+  computed: {
+    sValue() { // 对比度 0
+      return this.pointX;
+    },
+    lValue() { // 亮度 100
+      return 100 - this.pointY;
+    },
+    hValue() { // 色相 0
+      return 3.6 * this.hOffset;
+    },
+    hColor() { // 色颜色
+      return `hsl(${Math.round(this.hValue)},100%,50%)`;
+    },
+    aValue() { // 透明度 1
+      return parseFloat((((this.aOffset % 100) || 100) / 100).toFixed(2));
+    },
+    rgbValue() {
+      const [r, g, b] = hsv.rgb([this.hValue, this.sValue, this.lValue])
+      return `rgb(${r},${g},${b})`;
+    },
+    rgbaValue() {
+      return this.rgbValue.replace('rgb(', 'rgba(').replace(')', `,${this.aValue})`);
+    },
+  },
+  watch: {
+    value: {
+      handler(val) {
+        this.setDefaultValue(val);
+      },
+      immediate: true,
+    },
+    rgbaValue: {
+      handler() {
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+          this.setForm();
+        }, 20);
+      },
+      immediate: true,
+    },
+  },
+  mounted() {
+    const query = uni.createSelectorQuery().in(this)
+    // 亮度和对比度拖拽区域
+    query.select('#colorSL').boundingClientRect();
+    // 色相
+    query.select('#colorH').boundingClientRect();
+    // 透明度
+    query.select('#colorA').boundingClientRect();
+    query.exec(([slInfo, hInfo, aInfo]: UniApp.NodeInfo[]) => {
+      this.slRectInfo = slInfo;
+      this.hRectInfo = hInfo;
+      this.aRectInfo = aInfo;
+    });
+  },
+  methods: {
+    setDefaultValue(val: string) {
+      const { hsv: defaultHSV, alpha: defaultAlpha } = toHSVA(val);
 
-  if (mode.value === MODE.RGB) {
-    const { r, g, b, a } = form;
-    setDefaultValue(`rgba(${r},${g},${b},${a})`);
-  } else if (mode.value === MODE.HSL) {
-    const { h, s, l, a } = form;
-    setDefaultValue(`hsla(${h},${s},${l},${a})`);
-  } else {
-    setDefaultValue(form.hex);
-  }
+      console.log(val, '===> hsv', defaultHSV, defaultAlpha);
 
-  onValueChanged();
+      this.hOffset = defaultHSV[0] / 3.6;
+      this.aOffset = this.alpha ? defaultAlpha * 100 : 100;
+      this.pointX = defaultHSV[1];
+      this.pointY = 100 - defaultHSV[2];
+    },
+    // 对比度和亮度选择
+    onSLTouchMove(e: any) {
+      const { pageX, pageY } = e.touches[0];
+      this.setPoint(pageX, pageY);
+    },
+    setPoint(x: number, y: number) {
+      const { left, top, width, height } = this.slRectInfo as UniApp.NodeInfo;
+      x = (x - left!) * 100 / width!;
+      y = (y - top!) * 100 / height!;
+      if (x < 0) {
+        x = 0;
+      } else if (x > 100) {
+        x = 100
+      }
+      if (y < 0) {
+        y = 0;
+      } else if (y > 100) {
+        y = 100
+      }
+      this.pointX = x;
+      this.pointY = y;
+    },
+    // 色相透明度选择
+    onHTouchMove(e: any) {
+      const { pageX } = e.touches[0];
+      this.setOffset(pageX, 'hOffset', this.hRectInfo);
+    },
+    onATouchMove(e: any) {
+      const { pageX } = e.touches[0];
+      this.setOffset(pageX, 'aOffset', this.aRectInfo);
+    },
+    setOffset(x: number, key: string, info?: UniApp.NodeInfo) {
+      if (!info) {
+        return;
+      }
+      const { left, width } = info;
+      x = (x - left!) * 100 / width!;
+      if (x < 0) {
+        x = 0;
+      } else if (x > 100) {
+        x = 100
+      }
+      this[key] = x;
+    },
+    onTouchEnd() {
+      this.onValueChanged();
+    },
+    onValueChanged() {
+      this.$emit('change', this.alpha ? this.rgbaValue : this.rgbValue);
+    },
+    // 模式切换
+    onSwitch() {
+      this.mode = this.mode % 3 + 1;
+      console.log('模式切换', this.mode);
+      this.setForm();
+    },
+    setForm() {
+      const rgbValue = this.rgbValue.match(/\d+/g) as unknown as HSL;
+      if (this.mode === MODE.RGB) {
+        const [r, g, b] = rgbValue;
+        this.form.r = r;
+        this.form.g = g;
+        this.form.b = b;
+        this.form.a = this.aValue || 1;
+      } else if (this.mode === MODE.HSL) {
+        const [h, s, l] = rgb.hsl(rgbValue);
+        this.form.h = h;
+        this.form.s = s;
+        this.form.l = l;
+        this.form.a = this.aValue || 1;
+      } else {
+        this.form.hex = '#' + rgb.hex(rgbValue) + (this.alpha ? Math.round((this.aValue * 0xff)).toString(16) : '');
+      }
+    },
+    onInputChange(key: string, e: any) {
+      let { value } = e.detail;
+      console.log('onInputChange', key, value);
+      if (key !== 'hex') {
+        value = parseInt(value);
+        if (value < 0) {
+          value = 0;
+        } else if (['r', 'g', 'b'].includes(key) && value > 255) {
+          value = 255;
+        } else if (['s', 'l'].includes(key) && value > 100) {
+          value = 100;
+        } else if (key === 'h' && value > 360) {
+          value = 360;
+        } else if (key === 'a' && value > 1) {
+          value = 1;
+        }
+      } else {
+        value = value.toUpperCase();
+        if (!/^#/.test(value)) {
+          value = '#' + value;
+        }
+      }
+      this.form[key] = value as never;
+
+      if (this.mode === MODE.RGB) {
+        const { r, g, b, a } = this.form;
+        this.setDefaultValue(`rgba(${r},${g},${b},${a})`);
+      } else if (this.mode === MODE.HSL) {
+        const { h, s, l, a } = this.form;
+        this.setDefaultValue(`hsla(${h},${s},${l},${a})`);
+      } else {
+        this.setDefaultValue(this.form.hex);
+      }
+
+      this.onValueChanged();
+    },
+  },
 };
 </script>
 
