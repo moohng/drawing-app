@@ -7,7 +7,7 @@
     <view class="row">
       <view class="label">颜色</view>
       <view class="list">
-        <view class="item color-block" :class="{ selected: state.colorIndex === index }" :style="{ color: mergeColorByAlpha(item) }" v-for="(item, index) in state.colorList" :key="index" @click="handleColorSelect(index)"></view>
+        <view class="item color-block" :class="{ selected: state.colorIndex === index }" :style="{ color: item.value }" v-for="(item, index) in state.colorList" :key="index" @click="handleColorSelect(index)"></view>
         <view class="item button" @click="handleConfigColor('color')">
           <text class="iconfont icon-config"></text>
         </view>
@@ -28,7 +28,6 @@
 <script lang="ts" setup>
 import { useStore } from 'vuex';
 import { TypeKeys } from '@/store/types';
-import { mergeColorByAlpha } from '@/commons/utils';
 
 const { state, getters, commit } = useStore();
 

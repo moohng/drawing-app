@@ -3,11 +3,11 @@
     <view class="row">
       <view class="label">常用颜色</view>
       <view class="list">
-        <view class="item color-block" :class="{ selected: currentColorIndex === index }" :style="{ color: mergeColorByAlpha(item) }" v-for="(item, index) in colorList" :key="index" @click="handleColorSelect(index, item)"></view>
+        <view class="item color-block" :class="{ selected: currentColorIndex === index }" :style="{ color: item.value }" v-for="(item, index) in colorList" :key="index" @click="handleColorSelect(index, item)"></view>
       </view>
     </view>
     <view class="bottom-line"></view>
-    <ColorPicker :value="currentColor" @change="onColorChange"></ColorPicker>
+    <mo-color-panel :value="currentColor" @update:value="onColorChange"></mo-color-panel>
   </view>
   <!-- 视频广告 -->
   <view class="video-ad">
@@ -20,7 +20,6 @@ import { ColorOption, TypeKeys } from '@/store/types';
 import { computed, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { useStore } from 'vuex';
-import { mergeColorByAlpha } from '@/commons/utils';
 
 const { state, getters, commit } = useStore();
 

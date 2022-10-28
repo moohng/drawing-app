@@ -1,7 +1,7 @@
 <template>
   <view class="page">
     <!-- <button>颜色选择</button> -->
-    <ColorPanel v-model:value="currentColor"></ColorPanel>
+    <mo-color-panel v-model:value="currentColor"></mo-color-panel>
     <view>{{ currentColor }}</view>
   </view>
 </template>
@@ -34,7 +34,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .page {
-  width: 100vw;
-  height: 100vw;
+  padding: 24rpx;
 }
 </style>

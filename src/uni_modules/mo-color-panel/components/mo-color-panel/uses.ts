@@ -15,6 +15,9 @@ export function useRange(selector: string, onValueChanged?: () => void) {
 
   onMounted(() => {
     uni.createSelectorQuery().in(getCurrentInstance()).select(selector).boundingClientRect((info) => {
+      if (!info) {
+        return;
+      }
       width = info.width!;
       left = info.left!;
     }).exec();
@@ -144,7 +147,7 @@ export enum MODE {
   HEX = 3,
 }
 
-export function useModeSwitch(hslValue: Ref<string>, alpha: Ref<number>) {
+export function useModeSwitch(hslValue: Ref<string>, alpha?: Ref<number>) {
   const mode = ref(MODE.RGB);
   const form = reactive({
     r: 0,
@@ -164,15 +167,15 @@ export function useModeSwitch(hslValue: Ref<string>, alpha: Ref<number>) {
       form.r = r;
       form.g = g;
       form.b = b;
-      form.a = alpha.value;
+      form.a = alpha?.value || 1;
     } else if (mode.value === MODE.HSL) {
       const [h, s, l] = rgb.hsl(rgbValue);
       form.h = h;
       form.s = s;
       form.l = l;
-      form.a = alpha.value;
+      form.a = alpha?.value || 1;
     } else {
-      form.hex = '#' + rgb.hex(rgbValue) + Math.round((alpha.value * 0xff)).toString(16);
+      form.hex = '#' + rgb.hex(rgbValue) + (alpha?.value ? Math.round((alpha.value * 0xff)).toString(16) : '');
     }
   };
 
@@ -182,12 +185,12 @@ export function useModeSwitch(hslValue: Ref<string>, alpha: Ref<number>) {
     setForm();
   };
 
-  watch(hslValue, () => {
-    setForm();
-  }, { immediate: true });
-  
-  watch(alpha, () => {
-    setForm();
+  let timer = 0;
+  watch(alpha ? [hslValue, alpha] : hslValue, () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      setForm();
+    }, 20);
   }, { immediate: true });
 
   return {

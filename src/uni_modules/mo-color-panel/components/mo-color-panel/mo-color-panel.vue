@@ -10,14 +10,14 @@
     <!-- 色相、透明度选择 -->
     <view class="color-ha">
       <view class="trans-bg" style="margin-right: 16rpx;">
-        <view class="color-preview" :style="{ backgroundColor: hslaValue }"></view>
+        <view class="color-preview" :style="{ backgroundColor: alpha ? rgbaValue : rgbValue }"></view>
       </view>
       <view class="color-ha-bd">
-        <view class="h-bar hue" id="colorH" @touchstart="onHTouchStart" @touchmove="onHTouchMove" @touchend="onHTouchEnd" @touchcancel="onHTouchEnd">
+        <view class="h-bar hue" id="colorH" :style="{ height: alpha ? 'auto' : '100%' }" @touchstart="onHTouchStart" @touchmove="onHTouchMove" @touchend="onHTouchEnd" @touchcancel="onHTouchEnd">
           <view class="mark h-mark" :style="{ left: hOffset + '%' }"></view>
         </view>
-        <view class="trans-bg" style="margin-top: 16rpx;">
-          <view class="h-bar" id="colorA" :style="{ background: `linear-gradient(to right, ${hslValue.replace('rgb(', 'rgba(').replace(')', `,0)`)}, ${hslValue})` }" @touchstart="onATouchStart" @touchmove="onATouchMove" @touchend="onATouchEnd" @touchcancel="onATouchEnd">
+        <view class="trans-bg" style="margin-top: 16rpx;" v-if="alpha">
+          <view class="h-bar" id="colorA" :style="{ background: `linear-gradient(to right, ${rgbValue.replace('rgb(', 'rgba(').replace(')', `,0)`)}, ${rgbValue})` }" @touchstart="onATouchStart" @touchmove="onATouchMove" @touchend="onATouchEnd" @touchcancel="onATouchEnd">
             <view class="mark h-mark" :style="{ left: aOffset + '%' }"></view>
           </view>
         </view>
@@ -25,7 +25,7 @@
     </view>
     <!-- 颜色格式转换 -->
     <view class="color-form">
-      <view class="form-body col-3" v-if="mode === MODE.RGB">
+      <view class="form-body" :class="[alpha ? 'col-4' : 'col-3']" v-if="mode === MODE.RGB">
         <view class="field">
           <input class="input" :value="form.r" type="number" @blur="onInputChange('r', $event)" @confirm="onInputChange('r', $event)">
           <view class="label">R</view>
@@ -38,12 +38,12 @@
           <input class="input" :value="form.b" type="number" @blur="onInputChange('b', $event)" @confirm="onInputChange('b', $event)">
           <view class="label">B</view>
         </view>
-        <view class="field">
+        <view class="field" v-if="alpha">
           <input class="input" :value="form.a" type="number" @blur="onInputChange('a', $event)" @confirm="onInputChange('a', $event)">
           <view class="label">A</view>
         </view>
       </view>
-      <view class="form-body col-3" v-else-if="mode === MODE.HSL">
+      <view class="form-body" :class="[alpha ? 'col-4' : 'col-3']" v-else-if="mode === MODE.HSL">
         <view class="field">
           <input class="input" :value="form.h" type="number" @blur="onInputChange('h', $event)" @confirm="onInputChange('h', $event)">
           <view class="label">H</view>
@@ -56,7 +56,7 @@
           <input class="input" :value="form.l" type="number" @blur="onInputChange('l', $event)" @confirm="onInputChange('l', $event)">
           <view class="label">L</view>
         </view>
-        <view class="field">
+        <view class="field" v-if="alpha">
           <input class="input" :value="form.a" type="number" @blur="onInputChange('a', $event)" @confirm="onInputChange('a', $event)">
           <view class="label">A</view>
         </view>
@@ -83,6 +83,10 @@ const props = defineProps({
     type: String,
     default: '#000',
   },
+  alpha: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits<{
@@ -91,7 +95,7 @@ const emit = defineEmits<{
 
 // 触发change事件
 const onValueChanged = () => {
-  emit('update:value', hslaValue.value);
+  emit('update:value', props.alpha ? rgbaValue.value : rgbValue.value);
 }
 
 const { onSLTouchStart, onSLTouchMove, onSLTouchEnd, point, lValue, sValue } = useSLRange(onValueChanged);
@@ -108,7 +112,7 @@ const setDefaultValue = (v: string) => {
   console.log(v, '===> hsv', defaultHSV, defaultAlpha);
 
   hOffset.value = defaultHSV[0] / 3.6;
-  aOffset.value = defaultAlpha * 100;
+  aOffset.value = props.alpha ? defaultAlpha * 100 : 100;
   point.x = defaultHSV[1];
   point.y = 100 - defaultHSV[2];
 }
@@ -118,17 +122,17 @@ watch(() => props.value, (v) => {
   setDefaultValue(v);
 }, { immediate: true });
 
-const hslValue = computed(() => {
+const rgbValue = computed(() => {
   const [r, g, b] = hsv.rgb([hValue.value, sValue.value, lValue.value])
   return `rgb(${r},${g},${b})`;
 });
 
-const hslaValue = computed(() => {
-  return hslValue.value.replace('rgb(', 'rgba(').replace(')', `,${aValue.value})`);
+const rgbaValue = computed(() => {
+  return rgbValue.value.replace('rgb(', 'rgba(').replace(')', `,${aValue.value})`);
 });
 
 /** 模式切换 */
-const { mode, form, onSwitch } = useModeSwitch(hslValue, aValue);
+const { mode, form, onSwitch } = useModeSwitch(rgbValue, props.alpha ? aValue : undefined);
 
 const onInputChange = (key: keyof typeof form, e: any) => {
   let { value } = e.detail;
@@ -251,7 +255,7 @@ const onInputChange = (key: keyof typeof form, e: any) => {
 
   .field {
     .input {
-      padding: 2rpx 16rpx;
+      padding: 2rpx 8rpx;
       width: 220rpx;
       color: $uni-text-color;
       font-size: $uni-font-size-base;
@@ -270,6 +274,12 @@ const onInputChange = (key: keyof typeof form, e: any) => {
     justify-content: space-between;
     .field .input {
       width: 120rpx;
+    }
+  }
+  .form-body.col-4 {
+    justify-content: space-between;
+    .field .input {
+      width: 90rpx;
     }
   }
 }
