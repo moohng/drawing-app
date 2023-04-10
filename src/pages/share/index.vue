@@ -3,15 +3,16 @@
     <CanvasVideo :path="getters.currentPathList" :background="getters.backgroundColor" @change="onCanvasVideoChange"></CanvasVideo>
   </view>
 
-  <view class="list">
+  <!-- <view class="list">
     <view class="item bottom-line">
       <view class="label">标题</view>
       <input class="input" v-model="title" type="text" placeholder="给作品起一个标题吧" placeholder-class="placeholder">
     </view>
-  </view>
+  </view> -->
   <!-- 底部按钮 -->
   <view class="button-group">
-    <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[0] }" @click="handleSave">保存到画作</view>
+    <!-- <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[0] }" @click="handleSave">保存到画作</view> -->
+    <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[0] }" @click="handleGif">生成动画</view>
     <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[1] }" @click="handleDownload">生成图片</view>
   </view>
   <!-- 底部广告 -->
@@ -35,9 +36,8 @@
 import { ref } from 'vue';
 import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { shareConfig } from '@/commons/config';
-import { generalBgColor, showLoading } from '@/commons/utils';
+import { generalBgColor } from '@/commons/utils';
 import { useStore } from 'vuex';
-import { addPath, uploadImage } from '@/commons/api';
 import { useDownloadImage, useDrawImage } from '@/uses/useDownloadImage';
 import { usePaint } from '@/uses';
 import { useGenerateImage } from '@/uses/useGenerateImage';
@@ -70,34 +70,20 @@ const { paint } = usePaint('imgCanvas', async () => {
   }
 });
 
-const title = ref('');
+// 保存成功弹窗
 const showDialog = ref(false);
-
-const handleSave = async () => {
-  showLoading('正在保存...');
-  if (!shareImageUrl) {
-    useDrawImage(paint, getters);
-    shareImageUrl = await useGenerateImage('#imgCanvas');
-  }
-  // 上传图片信息
-  const res = await uploadImage(shareImageUrl);
-  // 保存
-  addPath({
-    path: getters.currentPathList,
-    title: title.value,
-    background: getters.backgroundColor,
-    imgUrl: res.fileID,
-  }).then(({ _id }: any) => {
-    path = '/pages/play/index?id=' + _id,
-    showDialog.value = true;
-  });
-};
 
 const handleSendFriend = () => {
   showDialog.value = false;
 };
 
+// 保存图片
 const { handleDownload } = useDownloadImage(paint, '#imgCanvas');
+
+// 保存动画
+const handleGif = () => {
+  console.log('--------------');
+};
 
 // 弹窗广告
 const { showInterstitialAd } = useInterstitialAd('adunit-c0ef209d582bf665');
@@ -144,21 +130,24 @@ const onCanvasVideoChange = (isPlay: boolean) => {
 }
 
 .button-group {
-  padding: 16rpx 32rpx;
+  padding: 32rpx;
   display: flex;
   justify-content: space-between;
   .button {
     width: 47%;
     height: 96rpx;
     color: #fff;
+    font-size: 36rpx;
+    font-weight: bold;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 8rpx;
   }
 }
 
 .bottom-banner {
-  margin: 16rpx 32rpx;
+  margin: 32rpx;
 }
 
 .dialog-btn {

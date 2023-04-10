@@ -1,7 +1,7 @@
 <template>
   <view class="container">
     <view class="row">
-      <view class="label">常用颜色</view>
+      <view class="label">{{ colorType === 'bg' ? '背景' : '画笔' }}颜色</view>
       <view class="list">
         <view class="item color-block" :class="{ selected: currentColorIndex === index }" :style="{ color: item.value }" v-for="(item, index) in colorList" :key="index" @click="handleColorSelect(index, item)"></view>
       </view>
@@ -93,15 +93,15 @@ const onColorChange = (v: any) => {
     &.color-block::before {
       content: '';
       display: block;
-      width: 44rpx;
-      height: 44rpx;
+      width: 36rpx;
+      height: 36rpx;
       background-color: currentColor;
       border-radius: 200rpx;
       transition: all .4s;
     }
 
     &.color-block.selected::before {
-      transform: scale(1.36);
+      transform: scale(1.6);
       box-shadow: $shadow;
     }
   }

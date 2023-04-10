@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
-// import uniIdPageInit from '@/uni_modules/uni-id-pages/init.js';
+import { onLaunch, onShow, onHide } from '@dcloudio/uni-app';
 
-onLaunch(async () => {
-  // await uniIdPageInit();
-});
+onLaunch(async () => {});
 onShow(() => {});
 onHide(() => {});
 </script>
@@ -12,7 +9,7 @@ onHide(() => {});
 @import './styles/iconfont.css';
 
 page {
-  --primaryColor: #00CCFF;
+  --primaryColor: #00ccff;
   --bg-color: $bgColor;
   color: #333;
   font-size: 32rpx;
@@ -34,7 +31,7 @@ page {
 }
 
 .mask.cover {
-  background-color: rgba(0,0,0,.56);
+  background-color: rgba(0, 0, 0, 0.56);
 }
 
 .placeholder {

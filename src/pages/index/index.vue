@@ -82,7 +82,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { onHide, onLoad, onShareAppMessage, onShareTimeline, onShow } from '@dcloudio/uni-app';
+import { onHide, onShareAppMessage, onShareTimeline, onShow } from '@dcloudio/uni-app';
 import { useStore } from 'vuex';
 import { usePaint } from '@/uses';
 import { shareConfig } from '@/commons/config';
@@ -94,8 +94,6 @@ import MainPage from './components/MainPage.vue';
 import { useCanvasEvent } from './uses/useCanvasEvent';
 import { usePreviewAction, useCopyAction } from './uses/useToolAction';
 import { PageMode } from './types';
-import { getOpenid } from '@/commons/api';
-// import { getPintFromLocal } from '@/commons/utils';
 
 
 const { getters } = useStore();
@@ -125,27 +123,13 @@ onHide(() => {
 });
 // #endif
 
-onLoad(() => {
-  setTimeout(() => {
-    getOpenid();
-  }, 2000);
-});
-
 /** 分享 */
 onShareAppMessage(() => shareConfig);
 
 onShareTimeline(() => shareConfig);
 
 /** 画笔 */
-const { paint } = usePaint('drawCanvas', () => {
-  // if (!state.path.length) {
-  //   const { path } = getPintFromLocal();
-  //   if (path?.length) {
-  //     paint.value?.clear();
-  //     paint.value?.drawPath(path);
-  //   }
-  // }
-});
+const { paint } = usePaint('drawCanvas');
 
 /** 初始化 */
 watch(paint, () => {
