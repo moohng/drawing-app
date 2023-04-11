@@ -45,16 +45,16 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from 'vue';
 import { defaultAvatarUrl } from '@/commons/config';
 import { generalBgColor } from '@/commons/utils';
-import { TypeKeys } from '@/store/modules/user';
-import { computed } from 'vue';
-import { useStore } from 'vuex';
+import { useUserStore, UserInfo } from '@/store/modules/user';
 import { PageMode } from '../types';
 import { useMenuAction } from '../uses/useToolAction';
+import { useStore } from '@/store';
 
-
-const { state, getters, commit } = useStore();
+const mainStore = useStore();
+const userStore = useUserStore();
 
 const emit = defineEmits<{
   (event: 'toggleMode', mode: PageMode): void;
@@ -62,7 +62,7 @@ const emit = defineEmits<{
 
 const topBg = computed(() => {
   return {
-    background: `linear-gradient(to bottom, ${getters.themeBgColor}, transparent)`,
+    background: `linear-gradient(to bottom, ${mainStore.themeBgColor}, transparent)`,
  };
 });
 
@@ -74,14 +74,14 @@ defineExpose({
   openMenu,
 });
 
-const userInfo = computed(() => state.user.userInfo);
+const userInfo = computed(() => userStore.userInfo);
 
 const getUserInfo = () => {
   if (userInfo.value) return;
   uni.getUserProfile({
     desc: '为了更好的用户体验',
     success: (res) => {
-      commit(TypeKeys.SET_USER_INFO, res.userInfo);
+      userStore.setUserInfo(res.userInfo as unknown as UserInfo);
     },
   });
 };

@@ -1,18 +1,18 @@
 <template>
   <!-- 操作区域 -->
-  <view class="toolbar bg-blur" :style="{ backgroundColor: getters.themeColor }">
+  <view class="toolbar bg-blur" :style="{ backgroundColor: store.themeColor }">
     <button class="button" @click="handleShare"><text class="iconfont icon-share"></text></button>
   </view>
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex';
+import { useStore } from '@/store';
 
-const { state, getters } = useStore();
+const store = useStore();
 
 /** 操作 */
 const handleShare = () => {
-  if (state.currentPathIndex < 0) {
+  if (store.currentPathIndex < 0) {
     return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
   }
 

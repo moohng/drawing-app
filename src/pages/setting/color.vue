@@ -19,32 +19,35 @@
 import { ColorOption, TypeKeys } from '@/store/types';
 import { computed, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { useStore } from 'vuex';
+import { useStore } from '@/store';
 
-const { state, getters, commit } = useStore();
+const store = useStore();
 
 const colorType = ref('color');
 const currentColor = ref('#000');
 
 onLoad(({ type = 'color' }) => {
   colorType.value = type;
-  currentColor.value = type === 'bg' ? getters.backgroundColor : getters.color;
+  currentColor.value = type === 'bg' ? store.backgroundColor : store.color;
 });
 
 const colorList = computed(() => {
-  return colorType.value === 'bg' ? state.bgColorList : state.colorList;
+  return colorType.value === 'bg' ? store.bgColorList : store.colorList;
 });
 
-const currentColorIndex = computed(() => colorType.value === 'bg' ? state.backgroundColorIndex : state.colorIndex);
+const currentColorIndex = computed(() => colorType.value === 'bg' ? store.backgroundColorIndex : store.colorIndex);
 
 const handleColorSelect = (index: number, item: ColorOption) => {
-  commit(colorType.value === 'bg' ? TypeKeys.SET_BACKGROUND_COLOR_INDEX : TypeKeys.SET_COLOR_INDEX, index);
+  colorType.value === 'bg' ? store.setBackgroundColorIndex(index) : store.setColorIndex(index);
   currentColor.value = item.value;
 };
 
 const onColorChange = (v: any) => {
   console.log('color change', v);
-  commit(colorType.value === 'bg' ? TypeKeys.EDIT_BACKGROUND_LIST_BY_INDEX : TypeKeys.EDIT_COLOR_LIST_BY_INDEX, {
+  colorType.value === 'bg' ? store.editBackgroundColorByIndex({
+    alpha: 1,
+    value: v,
+  }) : store.editColorListByIndex({
     alpha: 1,
     value: v,
   });

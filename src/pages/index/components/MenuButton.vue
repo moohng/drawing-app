@@ -2,7 +2,7 @@
   <view
     class="menu-button"
     :style="{
-      color: getters.themeColor,
+      color: store.themeColor,
       top: toTop + 'px',
     }"
     >
@@ -31,7 +31,8 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
-import { useStore } from 'vuex';
+import { useStore } from '@/store';
+import { useUserStore } from '@/store/modules/user';
 import { PageMode } from '../types';
 
 const props = defineProps<{
@@ -44,15 +45,15 @@ const emit = defineEmits<{
   (event: 'longPressEdit'): void;
 }>();
 
-const { state, getters } = useStore();
+const store = useStore();
+const userStore = useUserStore();
 
 const menuBg = computed(() => {
-  const { userInfo } = state.user;
-  return userInfo?.avatarUrl ? `url(${userInfo?.avatarUrl})` : '';
+  return userStore.userInfo?.avatarUrl ? `url(${userStore.userInfo?.avatarUrl})` : '';
 });
 
 const toTop = computed(() => {
-  return state.headerHeight + 32 * state.windowWidth / 750;
+  return store.headerHeight + 32 * store.windowWidth / 750;
 });
 
 /** 小提示 */

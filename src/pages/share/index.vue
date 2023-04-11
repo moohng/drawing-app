@@ -1,6 +1,6 @@
 <template>
   <view class="top">
-    <CanvasVideo :path="getters.currentPathList" :background="getters.backgroundColor" @change="onCanvasVideoChange"></CanvasVideo>
+    <CanvasVideo :path="store.currentPathList" :background="store.backgroundColor" @change="onCanvasVideoChange"></CanvasVideo>
   </view>
 
   <!-- <view class="list">
@@ -25,7 +25,7 @@
   <Dialog :visible="showDialog" title="保存成功" @click="handleSendFriend">
     <view class="dialog-desc">赶紧分享给好友炫耀一下吧~</view>
     <template #footer>
-      <button class="dialog-btn" :style="{ color: getters.themeColor }" open-type="share">分享给好友</button>
+      <button class="dialog-btn" :style="{ color: store.themeColor }" open-type="share">分享给好友</button>
     </template>
   </Dialog>
   <!-- 用于生成图片隐藏的canvas -->
@@ -37,7 +37,7 @@ import { ref } from 'vue';
 import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { shareConfig } from '@/commons/config';
 import { generalBgColor } from '@/commons/utils';
-import { useStore } from 'vuex';
+import { useStore } from '@/store';
 import { useDownloadImage, useDrawImage } from '@/uses/useDownloadImage';
 import { usePaint } from '@/uses';
 import { useGenerateImage } from '@/uses/useGenerateImage';
@@ -61,10 +61,10 @@ onShareTimeline(() => getShareConfig());
 
 const BG_COLOR_LIST = [generalBgColor(), generalBgColor()];
 
-const { getters } = useStore();
+const store = useStore();
 
 const { paint } = usePaint('imgCanvas', async () => {
-  useDrawImage(paint, getters);
+  useDrawImage(paint, store);
   if (!shareImageUrl && paint.value) {
     shareImageUrl = await useGenerateImage('#imgCanvas');
   }

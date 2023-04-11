@@ -6,15 +6,16 @@
 </template>
 
 <script lang="ts" setup>
-import { useStore } from 'vuex';
+import { useStore } from '@/store';
+import { toRefs } from 'vue';
 
 
 defineProps<{
   title?: string;
 }>();
 
-const { state } = useStore();
-const { statusBarHeight, navHeight } = state;
+const store = useStore();
+const { statusBarHeight, navHeight } = toRefs(store);
 </script>
 
 <style lang="scss" scoped>
