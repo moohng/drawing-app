@@ -27,8 +27,10 @@
     "@moohng/dan": "^2.1.0",
     "color-convert": "^2.0.1",
     "gif.js": "^0.2.0",
+    "gifencoder": "^2.0.1",
     "lodash": "^4.17.21",
     "pinia": "^2.0.23",
+    "threejs-miniprogram": "0.0.8",
     "vue": "^3.2.41",
     "vue-i18n": "^9.2.2",
     "vuex": "^4.1.0"
@@ -40,6 +42,7 @@
     "@dcloudio/uni-stacktracey": "^3.0.0-alpha-3060720221018006",
     "@dcloudio/vite-plugin-uni": "^3.0.0-alpha-3060720221018006",
     "@types/color-convert": "^2.0.0",
+    "@types/gif.js": "^0.2.2",
     "@types/lodash": "^4.14.178",
     "@types/node": "^18.11.5",
     "autoprefixer": "^10.4.2",

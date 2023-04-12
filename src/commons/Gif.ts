@@ -1,5 +1,5 @@
 // @ts-ignore
-import GIF from 'gif.js/dist/gif.js';
+import GIF from 'gif.js';
 
 GIF.prototype.finishRendering = function() {
   var data, frame, i, image, j, k, l, len, len1, len2, len3, offset, page, ref, ref1, ref2;
@@ -40,8 +40,8 @@ GIF.prototype.finishRendering = function() {
   // return this.emit("finished", image, data)
 };
 
-GIF.prototype.addFrame = function(image, options) {
-  var frame = {},
+GIF.prototype.addFrame = function(image: any, options: any) {
+  var frame: any = {},
     key;
   if (options == null) {
     options = {};

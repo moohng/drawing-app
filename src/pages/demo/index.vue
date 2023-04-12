@@ -1,35 +1,62 @@
 <template>
   <view class="page">
-    <!-- <button>颜色选择</button> -->
-    <mo-color-panel v-model:value="currentColor"></mo-color-panel>
-    <view>{{ currentColor }}</view>
+    <button @click="onClick">生成动图</button>
+    <video :src="currentGif"></video>
   </view>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup>
+import { ref } from 'vue';
+import { createScopedThreejs } from 'threejs-miniprogram';
+import { Paint } from '@/commons/Paint';
+import { generalBgColor } from '@/commons/utils';
 
-let isPressed = false;
+const currentGif = ref('');
 
-export default defineComponent({
-  data() {
-    return {
-      currentColor: '#01b10a60',
-    };
-  },
-  methods: {
-    onTouchStart(e: any) {
-      uni.showToast({ title: 'touch start', icon: 'none' });
-      isPressed = true;
-    },
-    onTouchMove(e: any) {
-      if (!isPressed) return;
-    },
-    onTouchEnd(e: any) {
-      isPressed = false;
-    },
-  }
-});
+const onClick = async () => {
+  console.log('------ click ----');
+
+  const canvas = wx.createOffscreenCanvas({ type: 'webgl', width: 200, height: 200 });
+
+  const THREE = createScopedThreejs(canvas);
+
+  // const ctx = canvas.getContext('webgl');
+  // const paint = new Paint(ctx, canvas);
+  // paint.setBackground(generalBgColor());
+
+  console.log('===', ctx);
+
+  // 创建 mediaRecorder
+  const fps = 2;
+  const recorder = wx.createMediaRecorder(canvas, {
+    fps,
+  });
+
+  // 启动 mediaRecorder
+  await recorder.start();
+
+  console.log('---- start ----')
+
+  // 绘制
+  ctx.clearColor(1, 0, 0, 1);
+  ctx.clear(ctx.COLOR_BUFFER_BIT);
+  await recorder.requestFrame();
+
+  ctx.clearColor(1, 1, 0, 1);
+  ctx.clear(ctx.COLOR_BUFFER_BIT);
+  await recorder.requestFrame();
+
+  console.log('---- requestFrame ----')
+
+  // 绘制完成，生成视频
+  const { tempFilePath } = await recorder.stop();
+
+  console.log('---- video ----', tempFilePath);
+
+  currentGif.value = tempFilePath;
+
+  recorder.destroy();
+}
 </script>
 
 <style lang="scss" scoped>
