@@ -1,61 +1,72 @@
 <template>
   <view class="page">
+    <button @click="onRender">渲染</button>
+    <button @click="onRender2">渲染2</button>
     <button @click="onClick">生成动图</button>
-    <video :src="currentGif"></video>
+    <video :src="vSrc"></video>
+    <canvas id="cs" type="webgl"></canvas>
   </view>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { ref } from 'vue';
-import { createScopedThreejs } from 'threejs-miniprogram';
-import { Paint } from '@/commons/Paint';
-import { generalBgColor } from '@/commons/utils';
+import { showLoading } from '@/commons/utils';
+import { onLoad } from '@dcloudio/uni-app';
+import { createWebglRender, createVideo } from '@/commons/webgl';
 
-const currentGif = ref('');
+const vSrc = ref('');
+
+let canvas: any;
+let render: any;
+
+onLoad(() => {
+  uni.createSelectorQuery().select('#cs').node(({ node }) => {
+    canvas = node;
+    canvas.width = 300;
+    canvas.height = 150;
+
+    render = createWebglRender(canvas);
+  }).exec();
+});
+
+const imageArr: string[] = [];
+
+['http://www.webgl3d.cn/threejs/%E5%87%A0%E4%BD%95%E4%BD%93Geometry.png', 'http://www.webgl3d.cn/threejs/%E6%9D%90%E8%B4%A8Material.png'].forEach(img => {
+  uni.downloadFile({
+    url: img,
+    success: (res) => {
+      imageArr.push(res.tempFilePath);
+    },
+  });
+});
+
+const onRender = async () => {
+  render(imageArr[0]);
+};
+
+const onRender2 = async () => {
+  render(imageArr[1]);
+};
 
 const onClick = async () => {
-  console.log('------ click ----');
+  showLoading('视频生成中...');
 
-  const canvas = wx.createOffscreenCanvas({ type: 'webgl', width: 200, height: 200 });
-
-  const THREE = createScopedThreejs(canvas);
-
-  // const ctx = canvas.getContext('webgl');
-  // const paint = new Paint(ctx, canvas);
-  // paint.setBackground(generalBgColor());
-
-  console.log('===', ctx);
-
-  // 创建 mediaRecorder
-  const fps = 2;
-  const recorder = wx.createMediaRecorder(canvas, {
-    fps,
+  const tempFilePath = await createVideo(new Array(120).fill(imageArr).flat(), {
+    onProgress(progress) {
+      console.log('--- 进度 ---', progress);
+    },
   });
 
-  // 启动 mediaRecorder
-  await recorder.start();
+  uni.hideLoading();
 
-  console.log('---- start ----')
+  vSrc.value = tempFilePath;
 
-  // 绘制
-  ctx.clearColor(1, 0, 0, 1);
-  ctx.clear(ctx.COLOR_BUFFER_BIT);
-  await recorder.requestFrame();
-
-  ctx.clearColor(1, 1, 0, 1);
-  ctx.clear(ctx.COLOR_BUFFER_BIT);
-  await recorder.requestFrame();
-
-  console.log('---- requestFrame ----')
-
-  // 绘制完成，生成视频
-  const { tempFilePath } = await recorder.stop();
-
-  console.log('---- video ----', tempFilePath);
-
-  currentGif.value = tempFilePath;
-
-  recorder.destroy();
+  uni.saveVideoToPhotosAlbum({
+    filePath: tempFilePath,
+    success: () => {
+      uni.showToast({ title: '保存成功！' });
+    },
+  });
 }
 </script>
 

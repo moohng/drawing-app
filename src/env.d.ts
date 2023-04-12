@@ -8,3 +8,7 @@ declare module '*.vue' {
 }
 
 declare const wx: any;
+
+declare module 'threejs-miniprogram' {
+  export function createScopedThreejs(canvas: any): any
+}
