@@ -2,12 +2,12 @@
   <view class="panel-tool">
     <view class="row">
       <view class="label">大小</view>
-      <slider class="slider" :value="state.width" :min="1" :max="20" :activeColor="getters.themeColor" backgroundColor="#ffffff" show-value :block-size="24" @change="handleWidthSelect"></slider>
+      <slider class="slider" :value="store.width" :min="1" :max="20" :activeColor="store.themeColor" backgroundColor="#ffffff" show-value :block-size="24" @change="handleWidthSelect"></slider>
     </view>
     <view class="row">
       <view class="label">颜色</view>
       <view class="list">
-        <view class="item color-block" :class="{ selected: state.colorIndex === index }" :style="{ color: item.value }" v-for="(item, index) in state.colorList" :key="index" @click="handleColorSelect(index)"></view>
+        <view class="item color-block" :class="{ selected: store.colorIndex === index }" :style="{ color: item.value }" v-for="(item, index) in store.colorList" :key="index" @click="handleColorSelect(index)"></view>
         <view class="item button" @click="handleConfigColor('color')">
           <text class="iconfont icon-config"></text>
         </view>
@@ -16,7 +16,7 @@
     <view class="row">
       <view class="label">背景</view>
       <view class="list">
-        <view class="item color-block" :class="{ selected: state.backgroundColorIndex === index }" :style="{ color: item.value }" v-for="(item, index) in state.bgColorList" :key="index" @click="handleBgColorSelect(index)"></view>
+        <view class="item color-block" :class="{ selected: store.backgroundColorIndex === index }" :style="{ color: item.value }" v-for="(item, index) in store.bgColorList" :key="index" @click="handleBgColorSelect(index)"></view>
         <view class="item button" @click="handleConfigColor('bg')">
           <text class="iconfont icon-config"></text>
         </view>
@@ -26,30 +26,30 @@
 </template>
 
 <script lang="ts" setup>
-import { useStore } from 'vuex';
+import { useStore } from '@/store';
 import { TypeKeys } from '@/store/types';
 
-const { state, getters, commit } = useStore();
+const store = useStore();
 
 const handleColorSelect = (index: number) => {
-  if (state.colorIndex === index) {
+  if (store.colorIndex === index) {
     // 颜色编辑
     uni.navigateTo({ url: '/pages/setting/color' });
   } else {
-    commit(TypeKeys.SET_COLOR_INDEX, index);
+    store.setColorIndex(index);
   }
 };
 
 const handleBgColorSelect = (index: number) => {
-  if (state.backgroundColorIndex === index) {
+  if (store.backgroundColorIndex === index) {
     uni.navigateTo({ url: '/pages/setting/color?type=bg' });
   } else {
-    commit(TypeKeys.SET_BACKGROUND_COLOR_INDEX, index);
+    store.setBackgroundColorIndex(index);
   }
 };
 
 const handleWidthSelect = (e: any) => {
-  commit(TypeKeys.SET_WIDTH, e.detail.value);
+  store.setWidth(e.detail.value);
 };
 
 const handleConfigColor = (type = 'color') => {

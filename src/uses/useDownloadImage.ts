@@ -1,7 +1,7 @@
 import { Paint } from '@/commons/Paint';
 import { download, showLoading } from '@/commons/utils';
 import { Ref } from 'vue';
-import { useStore } from 'vuex';
+import { useStore } from '@/store';
 import { useRewardedVideoAd } from './useAd';
 import { useGenerateImage } from './useGenerateImage';
 
@@ -13,14 +13,14 @@ export function useDrawImage(paint: Ref<Paint | undefined>, getters: any) {
 
 export function useDownloadImage(paint: Ref<Paint | undefined>, canvasSelect: string) {
 
-  const { state, getters } = useStore();
+  const store = useStore();
 
   // #ifdef MP
   const { showRewardedVideoAd } = useRewardedVideoAd();
   // #endif
 
   const handleDownload = async () => {
-    if (state.currentPathIndex < 0) {
+    if (store.currentPathIndex < 0) {
       return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
     }
 
@@ -56,7 +56,7 @@ export function useDownloadImage(paint: Ref<Paint | undefined>, canvasSelect: st
 
     showLoading('正在生成图片...');
     // 绘制图像
-    useDrawImage(paint, getters);
+    useDrawImage(paint, store);
 
     // 生成图片
     const shareImg = await useGenerateImage(canvasSelect);

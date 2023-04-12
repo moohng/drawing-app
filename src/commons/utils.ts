@@ -2,7 +2,7 @@ import { Path, Point, ColorOption } from '@/store/types';
 import * as dan from '@moohng/dan';
 import { hsv, rgb } from 'color-convert';
 import { RGB } from 'color-convert/conversions';
-import { PaintPath } from './api';
+import { PaintPath } from '@/store/types';
 
 export function showLoading(title = '加载中...') {
   return uni.showLoading({ title, mask: true });

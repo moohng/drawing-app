@@ -2,7 +2,7 @@
   <!-- #ifndef H5 -->
   <!-- <NavBar>涂图了</NavBar> -->
   <!-- #endif -->
-  <view class="canvas canvas-bg" :style="{ backgroundColor: getters.backgroundColor }"></view>
+  <view class="canvas canvas-bg" :style="{ backgroundColor: store.backgroundColor }"></view>
   <!-- 照着画功能 -->
   <movable-area
     v-if="mode === PageMode.COPY"
@@ -10,7 +10,7 @@
     :class="{ cover: isBgEdit }"
     :style="isBgEdit && { zIndex: 99 }"
   >
-    <view class="canvas-img-confirm" v-if="isBgEdit" :style="{ color: getters.color }" @click="isBgEdit = false">放置</view>
+    <view class="canvas-img-confirm" v-if="isBgEdit" :style="{ color: store.color }" @click="isBgEdit = false">放置</view>
     <movable-view
       class="canvas-img-wrap"
       :style="{ opacity: bgShow ? (isBgEdit ? 0.8 : 1) : 0 }"
@@ -83,7 +83,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { onHide, onShareAppMessage, onShareTimeline, onShow } from '@dcloudio/uni-app';
-import { useStore } from 'vuex';
+import { useStore } from '@/store';
 import { usePaint } from '@/uses';
 import { shareConfig } from '@/commons/config';
 import Panel from './components/Panel.vue';
@@ -96,7 +96,7 @@ import { usePreviewAction, useCopyAction } from './uses/useToolAction';
 import { PageMode } from './types';
 
 
-const { getters } = useStore();
+const store = useStore();
 
 /** 模式切换 */
 const mode = ref(PageMode.FREE);
@@ -133,7 +133,7 @@ const { paint } = usePaint('drawCanvas');
 
 /** 初始化 */
 watch(paint, () => {
-  paint.value?.setImageData(getters.currentStep);
+  paint.value?.setImageData(store.currentStep);
 });
 
 /** 绘图事件 */

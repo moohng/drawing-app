@@ -4,12 +4,12 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
-import { useStore } from 'vuex';
+import { useStore } from '@/store';
 
-const { state } = useStore();
+const store = useStore();
 
 const toTop = computed(() => {
-  return state.headerHeight + 16 * state.windowWidth / 750;
+  return store.headerHeight + 16 * store.windowWidth / 750;
 });
 
 const isFirst = !uni.getStorageSync('__NEW__KEY__');

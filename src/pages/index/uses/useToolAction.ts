@@ -1,5 +1,4 @@
-import { useStore } from 'vuex';
-import { TypeKeys } from '@/store/types';
+import { useStore } from '@/store';
 import { Paint } from '@/commons/Paint';
 import { Ref, ref } from 'vue';
 import { PageMode } from '../types';
@@ -14,26 +13,26 @@ export interface Props {
 }
 
 export function usePanelAction(emit: Emits, props: Props) {
-  const { state, getters, commit } = useStore();
+  const store = useStore();
 
   const handleUndo = () => {
-    if (state.currentStepIndex < 0) {
-      return uni.showToast({ title: (state.historyStepList.length ? '长按可清空画布~' : '没有上一步了~'), icon: 'none' });
+    if (store.currentStepIndex < 0) {
+      return uni.showToast({ title: (store.historyStepList.length ? '长按可清空画布~' : '没有上一步了~'), icon: 'none' });
     }
-    commit(TypeKeys.OPERATION_UNDO);
+    store.operationUndo();
     props.paint?.clear();
-    props.paint?.setImageData(getters.currentStep || state.lastStep);
+    props.paint?.setImageData(store.currentStep || store.lastStep);
   };
 
   const handleRedo = () => {
-    if (state.currentStepIndex >= state.historyStepList.length - 1) return uni.showToast({ title: '已经是最后一步了~', icon: 'none' });
-    commit(TypeKeys.OPERATION_REDO);
+    if (store.currentStepIndex >= store.historyStepList.length - 1) return uni.showToast({ title: '已经是最后一步了~', icon: 'none' });
+    store.operationRedo();
     props.paint?.clear();
-    props.paint?.setImageData(getters.currentStep);
+    props.paint?.setImageData(store.currentStep);
   };
 
   const handleClear = () => {
-    if (!state.historyStepList.length) return uni.showToast({ title: '没有可清除的内容！', icon: 'none' });
+    if (!store.historyStepList.length) return uni.showToast({ title: '没有可清除的内容！', icon: 'none' });
     uni.showModal({
       title: '警告！',
       content: '确定要清空画布上所有的内容和历史记录吗？',
@@ -44,14 +43,14 @@ export function usePanelAction(emit: Emits, props: Props) {
       success: (res) => {
         if (res.confirm) {
           props.paint?.clear();
-          commit(TypeKeys.OPERATION_CLEAR);
+          store.operationClear();
         }
       },
     });
   };
 
   const handlePreview = () => {
-    if (state.currentPathIndex < 0) {
+    if (store.currentPathIndex < 0) {
       return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
     }
     emit('preview');
@@ -61,21 +60,21 @@ export function usePanelAction(emit: Emits, props: Props) {
 }
 
 export function usePreviewAction(paint: Ref<Paint | undefined>) {
-  const { getters } = useStore();
+  const store = useStore();
 
   const isPreview = ref(false);
 
   const handlePreview = () => {
     isPreview.value = true;
     paint.value?.clear();
-    paint.value?.playPath((getters.currentPathList), handleEndPreview);
+    paint.value?.playPath((store.currentPathList), handleEndPreview);
   };
 
   const handleEndPreview = () => {
     isPreview.value = false;
     paint.value?.pause();
     paint.value?.clear();
-    paint.value?.setImageData(getters.currentStep);
+    paint.value?.setImageData(store.currentStep);
   };
 
   return { isPreview, handlePreview, handleEndPreview };
