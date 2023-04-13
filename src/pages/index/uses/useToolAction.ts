@@ -59,16 +59,16 @@ export function usePanelAction(emit: Emits, props: Props) {
   return { handleUndo, handleRedo, handleClear, handlePreview };
 }
 
-export function usePreviewAction(paint: Ref<Paint | undefined>) {
+export function usePreviewAction(paint: Ref<Paint>) {
   const store = useStore();
 
   const isPreview = ref(false);
 
   const handlePreview = async () => {
     isPreview.value = true;
-    paint.value?.clear();
+    paint.value.clear();
 
-    await paint.value?.playPath({
+    await paint.value.playPath({
       path: store.currentPathList,
     });
 
@@ -77,9 +77,9 @@ export function usePreviewAction(paint: Ref<Paint | undefined>) {
 
   const handleEndPreview = () => {
     isPreview.value = false;
-    paint.value?.pause();
-    paint.value?.clear();
-    paint.value?.setImageData(store.currentStep);
+    paint.value.pause();
+    paint.value.clear();
+    paint.value.setImageData(store.currentStep);
   };
 
   return { isPreview, handlePreview, handleEndPreview };

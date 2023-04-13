@@ -11,10 +11,11 @@
   </view>
   <!-- 底部按钮 -->
   <view class="button-group">
-    <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[1] }" @click="handleDownload">生成图片</view>
+    <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[1] }" @click="handleDownload(paint)">生成图片</view>
     <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[0] }" @click="handleVideo">生成视频</view>
   </view>
   <video :src="videoSrc" width="300" height="600"></video>
+  <image :src="ss"></image>
   <!-- 底部广告 -->
   <view class="bottom-banner" hidden>
     <!-- #ifndef H5 -->
@@ -32,7 +33,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
+import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { shareConfig } from '@/commons/config';
 import { generalBgColor, showLoading } from '@/commons/utils';
 import { useStore } from '@/store';
@@ -40,6 +41,7 @@ import { useDownloadImage } from '@/uses/useDownloadImage';
 import { usePaint } from '@/uses';
 import { useInterstitialAd } from '@/uses/useAd';
 import { createVideo } from '@/commons/webgl';
+import { createPaint, Paint } from '@/commons/Paint';
 
 let path = '/pages/index/index';
 let shareImageUrl: string;
@@ -61,12 +63,22 @@ const BG_COLOR_LIST = [generalBgColor(), generalBgColor()];
 
 const store = useStore();
 
-const { paint } = usePaint(null, async () => {
-  paint.value?.clear();
-  paint.value?.setImageData(store.currentStep);
-  paint.value?.setBackground(store.backgroundColor, true);
-  if (!shareImageUrl && paint.value) {
-    shareImageUrl = paint.value?.toDataURL();
+let paint: Paint;
+
+const ss = ref('');
+
+onLoad(async () => {
+  paint = await createPaint();
+
+  // 生成分享图片
+  paint.clear();
+  paint.setImageData(store.currentStep);
+  paint.setBackground(store.backgroundColor, true);
+  if (!shareImageUrl) {
+    shareImageUrl = await paint.toDataURL('image/jpeg', 0.8);
+    console.log('==========', shareImageUrl);
+
+    ss.value = shareImageUrl;
   }
 });
 
@@ -78,7 +90,7 @@ const handleSendFriend = () => {
 };
 
 // 保存图片
-const { handleDownload } = useDownloadImage(paint);
+const { handleDownload } = useDownloadImage();
 
 const videoSrc = ref('');
 
@@ -99,19 +111,19 @@ const handleVideo = async () => {
   const frames: string[] = [];
 
   // 获取视频帧
-  paint.value?.setBackground(backgroundColor);
-  await paint.value?.playPath({
+  // paint.setBackground(backgroundColor, true);
+  await paint.playPath({
     path: currentPathList,
-    onFrame: () => {
-      frames.push(paint.value!.toDataURL('image/jpeg', 0.8));
+    onFrame: async () => {
+      frames.push(await paint.toDataURL('image/jpeg', 0.8));
     },
   });
 
   // 生成视频
   showLoading('正在合成视频...');
 
-  const { width, height } = paint.value!.ctx.canvas;
-  const tempFilePath = await createVideo(frames, { width, height, fps: 36 });
+  const { width, height } = paint.ctx.canvas;
+  const tempFilePath = await createVideo(frames, { width: width * 0.1, height: height * 0.1, fps: 36 });
 
   videoSrc.value = tempFilePath;
 

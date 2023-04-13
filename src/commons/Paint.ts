@@ -1,4 +1,46 @@
+import { getCurrentInstance } from 'vue';
 import { Point, PaintType, Path } from '@/store/types';
+
+/**
+ * 创建 paint
+ * @param canvasId
+ * @returns
+ */
+export async function createPaint(canvasId?: string) {
+
+  // 创建 canvas
+  let canvas: HTMLCanvasElement;
+  if (canvasId) {
+    canvas = await new Promise(resolve => {
+      uni
+        .createSelectorQuery()
+        .in(getCurrentInstance())
+        .select('#' + canvasId)
+        .node(({ node }: any) => {
+          resolve(node);
+        }).exec();
+    });
+  } else {
+    canvas = wx.createOffscreenCanvas({ type: '2d' });
+  }
+
+  const { windowWidth, windowHeight, pixelRatio } = uni.getSystemInfoSync();
+  /**
+   * 解决绘图路径锯齿问题
+   * 1. 尺寸取物理像素 windowWidth * pixelRatio
+   * 2. 画布缩放像素比 ctx.scale
+   */
+  canvas.width = windowWidth * pixelRatio;
+  canvas.height = windowHeight * pixelRatio;
+
+  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+  ctx.translate(windowWidth * pixelRatio / 2, windowHeight * pixelRatio / 2);
+  ctx.scale(pixelRatio, pixelRatio);
+
+  const paint = new Paint(ctx, canvas);
+
+  return paint;
+}
 
 export class Paint {
   private readonly defaultWidth = 6;
@@ -251,7 +293,18 @@ export class Paint {
     return this.canvas.requestAnimationFrame(callback);
   }
 
-  toDataURL(type?: string, quality?: any) {
-    return this.canvas.toDataURL(type, quality) as string;
+  async toDataURL(type?: string, quality?: any) {
+    const base64 = this.canvas.toDataURL(type, quality) as string;
+    const fsm = wx.getFileSystemManager();
+    const tempFilePath = `${wx.env.USER_DATA_PATH}/${Date.now()}`;
+    return new Promise<string>((resolve, reject) => {
+      fsm.writeFile({
+        filePath: tempFilePath,
+        data: base64.split('base64,')[1],
+        encoding: 'base64',
+        success: () => resolve(tempFilePath),
+        fail: reject,
+      });
+    });
   }
 }

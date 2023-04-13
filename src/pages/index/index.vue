@@ -81,10 +81,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { onHide, onShareAppMessage, onShareTimeline, onShow } from '@dcloudio/uni-app';
+import { ref } from 'vue';
+import { onHide, onLoad, onShareAppMessage, onShareTimeline, onShow } from '@dcloudio/uni-app';
 import { useStore } from '@/store';
-import { usePaint } from '@/uses';
 import { shareConfig } from '@/commons/config';
 import Panel from './components/Panel.vue';
 import PanelTool from './components/PanelTool.vue';
@@ -94,6 +93,7 @@ import MainPage from './components/MainPage.vue';
 import { useCanvasEvent } from './uses/useCanvasEvent';
 import { usePreviewAction, useCopyAction } from './uses/useToolAction';
 import { PageMode } from './types';
+import { Paint, createPaint } from '@/commons/Paint';
 
 
 const store = useStore();
@@ -129,11 +129,13 @@ onShareAppMessage(() => shareConfig);
 onShareTimeline(() => shareConfig);
 
 /** 画笔 */
-const { paint } = usePaint('drawCanvas');
+const paint = ref();
 
-/** 初始化 */
-watch(paint, () => {
-  paint.value?.setImageData(store.currentStep);
+onLoad(async () => {
+  paint.value = await createPaint('drawCanvas');
+
+  // 初始化
+  paint.value.setImageData(store.currentStep);
 });
 
 /** 绘图事件 */

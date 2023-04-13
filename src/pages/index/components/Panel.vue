@@ -17,7 +17,7 @@
 
 <script lang="ts" setup>
 import { Paint } from '@/commons/Paint';
-import { PaintType, TypeKeys } from '@/store/types';
+import { PaintType } from '@/store/types';
 import { computed } from 'vue';
 import { useStore } from '@/store';
 import { usePanelAction } from '../uses/useToolAction';

@@ -1,16 +1,15 @@
-import { Ref } from 'vue';
 import { Paint } from '@/commons/Paint';
 import { showLoading } from '@/commons/utils';
 import { useStore } from '@/store';
 import { useRewardedVideoAd } from './useAd';
 
-export function useDownloadImage(paint: Ref<Paint | undefined>) {
+export function useDownloadImage() {
 
   const store = useStore();
 
   const { showRewardedVideoAd } = useRewardedVideoAd();
 
-  const handleDownload = async () => {
+  const handleDownload = async (paint: Paint) => {
     if (store.currentPathIndex < 0) {
       return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
     }
@@ -45,12 +44,12 @@ export function useDownloadImage(paint: Ref<Paint | undefined>) {
 
     showLoading('正在生成图片...');
     // 绘制图像
-    paint.value?.clear();
-    paint.value?.setImageData(store.currentStep);
-    paint.value?.setBackground(store.backgroundColor, true);
+    paint.clear();
+    paint.setImageData(store.currentStep);
+    paint.setBackground(store.backgroundColor, true);
 
     // 生成图片
-    const shareImg = paint.value?.toDataURL() as string;
+    const shareImg = paint.toDataURL() as string;
 
     uni.saveImageToPhotosAlbum({
       filePath: shareImg,

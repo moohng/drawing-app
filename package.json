@@ -27,7 +27,7 @@
     "@moohng/dan": "^2.1.0",
     "color-convert": "^2.0.1",
     "pinia": "^2.0.23",
-    "threejs-miniprogram": "0.0.8",
+    "threejs-miniprogram": "^0.0.8",
     "vue": "^3.2.41",
     "vue-i18n": "^9.2.2"
   },

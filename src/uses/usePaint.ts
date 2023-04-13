@@ -45,7 +45,7 @@ export default function usePaint(selector?: string | null, onLoad?: () => void) 
           }
         ).exec()
     } else {
-      const canvas = wx.createOffscreenCanvas({ type: '2d'});
+      const canvas = wx.createOffscreenCanvas({ type: '2d' });
       initCanvas(canvas);
       onLoad?.();
     };
