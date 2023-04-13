@@ -1,9 +1,5 @@
 import { Point, PaintType, Path } from '@/store/types';
 
-const { windowWidth, windowHeight, pixelRatio } = uni.getSystemInfoSync();
-
-const canvasId = 'drawCanvas';
-
 export class Paint {
   private readonly defaultWidth = 6;
   private readonly defaultColor = 'rgb(0,0,0)';
@@ -15,9 +11,9 @@ export class Paint {
 
   public isComplete = false;
 
-  public canvas?: HTMLCanvasElement
+  public canvas: HTMLCanvasElement
 
-  constructor(public ctx: CanvasRenderingContext2D, canvas?: HTMLCanvasElement) {
+  constructor(public ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
     this.setBackground();
 
     this.ctx.lineCap = 'round';
@@ -70,7 +66,8 @@ export class Paint {
     if (!color) return;
     this.ctx.fillStyle = color;
     under && (this.ctx.globalCompositeOperation = 'destination-over');
-    this.ctx.fillRect(-windowWidth * 0.5, -windowHeight * 0.5, windowWidth, windowHeight);
+    const { width, height } = this.ctx.canvas;
+    this.ctx.fillRect(-width * 0.5, -height * 0.5, width, height);
     under && (this.ctx.globalCompositeOperation = 'source-out');
     // #ifndef MP
     // @ts-ignore
@@ -82,7 +79,8 @@ export class Paint {
    * 清空画布
    */
   clear() {
-    this.ctx.clearRect(-windowWidth * 0.5, -windowHeight * 0.5, windowWidth, windowHeight);
+    const { width, height } = this.ctx.canvas;
+    this.ctx.clearRect(-width * 0.5, -height * 0.5, width, height);
     // #ifndef MP
     // @ts-ignore
     this.ctx.draw(true);
@@ -240,64 +238,20 @@ export class Paint {
      * todo: 可优化点，不用每次都保存整张画布，而是根据当前绘制的笔记自动计算出对应大小的画布和位置，减少内存占用
      * 方法：遍历当前笔记坐标数组，找到最小 (x, y) 和 最大 (x, y) 的值，并记录起来，下次在对应位置再进行绘制
      */
-    // #ifdef MP-WEIXIN
-    return this.ctx.getImageData(0, 0, windowWidth * pixelRatio, windowHeight * pixelRatio);
-    // #endif
-    // #ifndef MP-WEIXIN
-    return new Promise((resolve, reject) => {
-      uni.canvasGetImageData({
-        canvasId,
-        x: 0,
-        y: 0,
-        width: windowWidth,
-        height: windowHeight,
-        success: ({ data }) => {
-          resolve(data);
-        },
-        fail: reject,
-      });
-    });
-    // #endif
+    const { width, height } = this.ctx.canvas;
+    return this.ctx.getImageData(0, 0, width, height);
   }
 
   setImageData(imageData?: ImageData) {
-    // #ifdef MP-WEIXIN
     imageData && this.ctx.putImageData(imageData, 0, 0);
-    // #endif
-    // #ifndef MP-WEIXIN
-    imageData && uni.canvasPutImageData({ canvasId, x: 0, y: 0, width: windowWidth * pixelRatio, height: windowHeight * pixelRatio, data: imageData });
-    // #endif
-  }
-
-  drawImage(url: string) {
-    // #ifdef MP
-    // @ts-ignore
-    const image = this.canvas.createImage();
-    image.onload = () => {
-      const width = windowWidth;
-      const height = width * image.height / image.width;
-      this.ctx.drawImage(image, -width * 0.5, -height * 0.5, width, height);
-    };
-    image.src = url;
-    // #endif
-    // #ifndef MP
-    // @ts-ignore
-    this.ctx.drawImage(url, 0, 0);
-    // #endif
   }
 
   requestAnimationFrame(callback: FrameRequestCallback) {
-    // #ifdef MP
     // @ts-ignore
-    return this.canvas?.requestAnimationFrame(callback);
-    // #endif
-    // #ifdef H5
-    return window.requestAnimationFrame(callback);
-    // #endif
-    return setTimeout(callback, 16.7);
+    return this.canvas.requestAnimationFrame(callback);
   }
 
   toDataURL(type?: string, quality?: any) {
-    return this.canvas?.toDataURL(type, quality) as string;
+    return this.canvas.toDataURL(type, quality) as string;
   }
 }

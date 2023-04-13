@@ -27,8 +27,8 @@ export default function usePaint(selector?: string | null, onLoad?: () => void) 
     paint.value = new Paint(ctx, canvas);
   };
 
-  if (selector) {
-    onMounted(() => {
+  onMounted(() => {
+    if (selector) {
       uni
         .createSelectorQuery()
         .in(getCurrentInstance())
@@ -43,13 +43,13 @@ export default function usePaint(selector?: string | null, onLoad?: () => void) 
             initCanvas(cs);
             onLoad?.();
           }
-        ).exec();
-    });
-  } else {
-    const canvas = wx.createOffscreenCanvas({ type: '2d'});
-    initCanvas(canvas);
-    onLoad?.();
-  }
+        ).exec()
+    } else {
+      const canvas = wx.createOffscreenCanvas({ type: '2d'});
+      initCanvas(canvas);
+      onLoad?.();
+    };
+  });
 
   return { paint };
 }

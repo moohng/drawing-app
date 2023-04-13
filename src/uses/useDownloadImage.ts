@@ -1,23 +1,20 @@
-import { Paint } from '@/commons/Paint';
-import { download, showLoading } from '@/commons/utils';
 import { Ref } from 'vue';
+import { Paint } from '@/commons/Paint';
+import { showLoading } from '@/commons/utils';
 import { useStore } from '@/store';
 import { useRewardedVideoAd } from './useAd';
 
-export function useDownloadImage(paint: Ref<Paint | undefined>, canvasSelect: string) {
+export function useDownloadImage(paint: Ref<Paint | undefined>) {
 
   const store = useStore();
 
-  // #ifdef MP
   const { showRewardedVideoAd } = useRewardedVideoAd();
-  // #endif
 
   const handleDownload = async () => {
     if (store.currentPathIndex < 0) {
       return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
     }
 
-    // #ifdef MP
     try {
       const isEnded = await showRewardedVideoAd?.();
       if (!isEnded) {
@@ -45,7 +42,6 @@ export function useDownloadImage(paint: Ref<Paint | undefined>, canvasSelect: st
         return uni.showToast({ title: '请允许获取系统相册权限', icon: 'none' });
       }
     }
-    // #endif
 
     showLoading('正在生成图片...');
     // 绘制图像
@@ -56,7 +52,6 @@ export function useDownloadImage(paint: Ref<Paint | undefined>, canvasSelect: st
     // 生成图片
     const shareImg = paint.value?.toDataURL() as string;
 
-    // #ifndef H5
     uni.saveImageToPhotosAlbum({
       filePath: shareImg,
       success: () => {
@@ -66,11 +61,6 @@ export function useDownloadImage(paint: Ref<Paint | undefined>, canvasSelect: st
         uni.showToast({ title: '保存失败！', icon: 'none' });
       },
     });
-    // #endif
-    // #ifdef H5
-    download(shareImg);
-    uni.hideLoading();
-    // #endif
   };
 
   return { handleDownload };

@@ -78,7 +78,7 @@ const handleSendFriend = () => {
 };
 
 // 保存图片
-const { handleDownload } = useDownloadImage(paint, '#imgCanvas');
+const { handleDownload } = useDownloadImage(paint);
 
 const videoSrc = ref('');
 
@@ -110,7 +110,7 @@ const handleVideo = async () => {
   // 生成视频
   showLoading('正在合成视频...');
 
-  const { width, height } = paint.value?.canvas!;
+  const { width, height } = paint.value!.ctx.canvas;
   const tempFilePath = await createVideo(frames, { width, height, fps: 36 });
 
   videoSrc.value = tempFilePath;
