@@ -3,13 +3,6 @@ import { download, showLoading } from '@/commons/utils';
 import { Ref } from 'vue';
 import { useStore } from '@/store';
 import { useRewardedVideoAd } from './useAd';
-import { useGenerateImage } from './useGenerateImage';
-
-export function useDrawImage(paint: Ref<Paint | undefined>, getters: any) {
-  paint.value?.clear();
-  paint.value?.setImageData(getters.currentStep);
-  paint.value?.setBackground(getters.backgroundColor, true);
-}
 
 export function useDownloadImage(paint: Ref<Paint | undefined>, canvasSelect: string) {
 
@@ -56,10 +49,12 @@ export function useDownloadImage(paint: Ref<Paint | undefined>, canvasSelect: st
 
     showLoading('正在生成图片...');
     // 绘制图像
-    useDrawImage(paint, store);
+    paint.value?.clear();
+    paint.value?.setImageData(store.currentStep);
+    paint.value?.setBackground(store.backgroundColor, true);
 
     // 生成图片
-    const shareImg = await useGenerateImage(canvasSelect);
+    const shareImg = paint.value?.toDataURL() as string;
 
     // #ifndef H5
     uni.saveImageToPhotosAlbum({

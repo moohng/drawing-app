@@ -48,7 +48,7 @@ interface CreateVideoOptions {
   width?: number;
   height?: number;
   fps?: number;
-  onProgress(progress: number): void;
+  onProgress?: (progress: number) => void;
 }
 
 /**

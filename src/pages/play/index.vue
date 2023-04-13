@@ -30,9 +30,8 @@ import { PaintPath } from '@/store/types';
 import { shareConfig } from '@/commons/config';
 import { usePaint } from '@/uses';
 import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
-import { useGenerateImage } from '@/uses/useGenerateImage';
 import { useStore } from '@/store';
-import { getPintFromLocal, savePaintToLocal } from '@/commons/utils';
+import { getPintFromLocal } from '@/commons/utils';
 
 let shareImageUrl = '';
 
@@ -67,17 +66,19 @@ watch(isPlaying, async (value) => {
   // 播放暂停时
   if (!value) {
     // 生成分享图片
-    shareImageUrl = await useGenerateImage('#drawCanvas');
+    shareImageUrl = paint.value?.toDataURL() as string;
   }
 });
 
-const startPlay = () => {
+const startPlay = async () => {
   isPlaying.value = true;
   paint.value?.clear();
-  // localState.value?.title && uni.setNavigationBarTitle({ title: localState.value.title });
-  paint.value?.playPath(localState.value!.path, () => {
-    isPlaying.value = false;
+
+  await paint.value?.playPath({
+    path: localState.value!.path,
   });
+
+  isPlaying.value = false;
 };
 
 const fetchData = (id: string) => {

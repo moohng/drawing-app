@@ -3,20 +3,20 @@
     <CanvasVideo :path="store.currentPathList" :background="store.backgroundColor" @change="onCanvasVideoChange"></CanvasVideo>
   </view>
 
-  <!-- <view class="list">
+  <view class="list">
     <view class="item bottom-line">
       <view class="label">标题</view>
-      <input class="input" v-model="title" type="text" placeholder="给作品起一个标题吧" placeholder-class="placeholder">
+      <view></view>
     </view>
-  </view> -->
+  </view>
   <!-- 底部按钮 -->
   <view class="button-group">
-    <!-- <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[0] }" @click="handleSave">保存到画作</view> -->
-    <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[0] }" @click="handleGif">生成动画</view>
     <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[1] }" @click="handleDownload">生成图片</view>
+    <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[0] }" @click="handleVideo">生成视频</view>
   </view>
+  <video :src="videoSrc" width="300" height="600"></video>
   <!-- 底部广告 -->
-  <view class="bottom-banner">
+  <view class="bottom-banner" hidden>
     <!-- #ifndef H5 -->
     <ad class="ad" unit-id="adunit-e72cb196c01d4a8c" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
     <!-- #endif -->
@@ -28,20 +28,18 @@
       <button class="dialog-btn" :style="{ color: store.themeColor }" open-type="share">分享给好友</button>
     </template>
   </Dialog>
-  <!-- 用于生成图片隐藏的canvas -->
-  <canvas class="img-canvas" id="imgCanvas" type="2d"></canvas>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { shareConfig } from '@/commons/config';
-import { generalBgColor } from '@/commons/utils';
+import { generalBgColor, showLoading } from '@/commons/utils';
 import { useStore } from '@/store';
-import { useDownloadImage, useDrawImage } from '@/uses/useDownloadImage';
+import { useDownloadImage } from '@/uses/useDownloadImage';
 import { usePaint } from '@/uses';
-import { useGenerateImage } from '@/uses/useGenerateImage';
 import { useInterstitialAd } from '@/uses/useAd';
+import { createVideo } from '@/commons/webgl';
 
 let path = '/pages/index/index';
 let shareImageUrl: string;
@@ -63,10 +61,12 @@ const BG_COLOR_LIST = [generalBgColor(), generalBgColor()];
 
 const store = useStore();
 
-const { paint } = usePaint('imgCanvas', async () => {
-  useDrawImage(paint, store);
+const { paint } = usePaint(null, async () => {
+  paint.value?.clear();
+  paint.value?.setImageData(store.currentStep);
+  paint.value?.setBackground(store.backgroundColor, true);
   if (!shareImageUrl && paint.value) {
-    shareImageUrl = await useGenerateImage('#imgCanvas');
+    shareImageUrl = paint.value?.toDataURL();
   }
 });
 
@@ -80,9 +80,50 @@ const handleSendFriend = () => {
 // 保存图片
 const { handleDownload } = useDownloadImage(paint, '#imgCanvas');
 
+const videoSrc = ref('');
+
 // 保存动画
-const handleGif = () => {
-  console.log('--------------');
+const handleVideo = async () => {
+  showLoading('视频帧分析中...');
+
+  // 路径解析画布
+  // const canvas = wx.createOffscreenCanvas({ type: '2d', width: windowWidth * pixelRatio, height: windowHeight * pixelRatio });
+  // const ctx = canvas.getContext('2d');
+  // ctx.translate(windowWidth * pixelRatio / 2, windowHeight * pixelRatio / 2);
+  // // #ifndef MP-TOUTIAO
+  // ctx.scale(pixelRatio, pixelRatio);
+  // // #endif
+  // const paint = new Paint(ctx, canvas);
+
+  const { currentPathList, backgroundColor } = store;
+  const frames: string[] = [];
+
+  // 获取视频帧
+  paint.value?.setBackground(backgroundColor);
+  await paint.value?.playPath({
+    path: currentPathList,
+    onFrame: () => {
+      frames.push(paint.value!.toDataURL('image/jpeg', 0.8));
+    },
+  });
+
+  // 生成视频
+  showLoading('正在合成视频...');
+
+  const { width, height } = paint.value?.canvas!;
+  const tempFilePath = await createVideo(frames, { width, height, fps: 36 });
+
+  videoSrc.value = tempFilePath;
+
+  uni.hideLoading();
+
+  // 保存视频
+  uni.saveVideoToPhotosAlbum({
+    filePath: tempFilePath,
+    success: () => {
+      showDialog.value = true;
+    },
+  });
 };
 
 // 弹窗广告
@@ -111,20 +152,6 @@ const onCanvasVideoChange = (isPlay: boolean) => {
       display: flex;
       align-items: baseline;
       font-size: 36rpx;
-    }
-
-    .input {
-      margin: 24rpx 0;
-      width: 100%;
-      margin-left: auto;
-      font-size: 100%;
-    }
-
-    .textarea {
-      margin-top: 32rpx;
-      width: 100%;
-      height: 220rpx;
-      font-size: 100%;
     }
   }
 }

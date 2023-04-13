@@ -7,9 +7,8 @@ import { Paint } from '@/commons/Paint';
  * @param selector
  * @returns
  */
-export default function usePaint(selector: string, onLoad?: () => void) {
+export default function usePaint(selector?: string | null, onLoad?: () => void) {
   const paint = ref<Paint>();
-  const canvas = ref();
 
   const initCanvas = (canvas: any) => {
     const { windowWidth, windowHeight, pixelRatio } = uni.getSystemInfoSync();
@@ -23,52 +22,34 @@ export default function usePaint(selector: string, onLoad?: () => void) {
 
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     ctx.translate(windowWidth * pixelRatio / 2, windowHeight * pixelRatio / 2);
-
-    // #ifndef MP-TOUTIAO
     ctx.scale(pixelRatio, pixelRatio);
-    // #endif
 
     paint.value = new Paint(ctx, canvas);
   };
 
-  onMounted(() => {
-    // #ifdef MP
-    uni
-      .createSelectorQuery()
-      .in(getCurrentInstance())
-      .select('#' + selector)
-      // #ifdef MP-TOUTIAO
-      // @ts-ignore
-      .node()
-      .exec(([{ node: cs }]) => {
-        canvas.value = cs;
-        initCanvas(cs);
-        onLoad?.();
-      })
-      // #endif
-      // #ifndef MP-TOUTIAO
-      .fields(
-        {
-          // @ts-ignore
-          node: true,
-          size: true,
-        },
-        ({ node: cs }: any) => {
-          canvas.value = cs;
-          initCanvas(cs);
-          onLoad?.();
-        }
-      ).exec();
-      // #endif
-    // #endif
-    // #ifndef MP
-    const { windowWidth, windowHeight } = uni.getSystemInfoSync();
-    const ctx = uni.createCanvasContext(selector, getCurrentInstance());
-    ctx.translate(windowWidth / 2, windowHeight / 2);
-    paint.value = new Paint(ctx as unknown as CanvasRenderingContext2D);
+  if (selector) {
+    onMounted(() => {
+      uni
+        .createSelectorQuery()
+        .in(getCurrentInstance())
+        .select('#' + selector)
+        .fields(
+          {
+            // @ts-ignore
+            node: true,
+            size: true,
+          },
+          ({ node: cs }: any) => {
+            initCanvas(cs);
+            onLoad?.();
+          }
+        ).exec();
+    });
+  } else {
+    const canvas = wx.createOffscreenCanvas({ type: '2d'});
+    initCanvas(canvas);
     onLoad?.();
-    // #endif
-  });
+  }
 
   return { paint };
 }

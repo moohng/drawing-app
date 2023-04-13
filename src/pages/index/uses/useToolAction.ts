@@ -64,10 +64,15 @@ export function usePreviewAction(paint: Ref<Paint | undefined>) {
 
   const isPreview = ref(false);
 
-  const handlePreview = () => {
+  const handlePreview = async () => {
     isPreview.value = true;
     paint.value?.clear();
-    paint.value?.playPath((store.currentPathList), handleEndPreview);
+
+    await paint.value?.playPath({
+      path: store.currentPathList,
+    });
+
+    handleEndPreview();
   };
 
   const handleEndPreview = () => {

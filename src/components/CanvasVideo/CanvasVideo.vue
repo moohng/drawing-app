@@ -36,13 +36,15 @@ watch(isPlaying, (isPlay) => {
 
 const { paint } = usePaint('drawCanvas');
 
-const startPlay = () => {
+const startPlay = async () => {
   isPlaying.value = true;
   paint.value?.clear();
-  // paint.value?.setBackground(props.background);
-  paint.value?.playPath(props.path as Path[], () => {
-    isPlaying.value = false;
+
+  await paint.value?.playPath({
+    path: props.path as Path[],
   });
+
+  isPlaying.value = false;
 };
 
 const handlePlayToggle = () => {

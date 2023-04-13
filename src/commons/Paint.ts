@@ -12,9 +12,10 @@ export class Paint {
   private column = 0;
   private stop = false;
   private path: Path[] = [];
+
   public isComplete = false;
 
-  private canvas?: HTMLCanvasElement
+  public canvas?: HTMLCanvasElement
 
   constructor(public ctx: CanvasRenderingContext2D, canvas?: HTMLCanvasElement) {
     this.setBackground();
@@ -143,8 +144,13 @@ export class Paint {
    * @param completed 完成回调
    * @returns
    */
-  playPath(path: Path[], completed?: () => void) {
-    if (!path.length) return Promise.resolve();
+  playPath({ path, onFrame }: {
+    path: Path[];
+    onFrame?: () => void;
+  }) {
+    if (!path.length) {
+      throw new Error('path 参数不能为空');
+    }
 
     this.path = path;
 
@@ -157,15 +163,16 @@ export class Paint {
     const { points, color, width, type } = path[0];
     this.start(points[0], { color, width, type });
 
-    this.run(completed);
-    if (completed) {
-      this.completed = completed;
-    }
+    return new Promise(resolve => {
+      this.run(() => resolve(0), onFrame);
+    });
   }
 
-  private completed() {}
+  private onCompleted() {}
 
-  private run(completed = this.completed) {
+  private run(onCompleted?: () => void, onFrame?: () => void) {
+    onCompleted && (this.onCompleted = onCompleted);
+
     // 结束绘制（下一次播放的时候要结束上一次播放）
     if (this.stop) {
       return;
@@ -183,9 +190,13 @@ export class Paint {
         }
         this.drawLine(points[this.column], points[this.column - 1]);
       }
+
+      // 完成一帧
+      onFrame?.();
+
       this.column++;
       // @ts-ignore
-      this.requestAnimationFrame(() => this.run());
+      this.requestAnimationFrame(() => this.run(onCompleted, onFrame));
     } else {
       // 一条轨迹制完成
       if (++this.row < this.path.length) {
@@ -197,12 +208,12 @@ export class Paint {
         // 延时一会儿开始绘制下一条轨迹
         setTimeout(() => {
           // @ts-ignore
-          this.requestAnimationFrame(() => this.run());
+          this.requestAnimationFrame(() => this.run(onCompleted, onFrame));
         }, 240);
       } else {
         // 结束
         this.isComplete = true;
-        completed();
+        onCompleted?.();
       }
     }
   }
@@ -218,9 +229,9 @@ export class Paint {
    * 继续播放
    * @param completed 完成回调
    */
-  play(completed?: () => void) {
+  play(onCompleted = this.onCompleted) {
     this.stop = false;
-    this.run(completed);
+    this.run(onCompleted);
   }
 
   getImageData() {
@@ -284,5 +295,9 @@ export class Paint {
     return window.requestAnimationFrame(callback);
     // #endif
     return setTimeout(callback, 16.7);
+  }
+
+  toDataURL(type?: string, quality?: any) {
+    return this.canvas?.toDataURL(type, quality) as string;
   }
 }
