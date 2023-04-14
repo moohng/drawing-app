@@ -28,7 +28,7 @@
 import { ref, watch } from 'vue';
 import { PaintPath } from '@/store/types';
 import { shareConfig } from '@/commons/config';
-import { usePaint } from '@/uses';
+import { usePaint } from '@/commons/Paint';
 import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { useStore } from '@/store';
 import { getPintFromLocal } from '@/commons/utils';
@@ -66,7 +66,7 @@ watch(isPlaying, async (value) => {
   // 播放暂停时
   if (!value) {
     // 生成分享图片
-    shareImageUrl = paint.value?.toDataURL() as string;
+    shareImageUrl = await paint.value?.toDataURL() as string;
   }
 });
 

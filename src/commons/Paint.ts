@@ -1,5 +1,21 @@
-import { getCurrentInstance } from 'vue';
+import { getCurrentInstance, ref } from 'vue';
 import { Point, PaintType, Path } from '@/store/types';
+
+/**
+ * TODO: 画布的宽高需要重新定义，不同屏幕大小的设备不能保持一致
+ * @param canvasId
+ * @returns
+ */
+export function usePaint(canvasId?: string, onLoad?: () => void) {
+  const paint = ref<Paint>();
+
+  createPaint(canvasId).then((p) => {
+    paint.value = p;
+    onLoad?.();
+  });
+
+  return { paint };
+}
 
 /**
  * 创建 paint
@@ -42,6 +58,9 @@ export async function createPaint(canvasId?: string) {
   return paint;
 }
 
+/**
+ * 画笔类
+ */
 export class Paint {
   private readonly defaultWidth = 6;
   private readonly defaultColor = 'rgb(0,0,0)';
