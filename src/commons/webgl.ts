@@ -57,8 +57,8 @@ interface CreateVideoOptions {
  * @param options
  * @returns
  */
-export async function createVideo(frames: string[], options?: CreateVideoOptions) {
-  const { width = 300, height = 150, fps = 24, onProgress = (progress: number) => {} } = options || {};
+export async function createRenderVideo(options?: CreateVideoOptions) {
+  const { width = 300, height = 150, fps = 24 } = options || {};
 
   const canvas = wx.createOffscreenCanvas({ type: 'webgl', width, height });
 
@@ -71,23 +71,22 @@ export async function createVideo(frames: string[], options?: CreateVideoOptions
   await recorder.start();
 
   // 绘制
-  const frameCount = frames.length;
-  let i = 0;
-
-  while (i < frameCount) {
-    await render(frames[i]);
+  async function renderVideo(frame: string) {
+    await render(frame);
     await recorder.requestFrame();
-    onProgress(Math.round(i / frameCount));
-    i++;
+  };
+
+  renderVideo.stop = async function stop() {
+    // 绘制完成，生成视频
+    const { tempFilePath } = await recorder.stop();
+
+    console.log('---- video end ----', tempFilePath);
+
+    // 销毁
+    recorder.destroy();
+
+    return tempFilePath as string;
   }
 
-  // 绘制完成，生成视频
-  const { tempFilePath } = await recorder.stop();
-
-  console.log('---- video end ----', tempFilePath);
-
-  // 销毁
-  recorder.destroy();
-
-  return tempFilePath;
+  return renderVideo;
 };

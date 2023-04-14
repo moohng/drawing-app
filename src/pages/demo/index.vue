@@ -12,7 +12,7 @@
 import { ref } from 'vue';
 import { showLoading } from '@/commons/utils';
 import { onLoad } from '@dcloudio/uni-app';
-import { createWebglRender, createVideo } from '@/commons/webgl';
+import { createWebglRender, createRenderVideo } from '@/commons/webgl';
 
 const vSrc = ref('');
 
@@ -51,22 +51,21 @@ const onRender2 = async () => {
 const onClick = async () => {
   showLoading('视频生成中...');
 
-  const tempFilePath = await createVideo(new Array(120).fill(imageArr).flat(), {
-    onProgress(progress) {
-      console.log('--- 进度 ---', progress);
-    },
-  });
+  const renderVideo = await createRenderVideo();
+
+  let len = imageArr.length;
+  let i = 0;
+  while (i) {
+    await renderVideo(imageArr[i]);
+    console.log('--- 进度 ---', Math.round(i * 100 / len));
+    i++;
+  }
+
+  const tempFilePath = await renderVideo.stop();
 
   uni.hideLoading();
 
   vSrc.value = tempFilePath;
-
-  uni.saveVideoToPhotosAlbum({
-    filePath: tempFilePath,
-    success: () => {
-      uni.showToast({ title: '保存成功！' });
-    },
-  });
 }
 </script>
 

@@ -210,7 +210,7 @@ export class Paint {
 
   private onCompleted() {}
 
-  private run(onCompleted?: () => void, onFrame?: () => void) {
+  private async run(onCompleted?: () => void, onFrame?: () => void) {
     onCompleted && (this.onCompleted = onCompleted);
 
     // 结束绘制（下一次播放的时候要结束上一次播放）
@@ -232,7 +232,7 @@ export class Paint {
       }
 
       // 完成一帧
-      onFrame?.();
+      await onFrame?.();
 
       this.column++;
       // @ts-ignore
