@@ -3,12 +3,13 @@ import { useStore } from '@/store';
 import { Path } from '@/store/types';
 import { Paint } from '@/commons/Paint';
 import { getRelativePoint, getPoint } from '@/commons/utils';
+import { useSystemStore } from '@/store/modules/system';
 
 export function useCanvasEvent(paint: Ref<Paint>) {
   let painting = false;
   let currentLine: Path;
 
-  const { windowWidth, windowHeight } = uni.getSystemInfoSync();
+  const { windowWidth, windowHeight } = useSystemStore();
 
   const store = useStore();
 
@@ -35,6 +36,7 @@ export function useCanvasEvent(paint: Ref<Paint>) {
     if (!painting) return;
     const point = getRelativePoint(getPoint(event), { width: windowWidth, height: windowHeight });
     const lastPoint = currentLine.points[currentLine.points.length - 1];
+    // 忽略移动距离小于5的动作
     if ((point.x - lastPoint.x) ** 2 + (point.y - lastPoint.y) ** 2 < 5 ** 2) return;
     if (currentLine.points.length < 2) {
       paint.value.drawLine(point);

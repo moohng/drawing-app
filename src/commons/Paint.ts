@@ -1,5 +1,6 @@
 import { getCurrentInstance } from 'vue';
 import { Point, PaintType, Path } from '@/store/types';
+import { useSystemStore } from '@/store/modules/system';
 
 /**
  * 创建 paint
@@ -7,6 +8,10 @@ import { Point, PaintType, Path } from '@/store/types';
  * @returns
  */
 export async function createPaint(canvasId?: string) {
+
+  const { pixelRatio, windowWidth, windowHeight } = useSystemStore();
+  let canvasWidth = windowWidth;
+  let canvasHeight = windowHeight;
 
   // 创建 canvas
   let canvas: HTMLCanvasElement;
@@ -16,7 +21,13 @@ export async function createPaint(canvasId?: string) {
         .createSelectorQuery()
         .in(getCurrentInstance())
         .select('#' + canvasId)
-        .node(({ node }: any) => {
+        .fields({
+          // @ts-ignore
+          node: true,
+          size: true,
+        }, ({ node, width, height }: any) => {
+          canvasWidth = width;
+          canvasHeight = height;
           resolve(node);
         }).exec();
     });
@@ -24,17 +35,16 @@ export async function createPaint(canvasId?: string) {
     canvas = wx.createOffscreenCanvas({ type: '2d' });
   }
 
-  const { windowWidth, windowHeight, pixelRatio } = uni.getSystemInfoSync();
   /**
    * 解决绘图路径锯齿问题
    * 1. 尺寸取物理像素 windowWidth * pixelRatio
    * 2. 画布缩放像素比 ctx.scale
    */
-  canvas.width = windowWidth * pixelRatio;
-  canvas.height = windowHeight * pixelRatio;
+  canvas.width = canvasWidth * pixelRatio;
+  canvas.height = canvasHeight * pixelRatio;
 
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-  ctx.translate(windowWidth * pixelRatio / 2, windowHeight * pixelRatio / 2);
+  ctx.translate(canvasWidth * pixelRatio / 2, canvasHeight * pixelRatio / 2);
   ctx.scale(pixelRatio, pixelRatio);
 
   const paint = new Paint(ctx, canvas);

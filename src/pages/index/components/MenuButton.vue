@@ -32,6 +32,7 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
 import { useStore } from '@/store';
+import { useSystemStore } from '@/store/modules/system';
 import { useUserStore } from '@/store/modules/user';
 import { PageMode } from '../types';
 
@@ -46,6 +47,7 @@ const emit = defineEmits<{
 }>();
 
 const store = useStore();
+const systemStore = useSystemStore();
 const userStore = useUserStore();
 
 const menuBg = computed(() => {
@@ -53,7 +55,7 @@ const menuBg = computed(() => {
 });
 
 const toTop = computed(() => {
-  return store.headerHeight + 32 * store.windowWidth / 750;
+  return systemStore.headerHeight + 32 * systemStore.windowWidth / 750;
 });
 
 /** 小提示 */
