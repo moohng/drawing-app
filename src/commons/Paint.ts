@@ -1,6 +1,7 @@
 import { getCurrentInstance, ref } from 'vue';
 import { Point, PaintType, Path } from '@/store/types';
 import { useSystemStore } from '@/store/modules/system';
+import { useStore } from '@/store';
 
 /**
  * TODO: 画布的宽高需要重新定义，不同屏幕大小的设备不能保持一致
@@ -25,10 +26,6 @@ export function usePaint(canvasId?: string, onLoad?: () => void) {
  */
 export async function createPaint(canvasId?: string) {
 
-  const { pixelRatio, windowWidth, windowHeight } = useSystemStore();
-  let canvasWidth = windowWidth;
-  let canvasHeight = windowHeight;
-
   // 创建 canvas
   let canvas: HTMLCanvasElement;
   if (canvasId) {
@@ -41,15 +38,16 @@ export async function createPaint(canvasId?: string) {
           // @ts-ignore
           node: true,
           size: true,
-        }, ({ node, width, height }: any) => {
-          canvasWidth = width;
-          canvasHeight = height;
+        }, ({ node }: any) => {
           resolve(node);
         }).exec();
     });
   } else {
     canvas = wx.createOffscreenCanvas({ type: '2d' });
   }
+
+  const { pixelRatio } = useSystemStore();
+  const { canvasWidth, canvasHeight } = useStore();
 
   /**
    * 解决绘图路径锯齿问题

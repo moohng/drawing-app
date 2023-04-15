@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { generalThemeColor, getRandomColorList } from '@/commons/utils';
 import { PaintType } from './types';
 import { MAX_HISTORY_COUNT } from '@/commons/config';
+import { useSystemStore } from './modules/system';
 
 export const useStore = defineStore('main', {
   state() {
@@ -47,6 +48,15 @@ export const useStore = defineStore('main', {
     },
     themeBgColor() {
       return generalThemeColor(this.color as unknown as string, 10, 100, 0.9);
+    },
+
+    canvasWidth() {
+      const systemStore = useSystemStore();
+      return systemStore.windowWidth;
+    },
+    canvasHeight() {
+      const systemStore = useSystemStore();
+      return systemStore.windowHeight;
     },
   },
   actions: {
