@@ -49,7 +49,7 @@ export function useDownloadImage() {
     paint.setBackground(store.backgroundColor, true);
 
     // 生成图片
-    const shareImg = paint.toDataURL() as string;
+    const shareImg = await paint.toDataURL() as string;
 
     uni.saveImageToPhotosAlbum({
       filePath: shareImg,

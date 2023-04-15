@@ -1,6 +1,5 @@
 <template>
   <view class="canvas-video" @click="handlePlayToggle">
-    <!-- <canvas class="bg-canvas" id="bgCanvas" canvasId="bgCanvas" type="2d"></canvas> -->
     <canvas class="canvas" :style="{ opacity: paint ? 1 : 0, background }" id="drawCanvas" canvasId="drawCanvas" type="2d" />
     <view class="mask cover" v-if="!isPlaying">
       <text class="iconfont icon-play"></text>
@@ -10,7 +9,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, watch } from 'vue';
-import { usePaint } from '@/uses';
+import { usePaint } from '@/commons/Paint';
 import { Path } from '@/store/types';
 
 const props = defineProps({

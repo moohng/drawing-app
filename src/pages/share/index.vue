@@ -15,7 +15,6 @@
     <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[0] }" @click="handleVideo">生成视频</view>
   </view>
   <video :src="videoSrc" width="300" height="600"></video>
-  <image :src="ss"></image>
   <!-- 底部广告 -->
   <view class="bottom-banner" hidden>
     <!-- #ifndef H5 -->
@@ -23,7 +22,7 @@
     <!-- #endif -->
   </view>
   <!-- 分享成功 -->
-  <Dialog :visible="showDialog" title="保存成功" @click="handleSendFriend">
+  <Dialog :visible="showDialog" title="保存成功" @click="showDialog = false">
     <view class="dialog-desc">赶紧分享给好友炫耀一下吧~</view>
     <template #footer>
       <button class="dialog-btn" :style="{ color: store.themeColor }" open-type="share">分享给好友</button>
@@ -38,9 +37,8 @@ import { shareConfig } from '@/commons/config';
 import { generalBgColor, showLoading } from '@/commons/utils';
 import { useStore } from '@/store';
 import { useDownloadImage } from '@/uses/useDownloadImage';
-import { usePaint } from '@/uses';
 import { useInterstitialAd } from '@/uses/useAd';
-import { createVideo } from '@/commons/webgl';
+import { createRenderVideo } from '@/commons/webgl';
 import { createPaint, Paint } from '@/commons/Paint';
 
 let path = '/pages/index/index';
@@ -65,8 +63,6 @@ const store = useStore();
 
 let paint: Paint;
 
-const ss = ref('');
-
 onLoad(async () => {
   paint = await createPaint();
 
@@ -76,18 +72,11 @@ onLoad(async () => {
   paint.setBackground(store.backgroundColor, true);
   if (!shareImageUrl) {
     shareImageUrl = await paint.toDataURL('image/jpeg', 0.8);
-    console.log('==========', shareImageUrl);
-
-    ss.value = shareImageUrl;
   }
 });
 
 // 保存成功弹窗
 const showDialog = ref(false);
-
-const handleSendFriend = () => {
-  showDialog.value = false;
-};
 
 // 保存图片
 const { handleDownload } = useDownloadImage();
@@ -96,34 +85,25 @@ const videoSrc = ref('');
 
 // 保存动画
 const handleVideo = async () => {
-  showLoading('视频帧分析中...');
-
-  // 路径解析画布
-  // const canvas = wx.createOffscreenCanvas({ type: '2d', width: windowWidth * pixelRatio, height: windowHeight * pixelRatio });
-  // const ctx = canvas.getContext('2d');
-  // ctx.translate(windowWidth * pixelRatio / 2, windowHeight * pixelRatio / 2);
-  // // #ifndef MP-TOUTIAO
-  // ctx.scale(pixelRatio, pixelRatio);
-  // // #endif
-  // const paint = new Paint(ctx, canvas);
+  showLoading('正在合成视频...');
 
   const { currentPathList, backgroundColor } = store;
-  const frames: string[] = [];
+
+  const { width, height } = paint.ctx.canvas;
+  const renderVideo = await createRenderVideo({ width: width * 0.1, height: height * 0.1, fps: 36 });
 
   // 获取视频帧
-  // paint.setBackground(backgroundColor, true);
+  paint.clear();
+  paint.setBackground(backgroundColor, true);
   await paint.playPath({
     path: currentPathList,
     onFrame: async () => {
-      frames.push(await paint.toDataURL('image/jpeg', 0.8));
+      const frame = await paint.toDataURL('image/jpeg', 0.8);
+      await renderVideo(frame);
     },
   });
 
-  // 生成视频
-  showLoading('正在合成视频...');
-
-  const { width, height } = paint.ctx.canvas;
-  const tempFilePath = await createVideo(frames, { width: width * 0.1, height: height * 0.1, fps: 36 });
+  const tempFilePath = await renderVideo.stop();
 
   videoSrc.value = tempFilePath;
 
