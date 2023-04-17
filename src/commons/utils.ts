@@ -53,17 +53,6 @@ export function getPoint(event: TouchEvent) {
   return { x, y };
 }
 
-export function getEnv(): string {
-  const ua = window.navigator.userAgent.toLowerCase();
-  let env = 'h5';
-  if (/miniProgram/i.test(ua)) {
-    env = 'miniProgram';
-  } else if (/MicroMessenger/i.test(ua)) {
-    env = 'weixin';
-  }
-  return env;
-}
-
 /**
  * 随机生成颜色值
  * @returns

@@ -27,7 +27,6 @@
 
 <script lang="ts" setup>
 import { useStore } from '@/store';
-import { TypeKeys } from '@/store/types';
 
 const store = useStore();
 

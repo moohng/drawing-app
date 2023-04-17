@@ -1,57 +1,41 @@
 import { defineStore } from 'pinia';
-import { generalBgColor, generalThemeColor, getRandomColorList } from '@/commons/utils';
+import { generalThemeColor, getRandomColorList } from '@/commons/utils';
 import { PaintType } from './types';
 import { MAX_HISTORY_COUNT } from '@/commons/config';
-
-let colorList = uni.getStorageSync('COLOR_LIST');
-if (!colorList) {
-  colorList = getRandomColorList(5).map((item) => ({ value: item }));
-  uni.setStorageSync('COLOR_LIST', colorList);
-}
-let bgColorList = uni.getStorageSync('BACKGROUND_COLOR_LIST');
-if (!bgColorList) {
-  bgColorList = getRandomColorList(5).map((item) => ({ value: item }));
-  bgColorList[0] = { value: 'rgb(255, 255, 255)' };
-  uni.setStorageSync('BACKGROUND_COLOR_LIST', bgColorList);
-}
-
-const { statusBarHeight = 20, windowWidth } = uni.getSystemInfoSync();
-let navHeight = 44;
-// #ifdef MP
-const { top, bottom } = uni.getMenuButtonBoundingClientRect();
-// @ts-ignore
-navHeight = top + bottom - 2 * statusBarHeight;
-// #endif
-// #ifdef H5
-// @ts-ignore
-navHeight = 0;
-// #endif
+import { useSystemStore } from './modules/system';
 
 export const useStore = defineStore('main', {
-  state: () => ({
-    /** 绘制数据 */
-    path: [],
-    colorIndex: 0,
-    backgroundColorIndex: 0,
-    width: 2,
-    cacheWidth: 2,
-    paintType: PaintType.PEN,
-    /** 历史记录数据 */
-    currentPathIndex: -1, // 记录path操作记录指针
-    historyStepList: [],
-    currentStepIndex: -1, // 记录历史步骤指针
-    lastStep: undefined, // 历史记录操作最大值的时候，最后一次撤销时 备份需要用/
+  state() {
+    let colorList = uni.getStorageSync('COLOR_LIST');
+    if (!colorList) {
+      colorList = getRandomColorList(5).map((item) => ({ value: item }));
+      uni.setStorageSync('COLOR_LIST', colorList);
+    }
+    let bgColorList = uni.getStorageSync('BACKGROUND_COLOR_LIST');
+    if (!bgColorList) {
+      bgColorList = getRandomColorList(5).map((item) => ({ value: item }));
+      bgColorList[0] = { value: 'rgb(255, 255, 255)' };
+      uni.setStorageSync('BACKGROUND_COLOR_LIST', bgColorList);
+    }
 
-    env: '',
+    return {
+      /** 绘制数据 */
+      path: [],
+      colorIndex: 0,
+      backgroundColorIndex: 0,
+      width: 2,
+      cacheWidth: 2,
+      paintType: PaintType.PEN,
+      /** 历史记录数据 */
+      currentPathIndex: -1, // 记录path操作记录指针
+      historyStepList: [],
+      currentStepIndex: -1, // 记录历史步骤指针
+      lastStep: undefined, // 历史记录操作最大值的时候，最后一次撤销时 备份需要用/
 
-    colorList,
-    bgColorList,
-
-    statusBarHeight,
-    navHeight,
-    windowWidth,
-    headerHeight: statusBarHeight + navHeight,
-  }),
+      colorList,
+      bgColorList,
+    };
+  },
   getters: {
     currentStep: (state) => state.historyStepList[state.currentStepIndex],
     currentPathList: (state) => state.path.slice(0, state.currentPathIndex + 1),
@@ -65,11 +49,17 @@ export const useStore = defineStore('main', {
     themeBgColor() {
       return generalThemeColor(this.color as unknown as string, 10, 100, 0.9);
     },
+
+    canvasWidth() {
+      const systemStore = useSystemStore();
+      return systemStore.windowWidth;
+    },
+    canvasHeight() {
+      const systemStore = useSystemStore();
+      return systemStore.windowHeight;
+    },
   },
   actions: {
-    // setPath(path) {
-    //   this.path = path;
-    // },
     setColorIndex(colorIndex: number) {
       this.colorIndex = colorIndex;
       if (this.paintType === PaintType.ERASER) {

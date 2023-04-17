@@ -1,7 +1,4 @@
 <template>
-  <!-- #ifndef H5 -->
-  <!-- <NavBar>涂图了</NavBar> -->
-  <!-- #endif -->
   <view class="canvas canvas-bg" :style="{ backgroundColor: store.backgroundColor }"></view>
   <!-- 照着画功能 -->
   <movable-area

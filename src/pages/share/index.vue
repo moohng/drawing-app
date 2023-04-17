@@ -1,6 +1,11 @@
 <template>
   <view class="top">
-    <CanvasVideo :path="store.currentPathList" :background="store.backgroundColor" @change="onCanvasVideoChange"></CanvasVideo>
+    <CanvasVideo
+      :path="store.currentPathList"
+      :background="store.backgroundColor"
+      :coverImage="shareImageUrl"
+      @change="onCanvasVideoChange"
+    ></CanvasVideo>
   </view>
 
   <view class="item">操作</view>
@@ -37,12 +42,12 @@ import { createRenderVideo } from '@/commons/webgl';
 import { createPaint, Paint } from '@/commons/Paint';
 
 let path = '/pages/index/index';
-let shareImageUrl: string;
+const shareImageUrl = ref('');
 
 const getShareConfig = () => {
   shareConfig.path = path;
-  if (shareImageUrl) {
-    shareConfig.imageUrl = shareImageUrl;
+  if (shareImageUrl.value) {
+    shareConfig.imageUrl = shareImageUrl.value;
   }
   return shareConfig;
 };
@@ -65,8 +70,8 @@ onLoad(async () => {
   paint.clear();
   paint.setImageData(store.currentStep);
   paint.setBackground(store.backgroundColor, true);
-  if (!shareImageUrl) {
-    shareImageUrl = await paint.toDataURL('image/jpeg', 0.8);
+  if (!shareImageUrl.value) {
+    shareImageUrl.value = await paint.toDataURL('image/jpeg', 0.8);
   }
 });
 
