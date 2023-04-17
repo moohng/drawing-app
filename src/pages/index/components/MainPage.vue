@@ -18,16 +18,16 @@
       <!-- 主题部分 -->
       <view class="page-body">
         <view class="group">
-          <view class="menu-item bg-blur" :style="{ backgroundColor: generalBgColor() }" @click="hideMenu(), emit('toggleMode', PageMode.FREE)">
+          <view class="menu-item bg-blur" :style="{ backgroundColor: randomBgList[0] }" @click="hideMenu(), emit('toggleMode', PageMode.FREE)">
             <view class="title">自由画</view>
             <view class="desc">一张“白板”随意画</view>
           </view>
-          <view class="menu-item bg-blur" :style="{ backgroundColor: generalBgColor() }" @click="hideMenu(), emit('toggleMode', PageMode.COPY)">
+          <view class="menu-item bg-blur" :style="{ backgroundColor: randomBgList[1] }" @click="hideMenu(), emit('toggleMode', PageMode.COPY)">
             <view class="title">照着画</view>
             <view class="desc">选张图片照着画</view>
           </view>
         </view>
-        <view class="menu-item bg-blur" :style="{ backgroundColor: generalBgColor() }" @click="handleOpenPic">
+        <view class="menu-item bg-blur" :style="{ backgroundColor: randomBgList[2] }" @click="handleOpenPic">
           <view class="title">图片处理</view>
           <view class="desc">图片裁剪、压缩、拼接一键搞定</view>
         </view>
@@ -45,7 +45,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { defaultAvatarUrl } from '@/commons/config';
 import { generalBgColor } from '@/commons/utils';
 import { useUserStore, UserInfo } from '@/store/modules/user';
@@ -66,8 +66,16 @@ const topBg = computed(() => {
  };
 });
 
+const randomBgList = ref([generalBgColor(), generalBgColor(), generalBgColor()]);
+
 /** 菜单 */
 const { showMenu, openMenu, hideMenu } = useMenuAction();
+
+watch(showMenu, (val) => {
+  if (val) {
+    randomBgList.value = [generalBgColor(), generalBgColor(), generalBgColor()];
+  }
+});
 
 /** 开放接口 */
 defineExpose({

@@ -21,8 +21,12 @@
     <view>2. 生成视频耗时可能比较长，建议时长控制在10s内；</view>
     <view>3. 生成视频耗时可能比较长，建议时长控制在10s内；</view>
   </view>
+  <!-- 视频生成中弹窗 -->
+  <Dialog :visible="showVideoLoading" title="正在合成视频..." ad>
+    <view>{{videoLoadingProgress}}%</view>
+  </Dialog>
   <!-- 分享成功 -->
-  <Dialog :visible="showDialog" title="保存成功" @click="showDialog = false">
+  <Dialog :visible="showDialog" title="保存成功" @click="showDialog = false" ad>
     <view class="dialog-desc">赶紧分享给好友炫耀一下吧~</view>
     <template #footer>
       <button class="dialog-btn" :style="{ color: store.themeColor }" open-type="share">分享给好友</button>
@@ -32,7 +36,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
+import { onLoad, onShareAppMessage, onShareTimeline, onUnload } from '@dcloudio/uni-app';
 import { shareConfig } from '@/commons/config';
 import { generalBgColor, showLoading } from '@/commons/utils';
 import { useStore } from '@/store';
@@ -40,6 +44,7 @@ import { useDownloadOperation } from '@/uses/useDownloadImage';
 import { useInterstitialAd } from '@/uses/useAd';
 import { createRenderVideo } from '@/commons/webgl';
 import { createPaint, Paint } from '@/commons/Paint';
+import { Path } from '@/store/types';
 
 let path = '/pages/index/index';
 const shareImageUrl = ref('');
@@ -120,6 +125,10 @@ const handleSaveImage = async () => {
   });
 }
 
+const showVideoLoading = ref(false);
+const videoLoadingProgress = ref(0);
+let renderVideo: any;
+
 // 保存视频
 const handleSaveVideo = async () => {
   try {
@@ -129,21 +138,26 @@ const handleSaveVideo = async () => {
     return;
   }
 
-  showLoading('正在合成视频...');
+  showVideoLoading.value = true;
 
   const { currentPathList, backgroundColor } = store;
+
+  const videoFrameLength = currentPathList.reduce((len, item: Path) => len + item.points.length, 0);
+  console.log('============ 总长度 ==========', videoFrameLength);
 
   try {
     const width = 270;
     const height = 480;
-    const renderVideo = await createRenderVideo({ width, height });
+    renderVideo = await createRenderVideo({ width, height });
 
     // 获取视频帧
     paint.clear();
     paint.setBackground(backgroundColor, true);
     await paint.playPath({
       path: currentPathList,
-      onFrame: async () => {
+      onFrame: async (index) => {
+        console.log('进行中...', index, index / videoFrameLength);
+        videoLoadingProgress.value = Math.round(index * 100 / videoFrameLength);
         const frame = await paint.toDataURL('image/png');
         await renderVideo(frame);
       },
@@ -151,12 +165,12 @@ const handleSaveVideo = async () => {
 
     const tempFilePath = await renderVideo.stop();
 
-    uni.hideLoading();
-
     // 保存视频
     uni.saveVideoToPhotosAlbum({
       filePath: tempFilePath,
       success: () => {
+        showVideoLoading.value = false;
+        videoLoadingProgress.value = 0;
         showDialog.value = true;
       },
       fail: () => {
@@ -167,6 +181,12 @@ const handleSaveVideo = async () => {
     uni.showToast({ title: '合成视频失败！', icon: 'none' });
   }
 };
+
+onUnload(() => {
+  if (renderVideo) {
+    renderVideo.abort();
+  }
+});
 
 // 弹窗广告
 const { showInterstitialAd } = useInterstitialAd('adunit-c0ef209d582bf665');
