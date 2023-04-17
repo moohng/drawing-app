@@ -71,13 +71,12 @@ onMounted(() => {
 .canvas-video {
   position: relative;
   width: 100%;
-  height: 100%;
   background-color: #000;
   overflow: hidden;
   .canvas {
     margin: auto;
-    width: 50%;
-    height: 100%;
+    width: 75%;
+    height: 780rpx;
   }
   .mask.cover {
     position: absolute;
@@ -90,14 +89,5 @@ onMounted(() => {
       font-size: 64rpx;
     }
   }
-  // .bg-canvas {
-  //   position: absolute;
-  //   left: 0;
-  //   width: 100vw;
-  //   height: 100vh;
-  //   top: 50%;
-  //   transform: translateY(-50%);
-  //   z-index: -1;
-  // }
 }
 </style>

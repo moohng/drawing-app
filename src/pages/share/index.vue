@@ -3,23 +3,18 @@
     <CanvasVideo :path="store.currentPathList" :background="store.backgroundColor" @change="onCanvasVideoChange"></CanvasVideo>
   </view>
 
-  <view class="list">
-    <view class="item bottom-line">
-      <view class="label">标题</view>
-      <view></view>
-    </view>
-  </view>
-  <!-- 底部按钮 -->
+  <view class="item">操作</view>
+  <!-- 按钮 -->
   <view class="button-group">
-    <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[1] }" @click="handleDownload(paint)">生成图片</view>
-    <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[0] }" @click="handleVideo">生成视频</view>
+    <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[1] }" @click="handleSaveImage">生成图片</view>
+    <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[0] }" @click="handleSaveVideo">生成视频</view>
   </view>
-  <video :src="videoSrc" width="300" height="600"></video>
-  <!-- 底部广告 -->
-  <view class="bottom-banner" hidden>
-    <!-- #ifndef H5 -->
-    <ad class="ad" unit-id="adunit-e72cb196c01d4a8c" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
-    <!-- #endif -->
+  <!-- 底部说明 -->
+  <view class="bottom-tips">
+    <view class="label">说明：</view>
+    <view>1. 生成视频耗时可能比较长，建议时长控制在10s内；</view>
+    <view>2. 生成视频耗时可能比较长，建议时长控制在10s内；</view>
+    <view>3. 生成视频耗时可能比较长，建议时长控制在10s内；</view>
   </view>
   <!-- 分享成功 -->
   <Dialog :visible="showDialog" title="保存成功" @click="showDialog = false">
@@ -36,7 +31,7 @@ import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { shareConfig } from '@/commons/config';
 import { generalBgColor, showLoading } from '@/commons/utils';
 import { useStore } from '@/store';
-import { useDownloadImage } from '@/uses/useDownloadImage';
+import { useDownloadOperation } from '@/uses/useDownloadImage';
 import { useInterstitialAd } from '@/uses/useAd';
 import { createRenderVideo } from '@/commons/webgl';
 import { createPaint, Paint } from '@/commons/Paint';
@@ -78,19 +73,54 @@ onLoad(async () => {
 // 保存成功弹窗
 const showDialog = ref(false);
 
+const { beforeSave } = useDownloadOperation();
+
 // 保存图片
-const { handleDownload } = useDownloadImage();
+const handleSaveImage = async () => {
+  try {
+    await beforeSave();
+  } catch (err: any) {
+    err && uni.showToast({ title: err.message, icon: 'none' });
+    return;
+  }
 
-const videoSrc = ref('');
+  showLoading('正在生成图片...');
 
-// 保存动画
-const handleVideo = async () => {
+  // 绘制图像
+  paint.clear();
+  paint.setImageData(store.currentStep);
+  paint.setBackground(store.backgroundColor, true);
+
+  // 生成图片
+  const shareImg = await paint.toDataURL() as string;
+
+  uni.saveImageToPhotosAlbum({
+    filePath: shareImg,
+    success: () => {
+      showDialog.value = true;
+    },
+    fail: () => {
+      uni.showToast({ title: '保存失败！', icon: 'none' });
+    },
+  });
+}
+
+// 保存视频
+const handleSaveVideo = async () => {
+  try {
+    await beforeSave();
+  } catch (err: any) {
+    err && uni.showToast({ title: err.message, icon: 'none' });
+    return;
+  }
+
   showLoading('正在合成视频...');
 
   const { currentPathList, backgroundColor } = store;
 
-  const { width, height } = paint.ctx.canvas;
-  const renderVideo = await createRenderVideo({ width: width * 0.1, height: height * 0.1, fps: 36 });
+  const width = 270;
+  const height = 480;
+  const renderVideo = await createRenderVideo({ width, height });
 
   // 获取视频帧
   paint.clear();
@@ -98,14 +128,12 @@ const handleVideo = async () => {
   await paint.playPath({
     path: currentPathList,
     onFrame: async () => {
-      const frame = await paint.toDataURL('image/jpeg', 0.8);
+      const frame = await paint.toDataURL('image/png');
       await renderVideo(frame);
     },
   });
 
   const tempFilePath = await renderVideo.stop();
-
-  videoSrc.value = tempFilePath;
 
   uni.hideLoading();
 
@@ -114,6 +142,9 @@ const handleVideo = async () => {
     filePath: tempFilePath,
     success: () => {
       showDialog.value = true;
+    },
+    fail: () => {
+      uni.showToast({ title: '保存失败！', icon: 'none' });
     },
   });
 };
@@ -129,27 +160,13 @@ const onCanvasVideoChange = (isPlay: boolean) => {
 </script>
 
 <style lang="scss" scoped>
-.top {
-  height: 520rpx;
-}
-
-.list {
+.item {
   padding: 32rpx;
   font-size: 32rpx;
-
-  .item {
-    padding: 8rpx 0;
-
-    .label {
-      display: flex;
-      align-items: baseline;
-      font-size: 36rpx;
-    }
-  }
 }
 
 .button-group {
-  padding: 32rpx;
+  padding: 16rpx 32rpx 32rpx;
   display: flex;
   justify-content: space-between;
   .button {
@@ -165,8 +182,14 @@ const onCanvasVideoChange = (isPlay: boolean) => {
   }
 }
 
-.bottom-banner {
-  margin: 32rpx;
+.bottom-tips {
+  padding: 32rpx;
+  font-size: 28rpx;
+  color: #999;
+
+  .label {
+    margin-bottom: 8rpx;
+  }
 }
 
 .dialog-btn {
@@ -182,11 +205,4 @@ const onCanvasVideoChange = (isPlay: boolean) => {
     border: none;
   }
 }
-
-.img-canvas {
-  position: fixed;
-  opacity: 0;
-  transform: translateX(10000px);
-}
-
 </style>
