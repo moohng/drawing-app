@@ -66,11 +66,11 @@ let paint: Paint;
 onLoad(async () => {
   paint = await createPaint();
 
-  // 生成分享图片
-  paint.clear();
-  paint.setImageData(store.currentStep);
-  paint.setBackground(store.backgroundColor, true);
   if (!shareImageUrl.value) {
+    // 生成分享图片
+    paint.clear();
+    paint.setImageData(store.currentStep);
+    paint.setBackground(store.backgroundColor, true);
     shareImageUrl.value = await paint.toDataURL('image/jpeg', 0.8);
   }
 });
@@ -89,22 +89,32 @@ const handleSaveImage = async () => {
     return;
   }
 
-  showLoading('正在生成图片...');
+  let shareImg: string;
 
-  // 绘制图像
-  paint.clear();
-  paint.setImageData(store.currentStep);
-  paint.setBackground(store.backgroundColor, true);
+  if (!shareImageUrl.value) {
+    showLoading('正在生成图片...');
 
-  // 生成图片
-  const shareImg = await paint.toDataURL() as string;
+    // 绘制图像
+    paint.clear();
+    paint.setImageData(store.currentStep);
+    paint.setBackground(store.backgroundColor, true);
+
+    // 生成图片
+    shareImg = await paint.toDataURL() as string;
+
+  } else {
+    shareImg = shareImageUrl.value;
+  }
+
+  console.log('======= 图片路径 =======', shareImg);
 
   uni.saveImageToPhotosAlbum({
     filePath: shareImg,
     success: () => {
       showDialog.value = true;
     },
-    fail: () => {
+    fail: (err) => {
+      console.error(err);
       uni.showToast({ title: '保存失败！', icon: 'none' });
     },
   });
@@ -113,7 +123,7 @@ const handleSaveImage = async () => {
 // 保存视频
 const handleSaveVideo = async () => {
   try {
-    await beforeSave();
+    await beforeSave(true);
   } catch (err: any) {
     err && uni.showToast({ title: err.message, icon: 'none' });
     return;
@@ -123,35 +133,39 @@ const handleSaveVideo = async () => {
 
   const { currentPathList, backgroundColor } = store;
 
-  const width = 270;
-  const height = 480;
-  const renderVideo = await createRenderVideo({ width, height });
+  try {
+    const width = 270;
+    const height = 480;
+    const renderVideo = await createRenderVideo({ width, height });
 
-  // 获取视频帧
-  paint.clear();
-  paint.setBackground(backgroundColor, true);
-  await paint.playPath({
-    path: currentPathList,
-    onFrame: async () => {
-      const frame = await paint.toDataURL('image/png');
-      await renderVideo(frame);
-    },
-  });
+    // 获取视频帧
+    paint.clear();
+    paint.setBackground(backgroundColor, true);
+    await paint.playPath({
+      path: currentPathList,
+      onFrame: async () => {
+        const frame = await paint.toDataURL('image/png');
+        await renderVideo(frame);
+      },
+    });
 
-  const tempFilePath = await renderVideo.stop();
+    const tempFilePath = await renderVideo.stop();
 
-  uni.hideLoading();
+    uni.hideLoading();
 
-  // 保存视频
-  uni.saveVideoToPhotosAlbum({
-    filePath: tempFilePath,
-    success: () => {
-      showDialog.value = true;
-    },
-    fail: () => {
-      uni.showToast({ title: '保存失败！', icon: 'none' });
-    },
-  });
+    // 保存视频
+    uni.saveVideoToPhotosAlbum({
+      filePath: tempFilePath,
+      success: () => {
+        showDialog.value = true;
+      },
+      fail: () => {
+        uni.showToast({ title: '保存失败！', icon: 'none' });
+      },
+    });
+  } catch (err) {
+    uni.showToast({ title: '合成视频失败！', icon: 'none' });
+  }
 };
 
 // 弹窗广告
@@ -191,6 +205,7 @@ const onCanvasVideoChange = (isPlay: boolean) => {
   padding: 32rpx;
   font-size: 28rpx;
   color: #999;
+  line-height: 1.8;
 
   .label {
     margin-bottom: 8rpx;

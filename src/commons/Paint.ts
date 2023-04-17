@@ -321,13 +321,21 @@ export class Paint {
   }
 
   async toDataURL(type?: string, quality?: any) {
-    const base64 = this.canvas.toDataURL(type, quality) as string;
+    const dataURL = this.canvas.toDataURL(type, quality) as string;
+    const tempData = dataURL.split(';base64,');
+
+    // 生成临时文件路径
+    const ext = tempData[0].split('/')[1];
+    const tempFilePath = `${wx.env.USER_DATA_PATH}/${Date.now()}.${ext}`;
+
+    console.log('====== 生成临时文件路径 ======', tempFilePath);
+
+    // 写入临时文件
     const fsm = wx.getFileSystemManager();
-    const tempFilePath = `${wx.env.USER_DATA_PATH}/${Date.now()}`;
     return new Promise<string>((resolve, reject) => {
       fsm.writeFile({
         filePath: tempFilePath,
-        data: base64.split('base64,')[1],
+        data: tempData[1],
         encoding: 'base64',
         success: () => resolve(tempFilePath),
         fail: reject,

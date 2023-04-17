@@ -85,7 +85,6 @@ onMounted(() => {
 .canvas-video {
   position: relative;
   width: 100%;
-  background-color: #000;
   overflow: hidden;
 
   .video-bg {

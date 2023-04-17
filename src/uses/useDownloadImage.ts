@@ -7,14 +7,16 @@ export function useDownloadOperation() {
 
   const { showRewardedVideoAd } = useRewardedVideoAd();
 
-  const beforeSave = async () => {
+  const beforeSave = async (needAd = false) => {
     if (store.currentPathIndex < 0) {
       throw new Error('先随便画点什么吧~');
     }
 
-    const isEnded = await showRewardedVideoAd?.();
-    if (!isEnded) {
-      throw new Error('请完整观看视频！');
+    if (needAd) {
+      const isEnded = await showRewardedVideoAd?.();
+      if (!isEnded) {
+        throw new Error('请完整观看视频！');
+      }
     }
 
     const res = await uni.getSetting({});
