@@ -88,5 +88,9 @@ export async function createRenderVideo(options?: CreateVideoOptions) {
     return tempFilePath as string;
   }
 
+  renderVideo.abort = function abort() {
+    recorder.destroy();
+  }
+
   return renderVideo;
 };

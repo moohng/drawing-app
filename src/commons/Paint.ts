@@ -75,6 +75,7 @@ export class Paint {
 
   private row = 0;
   private column = 0;
+  private playFrameIndex = 0;
   private stop = false;
   private path: Path[] = [];
 
@@ -213,7 +214,7 @@ export class Paint {
    */
   playPath({ path, onFrame }: {
     path: Path[];
-    onFrame?: () => void;
+    onFrame?: (index: number) => void;
   }) {
     if (!path.length) {
       throw new Error('path 参数不能为空');
@@ -231,13 +232,14 @@ export class Paint {
     this.start(points[0], { color, width, type });
 
     return new Promise(resolve => {
+      this.playFrameIndex = 0;
       this.run(() => resolve(0), onFrame);
     });
   }
 
   private onCompleted() {}
 
-  private async run(onCompleted?: () => void, onFrame?: () => void) {
+  private async run(onCompleted?: () => void, onFrame?: (index: number) => void) {
     onCompleted && (this.onCompleted = onCompleted);
 
     // 结束绘制（下一次播放的时候要结束上一次播放）
@@ -259,7 +261,7 @@ export class Paint {
       }
 
       // 完成一帧
-      await onFrame?.();
+      await onFrame?.(this.playFrameIndex++);
 
       this.column++;
       // @ts-ignore
