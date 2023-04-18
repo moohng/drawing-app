@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ColorOption, TypeKeys } from '@/store/types';
+import { ColorOption } from '@/store/types';
 import { computed, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { useStore } from '@/store';
