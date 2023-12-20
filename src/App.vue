@@ -6,7 +6,8 @@ onShow(() => {});
 onHide(() => {});
 </script>
 <style lang="scss">
-@import './styles/iconfont.css';
+@import './assets/styles/iconfont.css';
+@import './assets/styles/material-icon.css';
 
 page {
   --primaryColor: #00ccff;

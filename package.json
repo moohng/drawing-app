@@ -26,10 +26,10 @@
     "@dcloudio/uni-quickapp-webview": "3.0.0-3090820231124001",
     "@moohng/dan": "^2.1.0",
     "color-convert": "^2.0.1",
-    "pinia": "^2.0.23",
+    "mini-smooth-signature": "^1.0.7",
+    "pinia": "2.0.36",
     "threejs-miniprogram": "^0.0.8",
-    "vue": "^3.3.12",
-    "vue-i18n": "^9.8.0"
+    "vue": "^3.2.47"
   },
   "devDependencies": {
     "@dcloudio/types": "^3.4.3",
@@ -37,12 +37,12 @@
     "@dcloudio/uni-cli-shared": "3.0.0-3090820231124001",
     "@dcloudio/uni-stacktracey": "3.0.0-3090820231124001",
     "@dcloudio/vite-plugin-uni": "3.0.0-3090820231124001",
-    "@types/color-convert": "^2.0.0",
-    "@types/node": "^18.11.5",
-    "@vue/runtime-core": "^3.2.45",
-    "autoprefixer": "^10.4.2",
-    "sass": "^1.48.0",
-    "typescript": "^4.5.2",
-    "vite": "^4.0.3"
+    "@types/color-convert": "^2.0.3",
+    "@types/node": "^20.10.5",
+    "@vue/runtime-core": "^3.2.47",
+    "autoprefixer": "^10.4.16",
+    "sass": "^1.69.5",
+    "typescript": "^5.3.3",
+    "vite": "^4.0.0"
   }
 }
