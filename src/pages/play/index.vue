@@ -13,7 +13,7 @@
     <view class="share-tips">点击右上角“···”，可分享到“朋友圈”</view>
     <text class="iconfont icon-play" @click="handlePlayToggle"></text>
     <view class="bottom" :class="{ safeBottom }">
-      <button class="btn" :style="{ color: getters.themeColor }" open-type="share">分享给好友<text class="iconfont icon-share"></text></button>
+      <button class="btn" :style="{ color: store.themeColor }" open-type="share">分享给好友<text class="iconfont icon-share"></text></button>
       <view class="btn" @click="handleGoPlay">我也要玩<text class="iconfont icon-pen"></text></view>
       <!-- banner -->
       <BottomAd unit-id="adunit-f990e4999b6ab2ce" @hide="safeBottom = true" />
@@ -26,13 +26,12 @@
 
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
-import { fetchPathById, PaintPath } from '@/commons/api';
+import { PaintPath } from '@/store/types';
 import { shareConfig } from '@/commons/config';
-import { usePaint } from '@/uses';
+import { usePaint } from '@/commons/Paint';
 import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
-import { useGenerateImage } from '@/uses/useGenerateImage';
-import { useStore } from 'vuex';
-import { getPintFromLocal, savePaintToLocal } from '@/commons/utils';
+import { useStore } from '@/store';
+import { getPintFromLocal } from '@/commons/utils';
 
 let shareImageUrl = '';
 
@@ -48,7 +47,7 @@ onShareTimeline(() => ({
   imageUrl: shareImageUrl,
 }));
 
-const { getters } = useStore();
+const store = useStore();
 
 let paintId: string;
 
@@ -67,17 +66,19 @@ watch(isPlaying, async (value) => {
   // 播放暂停时
   if (!value) {
     // 生成分享图片
-    shareImageUrl = await useGenerateImage('#drawCanvas');
+    shareImageUrl = await paint.value?.toDataURL() as string;
   }
 });
 
-const startPlay = () => {
+const startPlay = async () => {
   isPlaying.value = true;
   paint.value?.clear();
-  // localState.value?.title && uni.setNavigationBarTitle({ title: localState.value.title });
-  paint.value?.playPath(localState.value!.path, () => {
-    isPlaying.value = false;
+
+  await paint.value?.playPath({
+    path: localState.value!.path,
   });
+
+  isPlaying.value = false;
 };
 
 const fetchData = (id: string) => {
@@ -93,17 +94,17 @@ const fetchData = (id: string) => {
     return setPath(res);
   }
 
-  fetchPathById(id).then(({ result }: any) => {
-    const { data } = result;
-    if (!data?.length) {
-      isPlaying.value = false;
-      return uni.showToast({ title: '链接已失效~', icon: 'none' });
-    }
-    setPath(data[0]);
-    savePaintToLocal(data[0]);
-  }).catch(() => {
-    errorDialog.value = true;
-  });
+  // fetchPathById(id).then(({ result }: any) => {
+  //   const { data } = result;
+  //   if (!data?.length) {
+  //     isPlaying.value = false;
+  //     return uni.showToast({ title: '链接已失效~', icon: 'none' });
+  //   }
+  //   setPath(data[0]);
+  //   savePaintToLocal(data[0]);
+  // }).catch(() => {
+  //   errorDialog.value = true;
+  // });
 };
 
 onLoad(({ id }) => {

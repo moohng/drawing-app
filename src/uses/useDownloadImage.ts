@@ -1,36 +1,23 @@
-import { Paint } from '@/commons/Paint';
-import { download, showLoading } from '@/commons/utils';
-import { Ref } from 'vue';
-import { useStore } from 'vuex';
+import { useStore } from '@/store';
 import { useRewardedVideoAd } from './useAd';
-import { useGenerateImage } from './useGenerateImage';
 
-export function useDrawImage(paint: Ref<Paint | undefined>, getters: any) {
-  paint.value?.clear();
-  paint.value?.setImageData(getters.currentStep);
-  paint.value?.setBackground(getters.backgroundColor, true);
-}
+export function useDownloadOperation() {
 
-export function useDownloadImage(paint: Ref<Paint | undefined>, canvasSelect: string) {
+  const store = useStore();
 
-  const { state, getters } = useStore();
-
-  // #ifdef MP
   const { showRewardedVideoAd } = useRewardedVideoAd();
-  // #endif
 
-  const handleDownload = async () => {
-    if (state.currentPathIndex < 0) {
-      return uni.showToast({ title: '先随便画点什么吧~', icon: 'none' });
+  const beforeSave = async (needAd = false) => {
+    if (store.currentPathIndex < 0) {
+      throw new Error('先随便画点什么吧~');
     }
 
-    // #ifdef MP
-    try {
+    if (needAd) {
       const isEnded = await showRewardedVideoAd?.();
       if (!isEnded) {
-        return uni.showToast({ title: '请完整观看视频！', icon: 'none' });
+        throw new Error('请完整观看视频！');
       }
-    } catch (err) {}
+    }
 
     const res = await uni.getSetting({});
     // @ts-ignore
@@ -38,7 +25,7 @@ export function useDownloadImage(paint: Ref<Paint | undefined>, canvasSelect: st
       try {
         await uni.authorize({ scope: 'scope.writePhotosAlbum' });
       } catch {
-        return uni.showToast({ title: '请允许获取系统相册权限', icon: 'none' });
+        throw new Error('请允许获取系统相册权限');
       }
       // @ts-ignore
     } else if (!res?.authSetting?.['scope.writePhotosAlbum']) {
@@ -46,37 +33,13 @@ export function useDownloadImage(paint: Ref<Paint | undefined>, canvasSelect: st
         // @ts-ignore
         const { authSetting } = await uni.openSetting({});
         if (!authSetting['scope.writePhotosAlbum']) {
-          throw new Error();
+          throw new Error('请允许获取系统相册权限');
         }
       } catch (err) {
-        return uni.showToast({ title: '请允许获取系统相册权限', icon: 'none' });
+        throw new Error('请允许获取系统相册权限');
       }
     }
-    // #endif
-
-    showLoading('正在生成图片...');
-    // 绘制图像
-    useDrawImage(paint, getters);
-
-    // 生成图片
-    const shareImg = await useGenerateImage(canvasSelect);
-
-    // #ifndef H5
-    uni.saveImageToPhotosAlbum({
-      filePath: shareImg,
-      success: () => {
-        uni.showToast({ title: '保存成功！', icon: 'none' });
-      },
-      fail: () => {
-        uni.showToast({ title: '保存失败！', icon: 'none' });
-      },
-    });
-    // #endif
-    // #ifdef H5
-    download(shareImg);
-    uni.hideLoading();
-    // #endif
   };
 
-  return { handleDownload };
+  return { beforeSave };
 }

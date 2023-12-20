@@ -35,12 +35,9 @@
 			}
 		},
 		{
-			"path": "pages/my/index",
+			"path": "pages/demo/index",
 			"style": {
-				"navigationBarTitleText": "我的画作",
-				// #ifdef H5
-				"navigationStyle": "custom"
-				// #endif
+				"navigationBarTitleText": "测试页面"
 			}
 		}
 	],
@@ -48,6 +45,9 @@
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "涂图了",
 		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"backgroundColor": "#F8F8F8",
+    "app-plus": {
+      "bounce": "none"
+    }
 	}
 }

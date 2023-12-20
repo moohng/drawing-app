@@ -18,6 +18,10 @@
         </slot>
       </view>
     </view>
+    <!-- 弹窗广告 -->
+    <view class="bottom-ad" v-if="ad">
+      <BottomAd :unit-id="typeof ad === 'string' ? ad : 'adunit-af124415d4eba99e'" />
+    </view>
   </view>
 </template>
 
@@ -35,6 +39,7 @@ const props = defineProps<{
   title?: string;
   content?: string;
   buttons?: string | ButtonOption[];
+  ad?: string | boolean;
 }>();
 
 const { title, content, buttons, visible } = props;
@@ -80,7 +85,7 @@ watch(() => props.visible,
 
 .tui-dialog__body {
   position: fixed;
-  top: 44%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 620rpx;
@@ -158,5 +163,13 @@ watch(() => props.visible,
   color: #333;
   letter-spacing: 2rpx;
   text-decoration: none;
+}
+
+.bottom-ad {
+  position: fixed;
+  left: 32rpx;
+  right: 32rpx;
+  bottom: 32rpx;
+  z-index: 9999;
 }
 </style>

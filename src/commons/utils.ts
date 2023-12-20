@@ -2,7 +2,7 @@ import { Path, Point, ColorOption } from '@/store/types';
 import * as dan from '@moohng/dan';
 import { hsv, rgb } from 'color-convert';
 import { RGB } from 'color-convert/conversions';
-import { PaintPath } from './api';
+import { PaintPath } from '@/store/types';
 
 export function showLoading(title = '加载中...') {
   return uni.showLoading({ title, mask: true });
@@ -51,17 +51,6 @@ export function getPoint(event: TouchEvent) {
   // @ts-ignore
   const { clientX, clientY, x = clientX, y = clientY } = event.touches[0];
   return { x, y };
-}
-
-export function getEnv(): string {
-  const ua = window.navigator.userAgent.toLowerCase();
-  let env = 'h5';
-  if (/miniProgram/i.test(ua)) {
-    env = 'miniProgram';
-  } else if (/MicroMessenger/i.test(ua)) {
-    env = 'weixin';
-  }
-  return env;
 }
 
 /**

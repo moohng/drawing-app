@@ -2,55 +2,59 @@
   <view class="main-menu" :class="[showMenu ? 'show' : null]">
     <view class="mask cover" @click="hideMenu"></view>
     <!-- 主页面 -->
-    <view class="full-page" :style="{ top: state.headerHeight + 'px' }">
+    <view class="full-page">
       <view class="bg" :style="topBg"></view>
+      <!-- 用户头像 -->
       <view class="page-header">
         <view class="user-info" @click="getUserInfo">
           <view class="avatar">
             <image class="image" :src="userInfo?.avatarUrl || defaultAvatarUrl"></image>
           </view>
-          <view class="nickname">{{ userInfo?.nickName || '点击登陆' }}</view>
-          <view class="button bg-blur" :style="{ backgroundColor: getters.themeColor }" v-if="userInfo" @click="goMyPage">我的画作</view>
+          <view class="nickname">{{ userInfo?.nickName || '点击获取头像' }}</view>
+          <!-- <view class="button bg-blur" :style="{ backgroundColor: getters.themeColor }" v-if="userInfo" @click="goMyPage">我的画作</view> -->
         </view>
         <text class="iconfont icon-close" @click="hideMenu"></text>
       </view>
-      <!-- 用户头像 -->
-      <scroll-view class="page-scroll" scroll-y>
-        <view class="page-body">
-          <view class="group">
-            <view class="menu-item bg-blur" :style="{ backgroundColor: generalBgColor() }" @click="hideMenu(), emit('toggleMode', PageMode.FREE)">
-              <view class="title">自由画</view>
-              <view class="desc">一张“白板”随意画</view>
-            </view>
-            <view class="menu-item bg-blur" :style="{ backgroundColor: generalBgColor() }" @click="hideMenu(), emit('toggleMode', PageMode.COPY)">
-              <view class="title">照着画</view>
-              <view class="desc">选张图片照着画</view>
-            </view>
+      <!-- 主题部分 -->
+      <view class="page-body">
+        <view class="group">
+          <view class="menu-item bg-blur" :style="{ backgroundColor: randomBgList[0] }" @click="hideMenu(), emit('toggleMode', PageMode.FREE)">
+            <view class="title">自由画</view>
+            <view class="desc">一张“白板”随意画</view>
           </view>
-          <view class="menu-item bg-blur" :style="{ backgroundColor: generalBgColor() }" @click="handleOpenPic">
-            <view class="title">图片处理</view>
-            <view class="desc">图片裁剪、压缩、拼接一键搞定</view>
-          </view>
-          <view class="menu-ad">
-            <ad class="ad" unit-id="adunit-af124415d4eba99e" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
+          <view class="menu-item bg-blur" :style="{ backgroundColor: randomBgList[1] }" @click="hideMenu(), emit('toggleMode', PageMode.COPY)">
+            <view class="title">照着画</view>
+            <view class="desc">选张图片照着画</view>
           </view>
         </view>
-      </scroll-view>
+        <view class="menu-item bg-blur" :style="{ backgroundColor: randomBgList[2] }" @click="handleOpenPic">
+          <view class="title">图片处理</view>
+          <view class="desc">图片裁剪、压缩、拼接一键搞定</view>
+        </view>
+        <!-- #ifndef H5 -->
+        <view class="menu-ad">
+          <BottomAd unit-id="adunit-af124415d4eba99e" />
+        </view>
+        <!-- #endif -->
+        <!-- <view class="menu-ad">
+          <ad class="ad" unit-id="adunit-af124415d4eba99e" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
+        </view> -->
+      </view>
     </view>
   </view>
 </template>
 
 <script lang="ts" setup>
+import { computed, ref, watch } from 'vue';
 import { defaultAvatarUrl } from '@/commons/config';
 import { generalBgColor } from '@/commons/utils';
-import { TypeKeys } from '@/store/modules/user';
-import { computed } from 'vue';
-import { useStore } from 'vuex';
+import { useUserStore, UserInfo } from '@/store/modules/user';
 import { PageMode } from '../types';
 import { useMenuAction } from '../uses/useToolAction';
+import { useStore } from '@/store';
 
-
-const { state, getters, commit } = useStore();
+const mainStore = useStore();
+const userStore = useUserStore();
 
 const emit = defineEmits<{
   (event: 'toggleMode', mode: PageMode): void;
@@ -58,32 +62,36 @@ const emit = defineEmits<{
 
 const topBg = computed(() => {
   return {
-    background: `linear-gradient(to bottom, ${getters.themeBgColor}, transparent)`,
+    background: `linear-gradient(to bottom, ${mainStore.themeBgColor}, transparent)`,
  };
 });
 
+const randomBgList = ref([generalBgColor(), generalBgColor(), generalBgColor()]);
+
 /** 菜单 */
 const { showMenu, openMenu, hideMenu } = useMenuAction();
+
+watch(showMenu, (val) => {
+  if (val) {
+    randomBgList.value = [generalBgColor(), generalBgColor(), generalBgColor()];
+  }
+});
 
 /** 开放接口 */
 defineExpose({
   openMenu,
 });
 
-const userInfo = computed(() => state.user.userInfo);
+const userInfo = computed(() => userStore.userInfo);
 
 const getUserInfo = () => {
   if (userInfo.value) return;
   uni.getUserProfile({
     desc: '为了更好的用户体验',
     success: (res) => {
-      commit(TypeKeys.SET_USER_INFO, res.userInfo);
+      userStore.setUserInfo(res.userInfo as unknown as UserInfo);
     },
   });
-};
-
-const goMyPage = () => {
-  uni.navigateTo({ url: '/pages/my/index' });
 };
 
 const handleOpenPic = () => {
@@ -119,7 +127,6 @@ const handleOpenPic = () => {
     bottom: 0;
     left: 0;
     right: 0;
-    top: 280rpx;
     transform: translateY(100%) translateZ(0);
     transition: all 0.3s;
     background-color: #fff;
@@ -178,11 +185,6 @@ const handleOpenPic = () => {
       }
     }
 
-    .page-scroll {
-      height: 800rpx;
-      flex: 1;
-    }
-
     .page-body {
       padding: 0 32rpx 32rpx;
       overflow: hidden;
@@ -206,13 +208,12 @@ const handleOpenPic = () => {
     color: #fff;
     text-align: center;
     border-radius: 16rpx;
-    &.video-ad {
-      padding: 24rpx;
-      box-shadow: $shadow;
-    }
+
     .title {
-      font-size: 36rpx;
+      font-size: 40rpx;
+      font-weight: bold;
     }
+
     .desc {
       margin-top: 8rpx;
       font-size: 28rpx;
@@ -221,7 +222,12 @@ const handleOpenPic = () => {
 
   .menu-ad {
     margin-top: 32rpx;
+    border-radius: 16rpx;
     overflow: hidden;
+
+    :deep(ad) {
+      margin-top: 0;
+    }
   }
 }
 </style>

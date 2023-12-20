@@ -3,7 +3,7 @@
     <view class="container">
       <slot></slot>
     </view>
-    <view class="bar" :style="{ '--color': getters.themeColor }">
+    <view class="bar" :style="{ '--color': store.themeColor }">
       <view class="button" :class="{ active: paintType === PaintType.PEN }" @click="handleSwitch(PaintType.PEN)">
         <text class="iconfont icon-pen"></text>
       </view>
@@ -17,9 +17,9 @@
 
 <script lang="ts" setup>
 import { Paint } from '@/commons/Paint';
-import { PaintType, TypeKeys } from '@/store/types';
+import { PaintType } from '@/store/types';
 import { computed } from 'vue';
-import { useStore } from 'vuex';
+import { useStore } from '@/store';
 import { usePanelAction } from '../uses/useToolAction';
 
 const props = defineProps<{
@@ -33,14 +33,14 @@ interface Emits {
 
 const emit = defineEmits<Emits>();
 
-const { state, getters, commit } = useStore();
+const store = useStore();
 
 const { handleUndo, handleRedo, handleClear, handlePreview } = usePanelAction(emit, props);
 
-const paintType = computed(() => state.paintType);
+const paintType = computed(() => store.paintType);
 
 const handleSwitch = (paintType: PaintType) => {
-  commit(TypeKeys.SET_PAINT_TYPE, paintType);
+  store.setPaintType(paintType);
 };
 </script>
 

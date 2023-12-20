@@ -1,20 +1,89 @@
+import { getCurrentInstance, ref } from 'vue';
 import { Point, PaintType, Path } from '@/store/types';
+import { useSystemStore } from '@/store/modules/system';
+import { useStore } from '@/store';
 
-const { windowWidth, windowHeight, pixelRatio } = uni.getSystemInfoSync();
+/**
+ * TODO: 画布的宽高需要重新定义，不同屏幕大小的设备不能保持一致
+ * @param canvasId
+ * @returns
+ */
+export function usePaint(canvasId?: string, onLoad?: () => void) {
+  const paint = ref<Paint>();
 
+  createPaint(canvasId).then((p) => {
+    paint.value = p;
+    onLoad?.();
+  });
+
+  return { paint };
+}
+
+/**
+ * 创建 paint
+ * @param canvasId
+ * @returns
+ */
+export async function createPaint(canvasId?: string) {
+
+  // 创建 canvas
+  let canvas: HTMLCanvasElement;
+  if (canvasId) {
+    canvas = await new Promise(resolve => {
+      uni
+        .createSelectorQuery()
+        .in(getCurrentInstance())
+        .select('#' + canvasId)
+        .fields({
+          // @ts-ignore
+          node: true,
+          size: true,
+        }, ({ node }: any) => {
+          resolve(node);
+        }).exec();
+    });
+  } else {
+    canvas = wx.createOffscreenCanvas({ type: '2d' });
+  }
+
+  const { pixelRatio } = useSystemStore();
+  const { canvasWidth, canvasHeight } = useStore();
+
+  /**
+   * 解决绘图路径锯齿问题
+   * 1. 尺寸取物理像素 windowWidth * pixelRatio
+   * 2. 画布缩放像素比 ctx.scale
+   */
+  canvas.width = canvasWidth * pixelRatio;
+  canvas.height = canvasHeight * pixelRatio;
+
+  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+  ctx.translate(canvasWidth * pixelRatio / 2, canvasHeight * pixelRatio / 2);
+  ctx.scale(pixelRatio, pixelRatio);
+
+  const paint = new Paint(ctx, canvas);
+
+  return paint;
+}
+
+/**
+ * 画笔类
+ */
 export class Paint {
   private readonly defaultWidth = 6;
   private readonly defaultColor = 'rgb(0,0,0)';
 
   private row = 0;
   private column = 0;
+  private playFrameIndex = 0;
   private stop = false;
   private path: Path[] = [];
+
   public isComplete = false;
 
-  private canvas?: HTMLCanvasElement
+  public canvas: HTMLCanvasElement
 
-  constructor(public ctx: CanvasRenderingContext2D, canvas?: HTMLCanvasElement) {
+  constructor(public ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
     this.setBackground();
 
     this.ctx.lineCap = 'round';
@@ -67,7 +136,8 @@ export class Paint {
     if (!color) return;
     this.ctx.fillStyle = color;
     under && (this.ctx.globalCompositeOperation = 'destination-over');
-    this.ctx.fillRect(-windowWidth * 0.5, -windowHeight * 0.5, windowWidth, windowHeight);
+    const { width, height } = this.ctx.canvas;
+    this.ctx.fillRect(-width * 0.5, -height * 0.5, width, height);
     under && (this.ctx.globalCompositeOperation = 'source-out');
     // #ifndef MP
     // @ts-ignore
@@ -79,7 +149,8 @@ export class Paint {
    * 清空画布
    */
   clear() {
-    this.ctx.clearRect(-windowWidth * 0.5, -windowHeight * 0.5, windowWidth, windowHeight);
+    const { width, height } = this.ctx.canvas;
+    this.ctx.clearRect(-width * 0.5, -height * 0.5, width, height);
     // #ifndef MP
     // @ts-ignore
     this.ctx.draw(true);
@@ -141,8 +212,13 @@ export class Paint {
    * @param completed 完成回调
    * @returns
    */
-  playPath(path: Path[], completed?: () => void) {
-    if (!path.length) return Promise.resolve();
+  playPath({ path, onFrame }: {
+    path: Path[];
+    onFrame?: (index: number) => void;
+  }) {
+    if (!path.length) {
+      throw new Error('path 参数不能为空');
+    }
 
     this.path = path;
 
@@ -155,15 +231,17 @@ export class Paint {
     const { points, color, width, type } = path[0];
     this.start(points[0], { color, width, type });
 
-    this.run(completed);
-    if (completed) {
-      this.completed = completed;
-    }
+    return new Promise(resolve => {
+      this.playFrameIndex = 0;
+      this.run(() => resolve(0), onFrame);
+    });
   }
 
-  private completed() {}
+  private onCompleted() {}
 
-  private run(completed = this.completed) {
+  private async run(onCompleted?: () => void, onFrame?: (index: number) => void) {
+    onCompleted && (this.onCompleted = onCompleted);
+
     // 结束绘制（下一次播放的时候要结束上一次播放）
     if (this.stop) {
       return;
@@ -181,9 +259,13 @@ export class Paint {
         }
         this.drawLine(points[this.column], points[this.column - 1]);
       }
+
+      // 完成一帧
+      await onFrame?.(this.playFrameIndex++);
+
       this.column++;
       // @ts-ignore
-      this.requestAnimationFrame(() => this.run());
+      this.requestAnimationFrame(() => this.run(onCompleted, onFrame));
     } else {
       // 一条轨迹制完成
       if (++this.row < this.path.length) {
@@ -195,12 +277,12 @@ export class Paint {
         // 延时一会儿开始绘制下一条轨迹
         setTimeout(() => {
           // @ts-ignore
-          this.requestAnimationFrame(() => this.run());
+          this.requestAnimationFrame(() => this.run(onCompleted, onFrame));
         }, 240);
       } else {
         // 结束
         this.isComplete = true;
-        completed();
+        onCompleted?.();
       }
     }
   }
@@ -216,9 +298,9 @@ export class Paint {
    * 继续播放
    * @param completed 完成回调
    */
-  play(completed?: () => void) {
+  play(onCompleted = this.onCompleted) {
     this.stop = false;
-    this.run(completed);
+    this.run(onCompleted);
   }
 
   getImageData() {
@@ -227,39 +309,39 @@ export class Paint {
      * todo: 可优化点，不用每次都保存整张画布，而是根据当前绘制的笔记自动计算出对应大小的画布和位置，减少内存占用
      * 方法：遍历当前笔记坐标数组，找到最小 (x, y) 和 最大 (x, y) 的值，并记录起来，下次在对应位置再进行绘制
      */
-    // #ifdef MP
-    return this.ctx.getImageData(0, 0, windowWidth * pixelRatio, windowHeight * pixelRatio);
-    // #endif
+    const { width, height } = this.ctx.canvas;
+    return this.ctx.getImageData(0, 0, width, height);
   }
 
   setImageData(imageData?: ImageData) {
     imageData && this.ctx.putImageData(imageData, 0, 0);
   }
 
-  drawImage(url: string) {
-    // #ifdef MP
+  requestAnimationFrame(callback: FrameRequestCallback) {
     // @ts-ignore
-    const image = this.canvas.createImage();
-    image.onload = () => {
-      const width = windowWidth;
-      const height = width * image.height / image.width;
-      this.ctx.drawImage(image, -width * 0.5, -height * 0.5, width, height);
-    };
-    image.src = url;
-    // #endif
-    // #ifndef MP
-    // @ts-ignore
-    this.ctx.drawImage(url, 0, 0);
-    // #endif
+    return this.canvas.requestAnimationFrame(callback);
   }
 
-  requestAnimationFrame(callback: FrameRequestCallback) {
-    // #ifdef MP
-    // @ts-ignore
-    return this.canvas?.requestAnimationFrame(callback);
-    // #endif
-    // #ifndef MP
-    return window.requestAnimationFrame(callback);
-    // #endif
+  async toDataURL(type?: string, quality?: any) {
+    const dataURL = this.canvas.toDataURL(type, quality) as string;
+    const tempData = dataURL.split(';base64,');
+
+    // 生成临时文件路径
+    const ext = tempData[0].split('/')[1];
+    const tempFilePath = `${wx.env.USER_DATA_PATH}/${Date.now()}.${ext}`;
+
+    console.log('====== 生成临时文件路径 ======', tempFilePath);
+
+    // 写入临时文件
+    const fsm = wx.getFileSystemManager();
+    return new Promise<string>((resolve, reject) => {
+      fsm.writeFile({
+        filePath: tempFilePath,
+        data: tempData[1],
+        encoding: 'base64',
+        success: () => resolve(tempFilePath),
+        fail: reject,
+      });
+    });
   }
 }

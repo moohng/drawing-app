@@ -4,7 +4,7 @@
     "configurations": [{
      	"app-plus" : 
      	{
-     		"launchtype" : "local"
+     		"launchtype" : "remote"
      	},
      	"default" : 
      	{

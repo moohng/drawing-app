@@ -1,8 +1,5 @@
 <template>
-  <!-- #ifndef H5 -->
-  <!-- <NavBar>涂图了</NavBar> -->
-  <!-- #endif -->
-  <view class="canvas canvas-bg" :style="{ backgroundColor: getters.backgroundColor }"></view>
+  <view class="canvas canvas-bg" :style="{ backgroundColor: store.backgroundColor }"></view>
   <!-- 照着画功能 -->
   <movable-area
     v-if="mode === PageMode.COPY"
@@ -10,7 +7,7 @@
     :class="{ cover: isBgEdit }"
     :style="isBgEdit && { zIndex: 99 }"
   >
-    <view class="canvas-img-confirm" v-if="isBgEdit" :style="{ color: getters.color }" @click="isBgEdit = false">放置</view>
+    <view class="canvas-img-confirm" v-if="isBgEdit" :style="{ color: store.color }" @click="isBgEdit = false">放置</view>
     <movable-view
       class="canvas-img-wrap"
       :style="{ opacity: bgShow ? (isBgEdit ? 0.8 : 1) : 0 }"
@@ -81,10 +78,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { onHide, onLoad, onShareAppMessage, onShareTimeline, onShow } from '@dcloudio/uni-app';
-import { useStore } from 'vuex';
-import { usePaint } from '@/uses';
+import { useStore } from '@/store';
 import { shareConfig } from '@/commons/config';
 import Panel from './components/Panel.vue';
 import PanelTool from './components/PanelTool.vue';
@@ -94,11 +90,10 @@ import MainPage from './components/MainPage.vue';
 import { useCanvasEvent } from './uses/useCanvasEvent';
 import { usePreviewAction, useCopyAction } from './uses/useToolAction';
 import { PageMode } from './types';
-import { getOpenid } from '@/commons/api';
-// import { getPintFromLocal } from '@/commons/utils';
+import { Paint, createPaint } from '@/commons/Paint';
 
 
-const { getters } = useStore();
+const store = useStore();
 
 /** 模式切换 */
 const mode = ref(PageMode.FREE);
@@ -125,31 +120,19 @@ onHide(() => {
 });
 // #endif
 
-onLoad(() => {
-  setTimeout(() => {
-    getOpenid();
-  }, 2000);
-});
-
 /** 分享 */
 onShareAppMessage(() => shareConfig);
 
 onShareTimeline(() => shareConfig);
 
 /** 画笔 */
-const { paint } = usePaint('drawCanvas', () => {
-  // if (!state.path.length) {
-  //   const { path } = getPintFromLocal();
-  //   if (path?.length) {
-  //     paint.value?.clear();
-  //     paint.value?.drawPath(path);
-  //   }
-  // }
-});
+const paint = ref();
 
-/** 初始化 */
-watch(paint, () => {
-  paint.value?.setImageData(getters.currentStep);
+onLoad(async () => {
+  paint.value = await createPaint('drawCanvas');
+
+  // 初始化
+  paint.value.setImageData(store.currentStep);
 });
 
 /** 绘图事件 */

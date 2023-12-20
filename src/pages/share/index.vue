@@ -1,55 +1,58 @@
 <template>
   <view class="top">
-    <CanvasVideo :path="getters.currentPathList" :background="getters.backgroundColor" @change="onCanvasVideoChange"></CanvasVideo>
+    <CanvasVideo
+      :path="store.currentPathList"
+      :background="store.backgroundColor"
+      :coverImage="shareImageUrl"
+      @change="onCanvasVideoChange"
+    ></CanvasVideo>
   </view>
 
-  <view class="list">
-    <view class="item bottom-line">
-      <view class="label">标题</view>
-      <input class="input" v-model="title" type="text" placeholder="给作品起一个标题吧" placeholder-class="placeholder">
-    </view>
-  </view>
-  <!-- 底部按钮 -->
+  <view class="item">操作</view>
+  <!-- 按钮 -->
   <view class="button-group">
-    <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[0] }" @click="handleSave">保存到画作</view>
-    <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[1] }" @click="handleDownload">生成图片</view>
+    <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[1] }" @click="handleSaveImage">生成图片</view>
+    <view class="button bg-blur" :style="{ backgroundColor: BG_COLOR_LIST[0] }" @click="handleSaveVideo">生成视频</view>
   </view>
-  <!-- 底部广告 -->
-  <view class="bottom-banner">
-    <!-- #ifndef H5 -->
-    <ad class="ad" unit-id="adunit-e72cb196c01d4a8c" ad-type="video" ad-theme="white" :ad-intervals="30"></ad>
-    <!-- #endif -->
+  <!-- 底部说明 -->
+  <view class="bottom-tips">
+    <view class="label">说明：</view>
+    <view>1. 生成视频耗时可能比较长，建议时长控制在10s内；</view>
+    <view>2. 生成视频耗时可能比较长，建议时长控制在10s内；</view>
+    <view>3. 生成视频耗时可能比较长，建议时长控制在10s内；</view>
   </view>
+  <!-- 视频生成中弹窗 -->
+  <Dialog :visible="showVideoLoading" title="正在合成视频..." ad>
+    <view>{{videoLoadingProgress}}%</view>
+  </Dialog>
   <!-- 分享成功 -->
-  <Dialog :visible="showDialog" title="保存成功" @click="handleSendFriend">
+  <Dialog :visible="showDialog" title="保存成功" @click="showDialog = false" ad>
     <view class="dialog-desc">赶紧分享给好友炫耀一下吧~</view>
     <template #footer>
-      <button class="dialog-btn" :style="{ color: getters.themeColor }" open-type="share">分享给好友</button>
+      <button class="dialog-btn" :style="{ color: store.themeColor }" open-type="share">分享给好友</button>
     </template>
   </Dialog>
-  <!-- 用于生成图片隐藏的canvas -->
-  <canvas class="img-canvas" id="imgCanvas" type="2d"></canvas>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
+import { onLoad, onShareAppMessage, onShareTimeline, onUnload } from '@dcloudio/uni-app';
 import { shareConfig } from '@/commons/config';
 import { generalBgColor, showLoading } from '@/commons/utils';
-import { useStore } from 'vuex';
-import { addPath, uploadImage } from '@/commons/api';
-import { useDownloadImage, useDrawImage } from '@/uses/useDownloadImage';
-import { usePaint } from '@/uses';
-import { useGenerateImage } from '@/uses/useGenerateImage';
+import { useStore } from '@/store';
+import { useDownloadOperation } from '@/uses/useDownloadImage';
 import { useInterstitialAd } from '@/uses/useAd';
+import { createRenderVideo } from '@/commons/webgl';
+import { createPaint, Paint } from '@/commons/Paint';
+import { Path } from '@/store/types';
 
 let path = '/pages/index/index';
-let shareImageUrl: string;
+const shareImageUrl = ref('');
 
 const getShareConfig = () => {
   shareConfig.path = path;
-  if (shareImageUrl) {
-    shareConfig.imageUrl = shareImageUrl;
+  if (shareImageUrl.value) {
+    shareConfig.imageUrl = shareImageUrl.value;
   }
   return shareConfig;
 };
@@ -61,43 +64,129 @@ onShareTimeline(() => getShareConfig());
 
 const BG_COLOR_LIST = [generalBgColor(), generalBgColor()];
 
-const { getters } = useStore();
+const store = useStore();
 
-const { paint } = usePaint('imgCanvas', async () => {
-  useDrawImage(paint, getters);
-  if (!shareImageUrl && paint.value) {
-    shareImageUrl = await useGenerateImage('#imgCanvas');
+let paint: Paint;
+
+onLoad(async () => {
+  paint = await createPaint();
+
+  if (!shareImageUrl.value) {
+    // 生成分享图片
+    paint.clear();
+    paint.setImageData(store.currentStep);
+    paint.setBackground(store.backgroundColor, true);
+    shareImageUrl.value = await paint.toDataURL('image/jpeg', 0.8);
   }
 });
 
-const title = ref('');
+// 保存成功弹窗
 const showDialog = ref(false);
 
-const handleSave = async () => {
-  showLoading('正在保存...');
-  if (!shareImageUrl) {
-    useDrawImage(paint, getters);
-    shareImageUrl = await useGenerateImage('#imgCanvas');
+const { beforeSave } = useDownloadOperation();
+
+// 保存图片
+const handleSaveImage = async () => {
+  try {
+    await beforeSave();
+  } catch (err: any) {
+    err && uni.showToast({ title: err.message, icon: 'none' });
+    return;
   }
-  // 上传图片信息
-  const res = await uploadImage(shareImageUrl);
-  // 保存
-  addPath({
-    path: getters.currentPathList,
-    title: title.value,
-    background: getters.backgroundColor,
-    imgUrl: res.fileID,
-  }).then(({ _id }: any) => {
-    path = '/pages/play/index?id=' + _id,
-    showDialog.value = true;
+
+  let shareImg: string;
+
+  if (!shareImageUrl.value) {
+    showLoading('正在生成图片...');
+
+    // 绘制图像
+    paint.clear();
+    paint.setImageData(store.currentStep);
+    paint.setBackground(store.backgroundColor, true);
+
+    // 生成图片
+    shareImg = await paint.toDataURL() as string;
+
+  } else {
+    shareImg = shareImageUrl.value;
+  }
+
+  console.log('======= 图片路径 =======', shareImg);
+
+  uni.saveImageToPhotosAlbum({
+    filePath: shareImg,
+    success: () => {
+      showDialog.value = true;
+    },
+    fail: (err) => {
+      console.error(err);
+      uni.showToast({ title: '保存失败！', icon: 'none' });
+    },
   });
+}
+
+const showVideoLoading = ref(false);
+const videoLoadingProgress = ref(0);
+let renderVideo: any;
+
+// 保存视频
+const handleSaveVideo = async () => {
+  try {
+    await beforeSave(true);
+  } catch (err: any) {
+    err && uni.showToast({ title: err.message, icon: 'none' });
+    return;
+  }
+
+  showVideoLoading.value = true;
+
+  const { currentPathList, backgroundColor } = store;
+
+  const videoFrameLength = currentPathList.reduce((len, item: Path) => len + item.points.length, 0);
+  console.log('============ 总长度 ==========', videoFrameLength);
+
+  try {
+    const width = 270;
+    const height = 480;
+    renderVideo = await createRenderVideo({ width, height });
+
+    // 获取视频帧
+    paint.clear();
+    paint.setBackground(backgroundColor, true);
+    await paint.playPath({
+      path: currentPathList,
+      onFrame: async (index) => {
+        console.log('进行中...', index, index / videoFrameLength);
+        videoLoadingProgress.value = Math.round(index * 100 / videoFrameLength);
+        const frame = await paint.toDataURL('image/png');
+        await renderVideo(frame);
+      },
+    });
+
+    const tempFilePath = await renderVideo.stop();
+
+    // 保存视频
+    uni.saveVideoToPhotosAlbum({
+      filePath: tempFilePath,
+      success: () => {
+        showVideoLoading.value = false;
+        videoLoadingProgress.value = 0;
+        showDialog.value = true;
+      },
+      fail: () => {
+        uni.showToast({ title: '保存失败！', icon: 'none' });
+      },
+    });
+  } catch (err) {
+    uni.showToast({ title: '合成视频失败！', icon: 'none' });
+  }
 };
 
-const handleSendFriend = () => {
-  showDialog.value = false;
-};
-
-const { handleDownload } = useDownloadImage(paint, '#imgCanvas');
+onUnload(() => {
+  if (renderVideo) {
+    renderVideo.abort();
+  }
+});
 
 // 弹窗广告
 const { showInterstitialAd } = useInterstitialAd('adunit-c0ef209d582bf665');
@@ -110,55 +199,37 @@ const onCanvasVideoChange = (isPlay: boolean) => {
 </script>
 
 <style lang="scss" scoped>
-.top {
-  height: 520rpx;
-}
-
-.list {
+.item {
   padding: 32rpx;
   font-size: 32rpx;
-
-  .item {
-    padding: 8rpx 0;
-
-    .label {
-      display: flex;
-      align-items: baseline;
-      font-size: 36rpx;
-    }
-
-    .input {
-      margin: 24rpx 0;
-      width: 100%;
-      margin-left: auto;
-      font-size: 100%;
-    }
-
-    .textarea {
-      margin-top: 32rpx;
-      width: 100%;
-      height: 220rpx;
-      font-size: 100%;
-    }
-  }
 }
 
 .button-group {
-  padding: 16rpx 32rpx;
+  padding: 16rpx 32rpx 32rpx;
   display: flex;
   justify-content: space-between;
   .button {
     width: 47%;
     height: 96rpx;
     color: #fff;
+    font-size: 36rpx;
+    font-weight: bold;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 8rpx;
   }
 }
 
-.bottom-banner {
-  margin: 16rpx 32rpx;
+.bottom-tips {
+  padding: 32rpx;
+  font-size: 28rpx;
+  color: #999;
+  line-height: 1.8;
+
+  .label {
+    margin-bottom: 8rpx;
+  }
 }
 
 .dialog-btn {
@@ -174,11 +245,4 @@ const onCanvasVideoChange = (isPlay: boolean) => {
     border: none;
   }
 }
-
-.img-canvas {
-  position: fixed;
-  opacity: 0;
-  transform: translateX(10000px);
-}
-
 </style>

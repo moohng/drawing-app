@@ -1,53 +1,76 @@
 <template>
-  <canvas id="cs" canvas-id="cs" ref="cs" type="2d" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd"></canvas>
+  <view class="page">
+    <button @click="onRender">渲染</button>
+    <button @click="onRender2">渲染2</button>
+    <button @click="onClick">生成动图</button>
+    <video :src="vSrc"></video>
+    <canvas id="cs" type="webgl"></canvas>
+  </view>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script lang="ts" setup>
+import { ref } from 'vue';
+import { showLoading } from '@/commons/utils';
+import { onLoad } from '@dcloudio/uni-app';
+import { createWebglRender, createRenderVideo } from '@/commons/webgl';
 
-let isPressed = false;
+const vSrc = ref('');
 
-export default defineComponent({
-  onReady() {
-    const canvas = document.querySelector('.uni-canvas-canvas') as any;
-    canvas.width = 500;
-    canvas.height = 500;
-    this.ctx = canvas.getContext('2d') as any;
-    console.log(this.ctx)
+let canvas: any;
+let render: any;
 
-    this.ctx.lineWidth = 6;
-    this.ctx.lineCap = 'round';
-    this.ctx.lineJoin = 'round';
+onLoad(() => {
+  uni.createSelectorQuery().select('#cs').node(({ node }) => {
+    canvas = node;
+    canvas.width = 300;
+    canvas.height = 150;
 
-    const p1 = { x: 20, y: 20 };
-    const p2 = { x: 200, y: 100 };
-    this.ctx.save();
-    this.ctx.beginPath();
-    this.ctx.moveTo(p1.x, p1.y);
-    this.ctx.quadraticCurveTo(p1.x, p1.y, 20 + (200 - 20) / 2, 20 + (100 - 20) / 2);
-    // this.ctx.lineTo(p2.x, p2.y);
-    this.ctx.stroke();
-    this.ctx.restore();
-  },
-  methods: {
-    onTouchStart(e: any) {
-      uni.showToast({ title: 'touch start', icon: 'none' });
-      isPressed = true;
-    },
-    onTouchMove(e: any) {
-      if (!isPressed) return;
-    },
-    onTouchEnd(e: any) {
-      isPressed = false;
-    },
-  }
+    render = createWebglRender(canvas);
+  }).exec();
 });
+
+const imageArr: string[] = [];
+
+['http://www.webgl3d.cn/threejs/%E5%87%A0%E4%BD%95%E4%BD%93Geometry.png', 'http://www.webgl3d.cn/threejs/%E6%9D%90%E8%B4%A8Material.png'].forEach(img => {
+  uni.downloadFile({
+    url: img,
+    success: (res) => {
+      imageArr.push(res.tempFilePath);
+    },
+  });
+});
+
+const onRender = async () => {
+  render(imageArr[0]);
+};
+
+const onRender2 = async () => {
+  render(imageArr[1]);
+};
+
+const onClick = async () => {
+  showLoading('视频生成中...');
+
+  const renderVideo = await createRenderVideo();
+
+  let len = imageArr.length;
+  let i = 0;
+  while (i) {
+    await renderVideo(imageArr[i]);
+    console.log('--- 进度 ---', Math.round(i * 100 / len));
+    i++;
+  }
+
+  const tempFilePath = await renderVideo.stop();
+
+  uni.hideLoading();
+
+  vSrc.value = tempFilePath;
+}
 </script>
 
 <style lang="scss" scoped>
-canvas {
-  background-color: #e7e09bcc;
-  width: 100vw;
-  height: 100vw;
+.page {
+  padding: 24rpx;
 }
 </style>

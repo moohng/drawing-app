@@ -1,6 +1,6 @@
 <template>
   <view class="canvas-video" @click="handlePlayToggle">
-    <!-- <canvas class="bg-canvas" id="bgCanvas" canvasId="bgCanvas" type="2d"></canvas> -->
+    <view class="video-bg" :style="coverStyle"></view>
     <canvas class="canvas" :style="{ opacity: paint ? 1 : 0, background }" id="drawCanvas" canvasId="drawCanvas" type="2d" />
     <view class="mask cover" v-if="!isPlaying">
       <text class="iconfont icon-play"></text>
@@ -9,8 +9,8 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
-import { usePaint } from '@/uses';
+import { computed, onMounted, ref, watch } from 'vue';
+import { usePaint } from '@/commons/Paint';
 import { Path } from '@/store/types';
 
 const props = defineProps({
@@ -22,11 +22,24 @@ const props = defineProps({
     type: String,
     default: '#fff',
   },
+  coverImage: {
+    type: String,
+    default: '',
+  },
 });
 
 const emit = defineEmits<{
   (event: 'change', isPlay: boolean): void;
 }>();
+
+const coverStyle = computed(() => {
+  return props.coverImage ? {
+    backgroundImage: `url(${props.coverImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    filter: 'blur(8px)',
+  } : {};
+});
 
 const isPlaying = ref(true);
 
@@ -36,13 +49,15 @@ watch(isPlaying, (isPlay) => {
 
 const { paint } = usePaint('drawCanvas');
 
-const startPlay = () => {
+const startPlay = async () => {
   isPlaying.value = true;
   paint.value?.clear();
-  // paint.value?.setBackground(props.background);
-  paint.value?.playPath(props.path as Path[], () => {
-    isPlaying.value = false;
+
+  await paint.value?.playPath({
+    path: props.path as Path[],
   });
+
+  isPlaying.value = false;
 };
 
 const handlePlayToggle = () => {
@@ -70,13 +85,20 @@ onMounted(() => {
 .canvas-video {
   position: relative;
   width: 100%;
-  height: 100%;
-  background-color: #000;
   overflow: hidden;
+
+  .video-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    z-index: 0;
+  }
+
   .canvas {
     margin: auto;
-    width: 50%;
-    height: 100%;
+    width: 75%;
+    height: 780rpx;
   }
   .mask.cover {
     position: absolute;
@@ -89,14 +111,5 @@ onMounted(() => {
       font-size: 64rpx;
     }
   }
-  // .bg-canvas {
-  //   position: absolute;
-  //   left: 0;
-  //   width: 100vw;
-  //   height: 100vh;
-  //   top: 50%;
-  //   transform: translateY(-50%);
-  //   z-index: -1;
-  // }
 }
 </style>

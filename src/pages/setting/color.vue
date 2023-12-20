@@ -1,13 +1,13 @@
 <template>
   <view class="container">
     <view class="row">
-      <view class="label">常用颜色</view>
+      <view class="label">{{ colorType === 'bg' ? '背景' : '画笔' }}颜色</view>
       <view class="list">
-        <view class="item color-block" :class="{ selected: currentColorIndex === index }" :style="{ color: mergeColorByAlpha(item) }" v-for="(item, index) in colorList" :key="index" @click="handleColorSelect(index, item)"></view>
+        <view class="item color-block" :class="{ selected: currentColorIndex === index }" :style="{ color: item.value }" v-for="(item, index) in colorList" :key="index" @click="handleColorSelect(index, item)"></view>
       </view>
     </view>
     <view class="bottom-line"></view>
-    <ColorPicker :value="currentColor" @change="onColorChange"></ColorPicker>
+    <mo-color-panel :value="currentColor" @change="onColorChange"></mo-color-panel>
   </view>
   <!-- 视频广告 -->
   <view class="video-ad">
@@ -16,36 +16,38 @@
 </template>
 
 <script lang="ts" setup>
-import { ColorOption, TypeKeys } from '@/store/types';
+import { ColorOption } from '@/store/types';
 import { computed, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { useStore } from 'vuex';
-import { mergeColorByAlpha } from '@/commons/utils';
+import { useStore } from '@/store';
 
-const { state, getters, commit } = useStore();
+const store = useStore();
 
 const colorType = ref('color');
 const currentColor = ref('#000');
 
 onLoad(({ type = 'color' }) => {
   colorType.value = type;
-  currentColor.value = type === 'bg' ? getters.backgroundColor : getters.color;
+  currentColor.value = type === 'bg' ? store.backgroundColor : store.color;
 });
 
 const colorList = computed(() => {
-  return colorType.value === 'bg' ? state.bgColorList : state.colorList;
+  return colorType.value === 'bg' ? store.bgColorList : store.colorList;
 });
 
-const currentColorIndex = computed(() => colorType.value === 'bg' ? state.backgroundColorIndex : state.colorIndex);
+const currentColorIndex = computed(() => colorType.value === 'bg' ? store.backgroundColorIndex : store.colorIndex);
 
 const handleColorSelect = (index: number, item: ColorOption) => {
-  commit(colorType.value === 'bg' ? TypeKeys.SET_BACKGROUND_COLOR_INDEX : TypeKeys.SET_COLOR_INDEX, index);
+  colorType.value === 'bg' ? store.setBackgroundColorIndex(index) : store.setColorIndex(index);
   currentColor.value = item.value;
 };
 
 const onColorChange = (v: any) => {
   console.log('color change', v);
-  commit(colorType.value === 'bg' ? TypeKeys.EDIT_BACKGROUND_LIST_BY_INDEX : TypeKeys.EDIT_COLOR_LIST_BY_INDEX, {
+  colorType.value === 'bg' ? store.editBackgroundColorByIndex({
+    alpha: 1,
+    value: v,
+  }) : store.editColorListByIndex({
     alpha: 1,
     value: v,
   });
@@ -94,15 +96,15 @@ const onColorChange = (v: any) => {
     &.color-block::before {
       content: '';
       display: block;
-      width: 44rpx;
-      height: 44rpx;
+      width: 36rpx;
+      height: 36rpx;
       background-color: currentColor;
       border-radius: 200rpx;
       transition: all .4s;
     }
 
     &.color-block.selected::before {
-      transform: scale(1.36);
+      transform: scale(1.6);
       box-shadow: $shadow;
     }
   }
